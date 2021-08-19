@@ -93,10 +93,10 @@ const sendeubitx = async function(){
 	//write transaction
 	var transaction = {};
 	transaction.data = loadedTokenContracts["0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1"].methods.transfer(sendto.value, convDecimalToRaw(eubiamount.value)).encodeABI();
-	transaction.gas = "60000"
+	transaction.gas = "100000"
 	transaction.to = "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1";
-	transaction.from = walletAddressRAW;
-	//sign transaction
+	transaction.privateKey = privateKeyRAW;
+	//sign and send transaction
 	web3.eth.accounts.signTransaction(transaction, privateKeyRAW).then(function(value){
 		web3.eth.sendSignedTransaction(value.rawTransaction).then(function(value){
 			window.alert("Transaction sent successfully!");
