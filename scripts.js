@@ -16,6 +16,9 @@ const nativeBalance = document.getElementById("nativeBalance");
 const sendEubiButton = document.getElementById("sendEubiButton");
 const sendEubiPreloader = document.getElementById("sendEubiPreloader");
 const approveEubiButton = document.getElementById("approveEubiButton");
+const hideApprovalOwner = document.getElementById("hideApprovalOwner");
+const approvalOwner = document.getElementById("approvalOwner");
+const useApprovalCheckbox = document.getElementById("useApprovalCheckbox");
 var walletAddressRAW = "0x0000000000000000000000000000000000000000";
 var privateKeyRAW = "";
 if (history.scrollRestoration) {
@@ -115,7 +118,11 @@ const sendeubitx = async function(meth){
 	//write transaction
 	sendEubiMessage.innerHTML = "Writing transaction...";
 	var transaction = {};
-	transaction.data = loadedTokenContracts["0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1"].methods[meth](sendto.value, convDecimalToRaw(eubiamount.value)).encodeABI();
+	if(useApprovalCheckbox.checked){
+		transaction.data = loadedTokenContracts["0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1"].methods.transferFrom(approvalOwner.value, sendto.value, convDecimalToRaw(eubiamount.value)).encodeABI();
+	} else{
+		transaction.data = loadedTokenContracts["0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1"].methods[meth](sendto.value, convDecimalToRaw(eubiamount.value)).encodeABI();
+	}
 	transaction.gas = "100000"
 	transaction.to = "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1";
 	transaction.privateKey = privateKeyRAW;
