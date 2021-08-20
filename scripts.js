@@ -15,6 +15,7 @@ const rawUnitsToken = new BigInt("1000000000000");
 const nativeBalance = document.getElementById("nativeBalance");
 const sendEubiButton = document.getElementById("sendEubiButton");
 const sendEubiPreloader = document.getElementById("sendEubiPreloader");
+const approveEubiButton = document.getElementById("approveEubiButton");
 var walletAddressRAW = "0x0000000000000000000000000000000000000000";
 var privateKeyRAW = "";
 if (history.scrollRestoration) {
@@ -30,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	var instances = M.Collapsible.init(elems, collapsibleOptions);
 });
 const loadTokenContractIMPL = function(address){
-	return new web3.eth.Contract(JSON.parse('[{"constant": false,"inputs": [{"name": "spender","type": "address"},{"name": "value","type": "uint256"}],"name": "approve","outputs": [{"name": "","type": "bool"}],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": true,"inputs": [],"name": "totalSupply","outputs": [{"name": "","type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},{"constant": false,"inputs": [{"name": "from","type": "address"},{"name": "to","type": "address"},{"name": "value","type": "uint256"}],"name": "transferFrom","outputs": [{"name": "","type": "bool"}],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": true,"inputs": [{"name": "who","type": "address"}],"name": "balanceOf","outputs": [{"name": "","type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},{"constant": false,"inputs": [{"name": "to","type": "address"},{"name": "value","type": "uint256"}],"name": "transfer","outputs": [{"name": "","type": "bool"}],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": true,"inputs": [{"name": "owner","type": "address"},{"name": "spender","type": "address"}],"name": "allowance","outputs": [{"name": "","type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},{"anonymous": false,"inputs": [{"indexed": true,"name": "from","type": "address"},{"indexed": true,"name": "to","type": "address"},{"indexed": false,"name": "value","type": "uint256"}],"name": "Transfer","type": "event"},{"anonymous": false,"inputs": [{"indexed": true,"name": "owner","type": "address"},{"indexed": true,"name": "spender","type": "address"},{"indexed": false,"name": "value","type": "uint256"}],"name": "Approval","type": "event"}]'), address);
+	return new web3.eth.Contract(JSON.parse('[{"constant": false,"inputs": [{"name": "spender","type": "address"},{"name": "value","type": "uint256"}],"name": "approve","outputs": [{"name": "","type": "bool"}],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": false,"inputs": [{"name": "from","type": "address"},{"name": "to","type": "address"},{"name": "value","type": "uint256"}],"name": "transferFrom","outputs": [{"name": "","type": "bool"}],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": false,"inputs": [{"name": "spender","type": "address"},{"name": "addedValue","type": "uint256"}],"name": "increaseAllowance","outputs": [{"name": "","type": "bool"}],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": true,"inputs": [{"name": "who","type": "address"}],"name": "balanceOf","outputs": [{"name": "","type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},{"constant": false,"inputs": [{"name": "spender","type": "address"},{"name": "subtractedValue","type": "uint256"}],"name": "decreaseAllowance","outputs": [{"name": "","type": "bool"}],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": false,"inputs": [{"name": "to","type": "address"},{"name": "value","type": "uint256"}],"name": "transfer","outputs": [{"name": "","type": "bool"}],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": true,"inputs": [{"name": "owner","type": "address"},{"name": "spender","type": "address"}],"name": "allowance","outputs": [{"name": "","type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"}]'), address);
 };
 const createWallet = async function(){
 	walletMessage.innerHTML = "Your private key is: " + web3.eth.accounts.create().privateKey + "<br/>Please store the private key somewhere safe, since you need it to unlock your wallet.";
@@ -107,13 +108,14 @@ const convDecimalToRaw = function(value){
 	}
 	return new BigInt(value[0]).mul(rawUnitsToken).add(new BigInt(value[1].padEnd(12, "0"))).toString();
 };
-const sendeubitx = async function(){
+const sendeubitx = async function(meth){
 	sendEubiButton.disabled = true;
+	approveEubiButton.disabled = true;
 	sendEubiPreloader.style.visibility = "visible";
 	//write transaction
 	sendEubiMessage.innerHTML = "Writing transaction...";
 	var transaction = {};
-	transaction.data = loadedTokenContracts["0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1"].methods.transfer(sendto.value, convDecimalToRaw(eubiamount.value)).encodeABI();
+	transaction.data = loadedTokenContracts["0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1"].methods[meth](sendto.value, convDecimalToRaw(eubiamount.value)).encodeABI();
 	transaction.gas = "100000"
 	transaction.to = "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1";
 	transaction.privateKey = privateKeyRAW;
@@ -125,59 +127,26 @@ const sendeubitx = async function(){
 			if(value === null){
 				sendEubiMessage.innerHTML = "Transaction sent successfully!";
 				sendEubiButton.disabled = false;
+				approveEubiButton.disabled = false;
 				sendEubiPreloader.style.visibility = "hidden";
 			} else{
 				sendEubiMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.mintme.com/explorer/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
 				sendEubiButton.disabled = false;
+				approveEubiButton.disabled = false;
 				sendEubiPreloader.style.visibility = "hidden";
 			}
 			reloadWallet();
 		}, function(error){
 			sendEubiMessage.innerHTML = "Can't send transaction!";
 			sendEubiButton.disabled = false;
+			approveEubiButton.disabled = false;
 			sendEubiPreloader.style.visibility = "hidden";
 			reloadWallet();
 		});
 	}, function(error){
 		sendEubiMessage.innerHTML = "Can't sign transaction!";
 		sendEubiButton.disabled = false;
-		sendEubiPreloader.style.visibility = "hidden";
-	});
-};
-const approve4eubi = async function(){
-	sendEubiButton.disabled = true;
-	sendEubiPreloader.style.visibility = "visible";
-	//write transaction
-	sendEubiMessage.innerHTML = "Writing transaction...";
-	var transaction = {};
-	transaction.data = loadedTokenContracts["0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1"].methods.approve(sendto.value, convDecimalToRaw(eubiamount.value)).encodeABI();
-	transaction.gas = "100000"
-	transaction.to = "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1";
-	transaction.privateKey = privateKeyRAW;
-	sendEubiMessage.innerHTML = "Signing transaction...";
-	//sign and send transaction
-	web3.eth.accounts.signTransaction(transaction, privateKeyRAW).then(function(value){
-		sendEubiMessage.innerHTML = "Sending transaction...";
-		web3.eth.sendSignedTransaction(value.rawTransaction).then(function(value){
-			if(value === null){
-				sendEubiMessage.innerHTML = "Transaction sent successfully!";
-				sendEubiButton.disabled = false;
-				sendEubiPreloader.style.visibility = "hidden";
-			} else{
-				sendEubiMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.mintme.com/explorer/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
-				sendEubiButton.disabled = false;
-				sendEubiPreloader.style.visibility = "hidden";
-			}
-			reloadWallet();
-		}, function(error){
-			sendEubiMessage.innerHTML = "Can't send transaction!";
-			sendEubiButton.disabled = false;
-			sendEubiPreloader.style.visibility = "hidden";
-			reloadWallet();
-		});
-	}, function(error){
-		sendEubiMessage.innerHTML = "Can't sign transaction!";
-		sendEubiButton.disabled = false;
+		approveEubiButton.disabled = false;
 		sendEubiPreloader.style.visibility = "hidden";
 	});
 };

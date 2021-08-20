@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-	<title>Document</title>
+	<title>MyEUBIWallet v1.0: Ultimate EUBI web wallet</title>
 	</head>
 	<body class="blue-grey lighten-5">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.css" integrity="sha512-t38vG/f94E72wz6pCsuuhcOPJlHKwPy+PY+n1+tJFzdte3hsIgYE7iEpgg/StngunGszVMrRfvwZinrza0vMTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -52,8 +52,8 @@
 							<input id="eubiamount" type="text"/>
 							<label for="eubiamount">Amount</label>
 						</div>
-						<button class="waves-effect waves-light btn col s12 m12 l6" id="sendEubiButton" onclick="sendeubitx();"><i class="material-icons left">send</i>Send</button>
-						<button class="waves-effect waves-light btn col s12 m12 l6" id="sendEubiButton" onclick="approve4eubi();"><i class="material-icons left">check</i>Set approval</button>
+						<button class="waves-effect waves-light btn col s12 m12 l6" id="sendEubiButton" onclick='sendeubitx("transfer");'><i class="material-icons left">send</i>Send</button>
+						<button class="waves-effect waves-light btn col s12 m12 l6" id="approveEubiButton" onclick='sendeubitx("approve");'><i class="material-icons left">check</i>Set approval</button>
 						<div class="col s12">
 							<strong class="flow-text" id="sendEubiMessage"></strong>
 						</div>
