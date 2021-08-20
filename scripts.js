@@ -107,6 +107,7 @@ const loadWallet2 = async function(){
 	} else{
 		try{
 			loadedAccount = web3.eth.accounts.decrypt(walletCookie.substring(7), pass3.value);
+			privateKeyRAW = loadedAccount.privateKey;
 		} catch(err){
 			loadedAccount = null;
 		}
