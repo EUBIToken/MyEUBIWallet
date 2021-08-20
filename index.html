@@ -18,16 +18,28 @@
 			</div>
 		</nav>
 		<br/>
-		<div class="blue-grey lighten-4 container" id="beforeWalletLoad">
+		<div class="blue-grey lighten-4 container row" id="beforeWalletLoad">
 			<h6><b>You need a private key to load your wallet!</b></h6>
-			<div class="input-field col s6">
+			<div class="input-field col s12 m12 l6">
 				<i class="material-icons prefix">vpn_key</i>
 				<input id="privateKey" type="text"/>
 				<label for="privateKey">Private key</label>
 			</div>
-			<div class="row">
-				<button class="waves-effect waves-light btn col s12 m12 l6" onclick="loadWallet();"><i class="material-icons left">account_balance</i>Load Wallet</button>
+			<div class="col s12"></div>
+			
+			<button class="waves-effect waves-light btn col s12 m12 l6" onclick="loadWallet();"><i class="material-icons left">account_balance</i>Load Wallet</button>
+			<div class="col s12"><strong>Or you can use quick wallet access.</strong></div>
+		
+			<div class="input-field col s12 m12 l6">
+				<i class="material-icons prefix">vpn_key</i>
+				<input id="pass3" type="password"/>
+				<label for="pass3">Enter wallet encryption password</label>
 			</div>
+			<div class="col s12"></div>
+			<div class="row">
+				<button class="waves-effect waves-light btn col s12 m12 l6" onclick="loadWallet2();"><i class="material-icons left">account_balance</i>Decrypt and load Wallet</button>
+			</div>
+			<div class="col s12"></div>
 			<strong>Don't have a private key? No worries! You can create a new wallet.</strong><br/>
 			<div class="row">
 				<button class="waves-effect waves-light btn col s12 m12 l6" onclick="createWallet();"><i class="material-icons left">account_balance</i>Create Wallet</button>
@@ -70,6 +82,28 @@
 						</div>
 						<div class="col s12 m12 l6 progress" id="sendEubiPreloader" style="visibility: hidden;">
 							<div class="indeterminate"></div>
+						</div>
+					</div>
+				</li>
+				<li>
+					<div class="collapsible-header">
+						<strong class="flow-text">Quick wallet access</strong>
+					</div>
+					<div class="collapsible-body row">
+						<strong>Setting up quick wallet access allows you to access your wallet without copying and pasting the private key, which can enhance security. Do not rely on quick wallet access as the sole mean of storing your private key, and always backup your private key somewhere else. If you already set up quick wallet access, your previous quick wallet access configuration will be overwritten!</strong><br/>
+						<div class="input-field col s12">
+							<i class="material-icons prefix">vpn_key</i>
+							<input id="pass1" type="password"/>
+							<label for="pass1">Enter wallet encryption password</label>
+						</div>
+						<div class="input-field col s12">
+							<i class="material-icons prefix">vpn_key</i>
+							<input id="pass2" type="password"/>
+							<label for="pass2">Confirm wallet encryption password</label>
+						</div>
+						<button class="waves-effect waves-light btn col s12 m12 l6" onclick="encryptAndStore();"><i class="material-icons left">lock</i>Encrypt and store</button>
+						<div class="col s12">
+							<strong class="flow-text" id="lockAndStoreMSG"></strong>
 						</div>
 					</div>
 				</li>
