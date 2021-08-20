@@ -34,34 +34,60 @@
 			</div>
 			<strong id="walletMessage"></strong><br/>
 		</div>
-		<div class="blue-grey lighten-4 container" id="afterWalletLoad" style="visibility: hidden;">
+		<div class="blue-grey lighten-4 container" id="afterWalletLoad" style="display: none;">
 			<strong class="flow-text">Welcome to your EUBI web wallet!</strong><br/>
-			<strong class="flow-text" id="myWalletAddress"></strong><br/>
-			<strong class="flow-text" id="eubiBalance">Fetching EUBI balance...</strong><br/>
-			<strong class="flow-text" id="nativeBalance">Fetching MintME balance...</strong><br/>
-			<strong>You need approximately 0.00005 MintME to pay for gas costs for an EUBI transfer.</strong><br/>
-			<div class="row">
-				<button class="waves-effect waves-light btn col s12 m12 l6" onclick="showInnerMenu('sendeubi');"><i class="material-icons left">send</i>Send</button>
-				<button class="waves-effect waves-light btn col s12 m12 l6"><i class="material-icons left">delete_forever</i>Burn</button>
-				<button class="waves-effect waves-light btn col s12 m12 l6"><i class="material-icons left">check</i>Set allowance</button>
-				<button class="waves-effect waves-light btn col s12 m12 l6"><i class="material-icons left">arrow_forward</i>Spend allowance</button>
-				<button class="waves-effect waves-light btn col s12 m12 l6" onclick="eubiBalance.innerHTML='Fetching EUBI balance...';nativeBalance.innerHTML='Fetching MintME balance...';reloadWallet();"><i class="material-icons left">refresh</i>Reload wallet</button>
-			</div>
-			<div class="row" id="sendeubi" style="visibility: hidden;">
-				<strong class="flow-text">Send EUBI tokens</strong><br/>
-				<div class="input-field col s12">
-					<i class="material-icons prefix">vpn_key</i>
-					<input id="sendto" type="text"/>
-					<label for="sendto">Receiver's address</label>
-				</div>
-				<div class="input-field col s12">
-					<i class="material-icons prefix">attach_money</i>
-					<input id="eubiamount" type="text"/>
-					<label for="eubiamount">Amount</label>
-				</div>
-				<button class="waves-effect waves-light btn col s12 m12 l6" onclick="sendeubitx();"><i class="material-icons left">send</i>Send</button>
-				<strong id="sendEubiMessage"></strong><br/>
-			</div>
+			<ul class="collapsible">
+				<li>
+					<div class="collapsible-header">
+						<strong class="flow-text">Send EUBI tokens</strong>
+					</div>
+					<div class="collapsible-body row">
+						<div class="input-field col s12">
+							<i class="material-icons prefix">vpn_key</i>
+							<input id="sendto" type="text"/>
+							<label for="sendto">Receiver's address</label>
+						</div>
+						<div class="input-field col s12">
+							<i class="material-icons prefix">attach_money</i>
+							<input id="eubiamount" type="text"/>
+							<label for="eubiamount">Amount</label>
+						</div>
+						<button class="waves-effect waves-light btn col s12 m12 l6" id="sendEubiButton" onclick="sendeubitx();"><i class="material-icons left">send</i>Send</button>
+						<button class="waves-effect waves-light btn col s12 m12 l6" id="sendEubiButton" onclick="approve4eubi();"><i class="material-icons left">check</i>Set approval</button>
+						<div class="col s12">
+							<strong class="flow-text" id="sendEubiMessage"></strong>
+						</div>
+						<div class="col s12 m12 l6 progress" id="sendEubiPreloader" style="visibility: hidden;">
+							<div class="indeterminate"></div>
+						</div>
+					</div>
+				</li>
+				<li>
+					<div class="collapsible-header">
+						<strong class="flow-text">Wallet details</strong>
+					</div>
+					<div class="collapsible-body row">
+						<strong class="flow-text" id="myWalletAddress"></strong><br/>
+						<strong class="flow-text" id="eubiBalance">Fetching EUBI balance...</strong><br/>
+						<strong class="flow-text" id="nativeBalance">Fetching MintME balance...</strong><br/>
+						<strong>You need approximately 0.00005 MintME to pay for gas costs for an EUBI transfer.</strong><br/>
+						<button class="waves-effect waves-light btn col s12 m12 l6" onclick="eubiBalance.innerHTML='Fetching EUBI balance...';nativeBalance.innerHTML='Fetching MintME balance...';reloadWallet();"><i class="material-icons left">refresh</i>Reload wallet</button>
+						<button class="waves-effect waves-light btn col s12 m12 l6" onclick="navigator.clipboard.writeText(privateKeyRAW)"><i class="material-icons left">content_copy</i>Copy private key</button>
+					</div>
+				</li>
+				<li>
+					<div class="collapsible-header">
+						<strong class="flow-text">About MyEUBIWallet</strong>
+					</div>
+					<div class="collapsible-body row">
+						<strong>MyEUBIWallet is made by the blockchain director of EUBI, Jessie Lesbian</strong><br/>
+						<strong>Email: jessielesbian@eubitoken.com</strong><br/>
+						<strong>Reddit: <a href="https://www.reddit.com/u/jessielesbian">u/jessielesbian</a></strong><br/>
+						<strong>Website: <a href="https://www.eubitoken.com/">www.eubitoken.com</a></strong><br/>
+						<strong>MyEUBIWallet is still experimental software, use with care!</strong>
+					</div>
+				</li>
+			</ul>
 		</div>
 		<script src="scripts.js"></script>
 	</body>
