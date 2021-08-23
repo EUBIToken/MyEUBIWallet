@@ -25,6 +25,7 @@ const pass3 = document.getElementById("pass3");
 const decryptButton = document.getElementById("decryptButton");
 const lockAndStoreMSG = document.getElementById("lockAndStoreMSG");
 var walletAddressRAW = "0x0000000000000000000000000000000000000000";
+var contractAddress = "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1";
 var privateKeyRAW = "";
 if (history.scrollRestoration) {
     history.scrollRestoration = 'manual';
@@ -69,7 +70,7 @@ const refreshTokenBalance = async function(tokenAddress, tokenBalanceElement, wa
 const reloadWallet = async function(){
 	myWalletAddress.innerHTML = "Your wallet address is: " + walletAddressRAW;
 	afterWalletLoad.style.display = "block";
-	refreshTokenBalance("0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1", eubiBalance, walletAddressRAW, "EUBI");
+	refreshTokenBalance(contractAddress, eubiBalance, walletAddressRAW, "EUBI");
 	web3.eth.getBalance(walletAddressRAW).then(function(value){
 		vl = value.length;
 		if(vl > 18){
@@ -78,7 +79,18 @@ const reloadWallet = async function(){
 		} else{
 			value = "0." + value.padStart(18, "0");
 		}
-		nativeBalance.innerHTML = "You have " + value + " MintME to pay for gas";
+		switch(contractAddress){
+			case "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1":
+				nativeBalance.innerHTML = "You have " + value + " MintME to pay for gas";
+				break;
+			case "0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D":
+				nativeBalance.innerHTML = "You have " + value + " BSC to pay for gas";
+				break;
+			default:
+				nativeBalance.innerHTML = "You have " + value + " Unidentified cryptocurrency coins to pay for gas";
+				break;
+		}
+		
 	}, function(error){
 		nativeBalance.innerHTML = "ERROR: Can't load MintME balance";
 	});
@@ -146,12 +158,12 @@ const sendeubitx = async function(meth){
 	sendEubiMessage.innerHTML = "Writing transaction...";
 	var transaction = {};
 	if(useApprovalCheckbox.checked){
-		transaction.data = loadedTokenContracts["0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1"].methods.transferFrom(approvalOwner.value, sendto.value, convDecimalToRaw(eubiamount.value)).encodeABI();
+		transaction.data = loadedTokenContracts[contractAddress].methods.transferFrom(approvalOwner.value, sendto.value, convDecimalToRaw(eubiamount.value)).encodeABI();
 	} else{
-		transaction.data = loadedTokenContracts["0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1"].methods[meth](sendto.value, convDecimalToRaw(eubiamount.value)).encodeABI();
+		transaction.data = loadedTokenContracts[contractAddress].methods[meth](sendto.value, convDecimalToRaw(eubiamount.value)).encodeABI();
 	}
 	transaction.gas = "100000"
-	transaction.to = "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1";
+	transaction.to = contractAddress;
 	transaction.privateKey = privateKeyRAW;
 	sendEubiMessage.innerHTML = "Signing transaction...";
 	//sign and send transaction
@@ -192,5 +204,24 @@ const encryptAndStore = async function(){
 		lockAndStoreMSG.innerHTML = "Wallet encrypted and stored!";
 	} else{
 		lockAndStoreMSG.innerHTML = "The two passwords doesn't match!";
+	}
+};
+const selectBlockchain = async function(blockchain){
+	switch(blockchain){
+		case "MintME1":
+			web3.setProvider("https://node1.mintme.com:443");
+			contractAddress = "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1";
+			reloadWallet();
+			break;
+		case "MintME2":
+			web3.setProvider("https://node1.mintme.com:443");
+			contractAddress = "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1";
+			reloadWallet();
+			break;
+		case "BinanceSmartChain":
+			web3.setProvider("https://bsc-dataseed.binance.org/");
+			contractAddress = "0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D";
+			reloadWallet();
+			break;
 	}
 };

@@ -20,7 +20,7 @@
 		<br/>
 		<div class="blue-grey lighten-4 container row" id="beforeWalletLoad">
 			<h6><b>You need a private key to load your wallet!</b></h6>
-			<div class="input-field col s12 m12 l6">
+			<div class="input-field col s12">
 				<i class="material-icons prefix">vpn_key</i>
 				<input id="privateKey" type="text"/>
 				<label for="privateKey">Private key</label>
@@ -30,7 +30,7 @@
 			<button class="waves-effect waves-light btn col s12 m12 l6" onclick="loadWallet();"><i class="material-icons left">account_balance</i>Load Wallet</button>
 			<div class="col s12"><strong>Or you can use quick wallet access.</strong></div>
 		
-			<div class="input-field col s12 m12 l6">
+			<div class="input-field col s12">
 				<i class="material-icons prefix">vpn_key</i>
 				<input id="pass3" type="password"/>
 				<label for="pass3">Enter wallet encryption password</label>
@@ -118,6 +118,32 @@
 						<strong>You need approximately 0.00006 MintME to pay for gas costs for an EUBI transfer.</strong><br/>
 						<button class="waves-effect waves-light btn col s12 m12 l6" onclick="eubiBalance.innerHTML='Fetching EUBI balance...';nativeBalance.innerHTML='Fetching MintME balance...';reloadWallet();"><i class="material-icons left">refresh</i>Reload wallet</button>
 						<button class="waves-effect waves-light btn col s12 m12 l6" onclick="navigator.clipboard.writeText(privateKeyRAW)"><i class="material-icons left">content_copy</i>Copy private key</button>
+					</div>
+				</li>
+				<li>
+					<div class="collapsible-header">
+						<strong class="flow-text">Blockchain settings</strong>
+					</div>
+					<div class="collapsible-body row">
+						<strong class="flow-text" id="myWalletAddress">Which blockchain do you want to use?</strong><br/>
+							<p>
+								<label>
+									<input name="group1" type="radio" checked onclick="selectBlockchain('MintME1');"/>
+									<span style="color: black;">MintME (node 1)</span>
+								</label>
+							</p>
+							<p>
+								<label>
+									<input name="group1" type="radio" onclick="selectBlockchain('MintME2');"/>
+									<span style="color: black;">MintME (node 2)</span>
+								</label>
+							</p>
+							<p>
+								<label>
+									<input name="group1" type="radio" onclick="selectBlockchain('BinanceSmartChain');"/>
+									<span style="color: black;">Binance Smart Chain</span>
+								</label>
+							</p>
 					</div>
 				</li>
 				<li>
