@@ -203,7 +203,7 @@ const selectBlockchain = async function(blockchain){
 			reloadWallet();
 			break;
 		case "MintME2":
-			web3.setProvider("https://node1.mintme.com:443");
+			web3.setProvider("https://node2.mintme.com:443");
 			contractAddress = "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1";
 			reloadWallet();
 			break;
