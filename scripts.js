@@ -53,14 +53,14 @@ const loadTokenContract = function(address){
 	}
 	return loadingTokenContract;
 }
-const refreshTokenBalance = async function(tokenAddress, tokenBalanceElement, walletAddress, tokenName){
+const refreshTokenBalance = async function(tokenAddress, tokenBalanceElement, walletAddress, tokenName, decimals){
 	loadTokenContract(tokenAddress).methods.balanceOf(walletAddress).call().then(function(value){
 		vl = value.length;
-		if(vl > 12){
-			vl -= 12;
-			value = value.substring(0, vl) + "." + value.substring(vl).padEnd(12, "0");
+		if(vl > decimals){
+			vl -= decimals;
+			value = value.substring(0, vl) + "." + value.substring(vl).padEnd(decimals, "0");
 		} else{
-			value = "0." + value.padStart(12, "0");
+			value = "0." + value.padStart(decimals, "0");
 		}
 		tokenBalanceElement.innerHTML = "You have " + value + " " + tokenName + " Tokens";
 	}, function(error){
@@ -70,7 +70,12 @@ const refreshTokenBalance = async function(tokenAddress, tokenBalanceElement, wa
 const reloadWallet = async function(){
 	myWalletAddress.innerHTML = "Your wallet address is: " + walletAddressRAW;
 	afterWalletLoad.style.display = "block";
-	refreshTokenBalance(contractAddress, eubiBalance, walletAddressRAW, "EUBI");
+	if(contractAddress == "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1"){
+		refreshTokenBalance(contractAddress, eubiBalance, walletAddressRAW, "EUBI", 12);
+	} else{
+		refreshTokenBalance(contractAddress, eubiBalance, walletAddressRAW, "bEUBI", 18);
+	}
+	
 	web3.eth.getBalance(walletAddressRAW).then(function(value){
 		vl = value.length;
 		if(vl > 18){
@@ -84,7 +89,7 @@ const reloadWallet = async function(){
 				nativeBalance.innerHTML = "You have " + value + " MintME to pay for gas";
 				break;
 			case "0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D":
-				nativeBalance.innerHTML = "You have " + value + " BSC to pay for gas";
+				nativeBalance.innerHTML = "You have " + value + " BNB to pay for gas";
 				break;
 			default:
 				nativeBalance.innerHTML = "You have " + value + " Unidentified cryptocurrency coins to pay for gas";
@@ -132,12 +137,12 @@ const loadWallet2 = async function(){
 		}
 	}
 };
-const convDecimalToRaw = function(value){
+const convDecimalToRaw = function(value, decimals){
 	value = value.split(".");
 	if(value.length == 1){
 		value[1] = '0';
 	}
-	return new BigInt(value[0]).mul(rawUnitsToken).add(new BigInt(value[1].padEnd(12, "0"))).toString();
+	return new BigInt(value[0]).mul(rawUnitsToken).add(new BigInt(value[1].padEnd(decimals, "0"))).toString();
 };
 const sendeubitx = async function(meth){
 	sendEubiButton.disabled = true;
@@ -146,10 +151,11 @@ const sendeubitx = async function(meth){
 	//write transaction
 	sendEubiMessage.innerHTML = "Writing transaction...";
 	var transaction = {};
+	var decimals = contractAddress == "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1" ? 12 : 18;
 	if(useApprovalCheckbox.checked){
-		transaction.data = loadedTokenContracts[contractAddress].methods.transferFrom(approvalOwner.value, sendto.value, convDecimalToRaw(eubiamount.value)).encodeABI();
+		transaction.data = loadedTokenContracts[contractAddress].methods.transferFrom(approvalOwner.value, sendto.value, convDecimalToRaw(eubiamount.value, decimals)).encodeABI();
 	} else{
-		transaction.data = loadedTokenContracts[contractAddress].methods[meth](sendto.value, convDecimalToRaw(eubiamount.value)).encodeABI();
+		transaction.data = loadedTokenContracts[contractAddress].methods[meth](sendto.value, convDecimalToRaw(eubiamount.value, decimals)).encodeABI();
 	}
 	transaction.gas = "100000"
 	transaction.to = contractAddress;
