@@ -107,18 +107,18 @@ const loadWallet = async function(){
 		walletMessage.innerHTML = "Can't load wallet";
 	} else{
 		walletAddressRAW = loadedAccount.address;
-		beforeWalletLoad.remove();
+		beforeWalletLoad.style.display = "none";
 		reloadWallet();
 	}
 };
 const loadWallet2 = async function(){
 	walletMessage.innerHTML = "Decrypting and loading wallet...";
-	var walletCookie = document.cookie;
-	if (walletCookie == ''){
+	var walletStorage = localStorage.getItem('savedeubiwallet');
+	if (walletStorage == null){
 		walletMessage.innerHTML = "Quick wallet access not yet set up!";
 	} else{
 		try{
-			loadedAccount = web3.eth.accounts.decrypt(walletCookie.substring(7), pass3.value);
+			loadedAccount = web3.eth.accounts.decrypt(walletStorage, pass3.value);
 			privateKeyRAW = loadedAccount.privateKey;
 		} catch(err){
 			loadedAccount = null;
@@ -127,21 +127,10 @@ const loadWallet2 = async function(){
 			walletMessage.innerHTML = "Can't load wallet!";
 		} else{
 			walletAddressRAW = loadedAccount.address;
-			beforeWalletLoad.remove();
+			beforeWalletLoad.style.display = "none";
 			reloadWallet();
 		}
 	}
-};
-const showInnerMenu = async function(menu){
-	var temp = function(menu1, menu2, preferredDisplay){
-		if(menu1 == menu2){
-			document.getElementById(menu1).style.display = preferredDisplay;
-		} else{
-			document.getElementById(menu1).style.display = "none";
-		}
-	};
-	temp("sendeubi", menu, "block");
-	temp("setAllowance", menu, "block");
 };
 const convDecimalToRaw = function(value){
 	value = value.split(".");
@@ -200,7 +189,7 @@ const encryptAndStore = async function(){
 	lockAndStoreMSG.innerHTML = "Encrypting and storing wallet...";
 	var password2 = pass1.value;
 	if(pass2.value == password2){
-		document.cookie = "wallet=" + JSON.stringify(web3.eth.accounts.encrypt(privateKeyRAW, password2));
+		localStorage.setItem("savedeubiwallet", JSON.stringify(web3.eth.accounts.encrypt(privateKeyRAW, password2)));
 		lockAndStoreMSG.innerHTML = "Wallet encrypted and stored!";
 	} else{
 		lockAndStoreMSG.innerHTML = "The two passwords doesn't match!";
@@ -224,4 +213,14 @@ const selectBlockchain = async function(blockchain){
 			reloadWallet();
 			break;
 	}
+};
+const logout = async function(){
+	loadedAccount = null;
+	privateKeyRAW = "";
+	walletAddressRAW = "0x0000000000000000000000000000000000000000";
+	privateKey.value = "";
+	pass3.value = "";
+	walletMessage.innerHTML = "Wallet unloaded!";
+	afterWalletLoad.style.display = "none";
+	beforeWalletLoad.style.display = "block";
 };

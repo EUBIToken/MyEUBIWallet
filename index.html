@@ -28,8 +28,9 @@
 			<div class="col s12"></div>
 			
 			<button class="waves-effect waves-light btn col s12 m12 l6" onclick="loadWallet();"><i class="material-icons left">account_balance</i>Load Wallet</button>
-			<div class="col s12"><strong>Or you can use quick wallet access.</strong></div>
-		
+			<div class="col s12">
+				<strong>Or you can use quick wallet access.</strong>
+			</div>
 			<div class="input-field col s12">
 				<i class="material-icons prefix">vpn_key</i>
 				<input id="pass3" type="password"/>
@@ -39,8 +40,15 @@
 			<div class="row">
 				<button class="waves-effect waves-light btn col s12 m12 l6" onclick="loadWallet2();"><i class="material-icons left">account_balance</i>Decrypt and load Wallet</button>
 			</div>
-			<div class="col s12"></div>
-			<strong>Don't have a private key? No worries! You can create a new wallet.</strong><br/>
+			<div class="col s12">
+				<strong>If you no longer want to use quick wallet access, you can delete quick wallet access.</strong>
+			</div>
+			<div class="row">
+				<button class="waves-effect waves-light btn col s12 m12 l6 red" onclick="localStorage.removeItem('savedeubiwallet');walletMessage.innerHTML = 'Deleted quick wallet access!';"><i class="material-icons left">clear</i>Delete quick wallet access</button>
+			</div>
+			<div class="col s12">
+				<strong>Don't have a private key? No worries! You can create a new wallet.</strong>
+			</div>
 			<div class="row">
 				<button class="waves-effect waves-light btn col s12 m12 l6" onclick="createWallet();"><i class="material-icons left">account_balance</i>Create Wallet</button>
 			</div>
@@ -118,6 +126,7 @@
 						<strong>You need approximately 0.00006 MintME to pay for gas costs for an EUBI transfer.</strong><br/>
 						<button class="waves-effect waves-light btn col s12 m12 l6" onclick="eubiBalance.innerHTML='Fetching EUBI balance...';nativeBalance.innerHTML='Fetching MintME balance...';reloadWallet();"><i class="material-icons left">refresh</i>Reload wallet</button>
 						<button class="waves-effect waves-light btn col s12 m12 l6" onclick="navigator.clipboard.writeText(privateKeyRAW)"><i class="material-icons left">content_copy</i>Copy private key</button>
+						<button class="waves-effect waves-light btn col s12 m12 l6 red" onclick="logout();"><i class="material-icons left">clear</i>Unload wallet</button>
 					</div>
 				</li>
 				<li>
