@@ -27,6 +27,14 @@ const lockAndStoreMSG = document.getElementById("lockAndStoreMSG");
 const customNode = document.getElementById("customNode");
 const customNode3 = document.getElementById("customNode3");
 const customNode2 = document.getElementById("customNode2");
+const dividendsMenu = document.getElementById("dividendsMenu");
+const pendingDividends = document.getElementById("pendingDividends");
+const withdrawDividendButton = document.getElementById("withdrawDividendButton");
+const withdrawDividendMessage = document.getElementById("withdrawDividendMessage");
+const withdrawDividendPreloader = document.getElementById("withdrawDividendPreloader");
+const unstakeAmount = document.getElementById("unstakeAmount");
+const stakedTokensText = document.getElementById("stakedTokensText");
+const unstakeEubiButton = document.getElementById("unstakeEubiButton");
 var walletAddressRAW = "0x0000000000000000000000000000000000000000";
 var contractAddress = "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1";
 var privateKeyRAW = "";
@@ -44,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	var instances = M.Collapsible.init(elems, collapsibleOptions);
 });
 const loadTokenContractIMPL = function(address){
-	return new web3.eth.Contract(JSON.parse('[{"constant": false,"inputs": [{"name": "spender","type": "address"},{"name": "value","type": "uint256"}],"name": "approve","outputs": [{"name": "","type": "bool"}],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": false,"inputs": [{"name": "from","type": "address"},{"name": "to","type": "address"},{"name": "value","type": "uint256"}],"name": "transferFrom","outputs": [{"name": "","type": "bool"}],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": true,"inputs": [{"name": "who","type": "address"}],"name": "balanceOf","outputs": [{"name": "","type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},{"constant": false,"inputs": [{"name": "to","type": "address"},{"name": "value","type": "uint256"}],"name": "transfer","outputs": [{"name": "","type": "bool"}],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": true,"inputs": [{"name": "owner","type": "address"},{"name": "spender","type": "address"}],"name": "allowance","outputs": [{"name": "","type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"}]'), address);
+	return new web3.eth.Contract(JSON.parse('[{"constant": false,"inputs": [{"name": "spender","type": "address"},{"name": "value","type": "uint256"}],"name": "approve","outputs": [{"name": "","type": "bool"}],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": false,"inputs": [{"name": "from","type": "address"},{"name": "to","type": "address"},{"name": "value","type": "uint256"}],"name": "transferFrom","outputs": [{"name": "","type": "bool"}],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": true,"inputs": [{"name": "owner","type": "address"}],"name": "stakingBalance","outputs": [{"name": "","type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},{"constant": false,"inputs": [],"name": "withdrawDividend","outputs": [],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": true,"inputs": [{"name": "who","type": "address"}],"name": "balanceOf","outputs": [{"name": "","type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},{"constant": true,"inputs": [{"name": "owner","type": "address"}],"name": "dividendOf","outputs": [{"name": "","type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},{"constant": false,"inputs": [{"name": "to","type": "address"},{"name": "value","type": "uint256"}],"name": "transfer","outputs": [{"name": "","type": "bool"}],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": false,"inputs": [{"name": "amount","type": "uint256"}],"name": "withdrawStakedToken","outputs": [{"name": "","type": "bool"}],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": true,"inputs": [{"name": "owner","type": "address"},{"name": "spender","type": "address"}],"name": "allowance","outputs": [{"name": "","type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"}]'), address);
 };
 const createWallet = async function(){
 	walletMessage.innerHTML = "Your private key is: " + web3.eth.accounts.create().privateKey + "<br/>Please store the private key somewhere safe, since you need it to unlock your wallet.";
@@ -77,6 +85,7 @@ const reloadWallet = async function(){
 	networkId = await web3.eth.getChainId();
 	switch(networkId){
 		case 24734:
+			dividendsMenu.style.display = "none";
 			eubiBalance.innerHTML='Loading EUBI balance...';
 			nativeBalance.innerHTML='Loading MintME balance...';
 			contractAddress = "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1";
@@ -95,6 +104,7 @@ const reloadWallet = async function(){
 			});
 			break;
 		case 56:
+			dividendsMenu.style.display = "none";
 			eubiBalance.innerHTML='Loading bEUBI balance...';
 			nativeBalance.innerHTML='Loading BNB balance...';
 			contractAddress = "0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D";
@@ -113,7 +123,10 @@ const reloadWallet = async function(){
 			});
 			break;
 		case 3:
+			dividendsMenu.style.display = "list-item";
+			stakedTokensText.innerHTML = "Loading staked tokens...";
 			eubiBalance.innerHTML='Loading EUBIng balance...';
+			pendingDividends.innerHTML = "Loading pending dividends...";
 			nativeBalance.innerHTML='Loading Testnet Ethereum balance...';
 			contractAddress = "0x8e4d858128c9ba2d3a7636892268fab031eddaf8";
 			refreshTokenBalance("0x8e4d858128c9ba2d3a7636892268fab031eddaf8", eubiBalance, walletAddressRAW, "EUBI", 12);
@@ -128,6 +141,30 @@ const reloadWallet = async function(){
 				nativeBalance.innerHTML = "You have " + value + " Testnet Ethereum to pay for gas";
 			}, function(error){
 				nativeBalance.innerHTML = "ERROR: Can't load Testnet Ethereum balance!";
+			});
+			loadTokenContract("0x8e4d858128c9ba2d3a7636892268fab031eddaf8").methods.dividendOf(walletAddressRAW).call().then(function(value){
+				var vl = value.length;
+				if(vl > 18){
+					vl -= 18;
+					value = value.substring(0, vl) + "." + value.substring(vl).padEnd(18, "0");
+				} else{
+					value = "0." + value.padStart(18, "0");
+				}
+				pendingDividends.innerHTML = "You have " + value + " ETH worth of pending dividends";
+			}, function(error){
+				pendingDividends.innerHTML = "ERROR: Can't load pending dividends";
+			});
+			loadTokenContract("0x8e4d858128c9ba2d3a7636892268fab031eddaf8").methods.stakingBalance(walletAddressRAW).call().then(function(value){
+				var vl = value.length;
+				if(vl > 12){
+					vl -= 12;
+					value = value.substring(0, vl) + "." + value.substring(vl).padEnd(12, "0");
+				} else{
+					value = "0." + value.padStart(12, "0");
+				}
+				stakedTokensText.innerHTML = "You have " + value + " EUBI staked for dividends";
+			}, function(error){
+				stakedTokensText.innerHTML = "ERROR: Can't load staking balance";
 			});
 			break;
 		default:
@@ -205,7 +242,8 @@ const sendeubitx = async function(meth){
 	var transaction = {};
 	var decimals = 12;
 	var contractAddress2 = "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1";
-	switch(networkId){
+	var networkId2 = networkId;
+	switch(networkId2){
 		case 24734:
 			break;
 		case 56:
@@ -241,10 +279,16 @@ const sendeubitx = async function(meth){
 				approveEubiButton.disabled = false;
 				sendEubiPreloader.style.visibility = "hidden";
 			} else{
-				if(decimals == 12){
-					sendEubiMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.mintme.com/explorer/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
-				} else{
-					sendEubiMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.bscscan.com/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+				switch(networkId2){
+					case 24734:
+						sendEubiMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.mintme.com/explorer/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+						break;
+					case 56:
+						sendEubiMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.bscscan.com/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+						break;
+					case 3:
+						sendEubiMessage.innerHTML = "Transaction sent successfully! <a href=\"https://ropsten.etherscan.io/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+						break;
 				}
 				sendEubiButton.disabled = false;
 				approveEubiButton.disabled = false;
@@ -263,6 +307,52 @@ const sendeubitx = async function(meth){
 		sendEubiButton.disabled = false;
 		approveEubiButton.disabled = false;
 		sendEubiPreloader.style.visibility = "hidden";
+	});
+};
+const ManageDividends = async function(action){
+	withdrawDividendButton.disabled = true;
+	unstakeEubiButton.disabled = true;
+	withdrawDividendPreloader.style.visibility = "visible";
+	//write transaction
+	withdrawDividendMessage.innerHTML = "Writing transaction...";
+	var transaction = {};
+	if(action == "withdraw"){
+		transaction.data = loadedTokenContracts["0x8e4d858128c9ba2d3a7636892268fab031eddaf8"].methods.withdrawDividend().encodeABI();
+	} else{
+		transaction.data = loadedTokenContracts["0x8e4d858128c9ba2d3a7636892268fab031eddaf8"].methods.withdrawStakedToken(convDecimalToRaw(unstakeAmount.value, 12)).encodeABI();
+	}
+	transaction.gas = "100000"
+	transaction.to = "0x8e4d858128c9ba2d3a7636892268fab031eddaf8";
+	transaction.privateKey = privateKeyRAW;
+	withdrawDividendMessage.innerHTML = "Signing transaction...";
+	//sign and send transaction
+	web3.eth.accounts.signTransaction(transaction, privateKeyRAW).then(function(value){
+		withdrawDividendMessage.innerHTML = "Sending transaction...";
+		web3.eth.sendSignedTransaction(value.rawTransaction).then(function(value){
+			if(value === null){
+				withdrawDividendMessage.innerHTML = "Transaction sent successfully!";
+				withdrawDividendButton.disabled = false;
+				unstakeEubiButton.disabled = false;
+				withdrawDividendPreloader.style.visibility = "hidden";
+			} else{
+				withdrawDividendMessage.innerHTML = "Transaction sent successfully! <a href=\"https://ropsten.etherscan.io/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+				withdrawDividendButton.disabled = false;
+				unstakeEubiButton.disabled = false;
+				withdrawDividendPreloader.style.visibility = "hidden";
+			}
+			reloadWallet();
+		}, function(error){
+			withdrawDividendMessage.innerHTML = "Can't send transaction!";
+			withdrawDividendButton.disabled = false;
+			unstakeEubiButton.disabled = false;
+			withdrawDividendPreloader.style.visibility = "hidden";
+			reloadWallet();
+		});
+	}, function(error){
+		withdrawDividendMessage.innerHTML = "Can't sign transaction!";
+		withdrawDividendButton.disabled = false;
+		unstakeEubiButton.disabled = false;
+		withdrawDividendPreloader.style.visibility = "hidden";
 	});
 };
 const encryptAndStore = async function(){

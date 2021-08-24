@@ -174,6 +174,31 @@
 						<button class="waves-effect waves-light btn col s12 m12 l6" id="customNode3" onclick='selectBlockchain("");' style="display: none;"><i class="material-icons left">send</i>Connect custom node</button>
 					</div>
 				</li>
+				<li id="dividendsMenu" style="display: none;">
+					<div class="collapsible-header">
+						<strong class="flow-text">Dividends-paying token</strong>
+					</div>
+					<div class="collapsible-body row">
+						<strong class="flow-text">In order to receive dividends, you have to stake your tokens.</strong><br/>
+						<strong class="flow-text">Stake address: 0x8e4d858128c9ba2d3a7636892268fab031eddaf8</strong><br/>
+						<strong class="flow-text">Send ether to 0x8e4d858128c9ba2d3a7636892268fab031eddaf8 to distribute dividends!</strong><br/>
+						<strong id="pendingDividends" class="flow-text">Loading pending dividends...</strong><br/>
+						<strong id="stakedTokensText" class="flow-text">Loading staked tokens...</strong><br/>
+						<button class="waves-effect waves-light btn col s12 m12 l6" onclick="ManageDividends('withdraw');" id="withdrawDividendButton"><i class="material-icons left">account_balance</i>Withdraw dividends</button>
+						<div class="input-field col s12">
+							<i class="material-icons prefix">attach_money</i>
+							<input id="unstakeAmount" type="text"/>
+							<label for="unstakeAmount">Amount</label>
+						</div>
+						<button class="waves-effect waves-light btn col s12 m12 l6" onclick="ManageDividends('unstake');" id="unstakeEubiButton"><i class="material-icons left">account_balance</i>Unstake tokens</button>
+						<div class="col s12">
+							<strong id="withdrawDividendMessage" class="flow-text"></strong><br/>
+						</div>
+						<div class="col s12 m12 l6 progress" id="withdrawDividendPreloader" style="visibility: hidden;">
+							<div class="indeterminate"></div>
+						</div>
+					</div>
+				</li>
 				<li>
 					<div class="collapsible-header">
 						<strong class="flow-text">About MyEUBIWallet</strong>
