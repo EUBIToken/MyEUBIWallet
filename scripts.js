@@ -112,6 +112,24 @@ const reloadWallet = async function(){
 				nativeBalance.innerHTML = "ERROR: Can't load BNB balance!";
 			});
 			break;
+		case 3:
+			eubiBalance.innerHTML='Loading EUBIng balance...';
+			nativeBalance.innerHTML='Loading Testnet Ethereum balance...';
+			contractAddress = "0x8e4d858128c9ba2d3a7636892268fab031eddaf8";
+			refreshTokenBalance("0x8e4d858128c9ba2d3a7636892268fab031eddaf8", eubiBalance, walletAddressRAW, "EUBI", 12);
+			web3.eth.getBalance(walletAddressRAW).then(function(value){
+				var vl = value.length;
+				if(vl > 18){
+					vl -= 18;
+					value = value.substring(0, vl) + "." + value.substring(vl).padEnd(18, "0");
+				} else{
+					value = "0." + value.padStart(18, "0");
+				}
+				nativeBalance.innerHTML = "You have " + value + " Testnet Ethereum to pay for gas";
+			}, function(error){
+				nativeBalance.innerHTML = "ERROR: Can't load Testnet Ethereum balance!";
+			});
+			break;
 		default:
 			eubiBalance.innerHTML = "EUBI is not deployed on this blockchain!";
 			nativeBalance.innerHTML='Loading unknown balance...';
@@ -194,6 +212,9 @@ const sendeubitx = async function(meth){
 			decimals = 18;
 			contractAddress2 = "0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D";
 			break;
+		case 3:
+			contractAddress2 = "0x8e4d858128c9ba2d3a7636892268fab031eddaf8";
+			break;
 		default:
 			sendEubiMessage.innerHTML = "EUBI is not deployed on this blockchain!";
 			sendEubiButton.disabled = false;
@@ -274,6 +295,12 @@ const selectBlockchain = async function(blockchain){
 			web3.setProvider("https://bsc-dataseed.binance.org/");
 			reloadWallet();
 			break;
+		case "ropsten":
+			customNode.style.display = "none";
+			customNode3.style.display = "none";
+			web3.setProvider("https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161");
+			reloadWallet();
+			break;
 		case "CustomNode":
 			customNode.style.display = "block";
 			customNode3.style.display = "block";
@@ -298,7 +325,7 @@ const checkAllowance = async function(){
 	if(useApprovalCheckbox.checked){
 		switch(networkId){
 			case 24734:
-				loadTokenContract(contractAddress).methods.allowance(approvalOwner.value, walletAddressRAW).call().then(function(value){
+				loadTokenContract("0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1").methods.allowance(approvalOwner.value, walletAddressRAW).call().then(function(value){
 					var vl = value.length;
 					var decimals = 12;
 					if(vl > decimals){
@@ -313,7 +340,22 @@ const checkAllowance = async function(){
 				});
 				break;
 			case 56:
-				loadTokenContract(contractAddress).methods.allowance(approvalOwner.value, walletAddressRAW).call().then(function(value){
+				loadTokenContract("0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D").methods.allowance(approvalOwner.value, walletAddressRAW).call().then(function(value){
+					var vl = value.length;
+					var decimals = 18;
+					if(vl > decimals){
+						vl -= decimals;
+						value = value.substring(0, vl) + "." + value.substring(vl).padEnd(decimals, "0");
+					} else{
+						value = "0." + value.padStart(decimals, "0");
+					}
+					sendEubiMessage.innerHTML = "Your remaining allowance: " + value + " bEUBI";
+				}, function(error){
+					sendEubiMessage.innerHTML = "ERROR: Can't query allowance";
+				});
+				break;
+			case 3:
+				loadTokenContract("0x8e4d858128c9ba2d3a7636892268fab031eddaf8").methods.allowance(approvalOwner.value, walletAddressRAW).call().then(function(value){
 					var vl = value.length;
 					var decimals = 18;
 					if(vl > decimals){
@@ -359,6 +401,21 @@ const checkAllowance = async function(){
 						value = "0." + value.padStart(decimals, "0");
 					}
 					sendEubiMessage.innerHTML = "Remaining allowance: " + value + " bEUBI";
+				}, function(error){
+					sendEubiMessage.innerHTML = "ERROR: Can't query allowance";
+				});
+				break;
+			case 3:
+				loadTokenContract("0x8e4d858128c9ba2d3a7636892268fab031eddaf8").methods.allowance(walletAddressRAW, sendto.value).call().then(function(value){
+					var vl = value.length;
+					var decimals = 18;
+					if(vl > decimals){
+						vl -= decimals;
+						value = value.substring(0, vl) + "." + value.substring(vl).padEnd(decimals, "0");
+					} else{
+						value = "0." + value.padStart(decimals, "0");
+					}
+					sendEubiMessage.innerHTML = "Your remaining allowance: " + value + " bEUBI";
 				}, function(error){
 					sendEubiMessage.innerHTML = "ERROR: Can't query allowance";
 				});
