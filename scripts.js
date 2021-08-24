@@ -171,7 +171,11 @@ const sendeubitx = async function(meth){
 				approveEubiButton.disabled = false;
 				sendEubiPreloader.style.visibility = "hidden";
 			} else{
-				sendEubiMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.mintme.com/explorer/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+				if(contractAddress == "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1"){
+					sendEubiMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.mintme.com/explorer/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+				} else{
+					sendEubiMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.bscscan.com/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+				}
 				sendEubiButton.disabled = false;
 				approveEubiButton.disabled = false;
 				sendEubiPreloader.style.visibility = "hidden";
