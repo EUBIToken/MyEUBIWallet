@@ -85,6 +85,7 @@
 						</label>
 						<button class="waves-effect waves-light btn col s12 m12 l6" id="sendEubiButton" onclick='sendeubitx("transfer");'><i class="material-icons left">send</i>Send</button>
 						<button class="waves-effect waves-light btn col s12 m12 l6" id="approveEubiButton" onclick='sendeubitx("approve");'><i class="material-icons left">check</i>Set approval</button>
+						<button class="waves-effect waves-light btn col s12 m12 l6" onclick='checkAllowance();'><i class="material-icons left">search</i>Query approval</button>
 						<div class="col s12">
 							<strong class="flow-text" id="sendEubiMessage"></strong>
 						</div>
@@ -124,7 +125,7 @@
 						<strong class="flow-text" id="eubiBalance">Fetching EUBI balance...</strong><br/>
 						<strong class="flow-text" id="nativeBalance">Fetching MintME balance...</strong><br/>
 						<strong>You need approximately 0.00006 MintME or 0.00019 BNB to pay for gas costs for an EUBI transfer.</strong><br/>
-						<button class="waves-effect waves-light btn col s12 m12 l6" onclick="eubiBalance.innerHTML='Fetching EUBI balance...';nativeBalance.innerHTML='Fetching MintME balance...';reloadWallet();"><i class="material-icons left">refresh</i>Reload wallet</button>
+						<button class="waves-effect waves-light btn col s12 m12 l6" onclick="reloadWallet();"><i class="material-icons left">refresh</i>Reload wallet</button>
 						<button class="waves-effect waves-light btn col s12 m12 l6" onclick="navigator.clipboard.writeText(privateKeyRAW)"><i class="material-icons left">content_copy</i>Copy private key</button>
 						<button class="waves-effect waves-light btn col s12 m12 l6 red" onclick="logout();"><i class="material-icons left">clear</i>Unload wallet</button>
 					</div>
@@ -135,24 +136,36 @@
 					</div>
 					<div class="collapsible-body row">
 						<strong class="flow-text" id="myWalletAddress">Which blockchain do you want to use?</strong><br/>
-							<p>
-								<label>
-									<input name="group1" type="radio" checked onclick="selectBlockchain('MintME1');"/>
-									<span style="color: black;">MintME (node 1)</span>
-								</label>
-							</p>
-							<p>
-								<label>
-									<input name="group1" type="radio" onclick="selectBlockchain('MintME2');"/>
-									<span style="color: black;">MintME (node 2)</span>
-								</label>
-							</p>
-							<p>
-								<label>
-									<input name="group1" type="radio" onclick="selectBlockchain('BinanceSmartChain');"/>
-									<span style="color: black;">Binance Smart Chain</span>
-								</label>
-							</p>
+						<p>
+							<label>
+								<input name="group1" type="radio" checked onclick="selectBlockchain('MintME1');"/>
+								<span style="color: black;">MintME (node 1)</span>
+							</label>
+						</p>
+						<p>
+							<label>
+								<input name="group1" type="radio" onclick="selectBlockchain('MintME2');"/>
+								<span style="color: black;">MintME (node 2)</span>
+							</label>
+						</p>
+						<p>
+							<label>
+								<input name="group1" type="radio" onclick="selectBlockchain('BinanceSmartChain');"/>
+								<span style="color: black;">Binance Smart Chain</span>
+							</label>
+						</p>
+						<p>
+							<label>
+								<input name="group1" type="radio" onclick="selectBlockchain('CustomNode');"/>
+								<span style="color: black;">Custom node</span>
+							</label>
+						</p>
+						<div class="input-field col s12" id="customNode" style="display: none;">
+							<i class="material-icons prefix">send</i>
+							<input id="customNode2" type="text"/>
+							<label for="approvalOwner">Enter node URL</label>
+						</div>
+						<button class="waves-effect waves-light btn col s12 m12 l6" id="customNode3" onclick='selectBlockchain("");' style="display: none;"><i class="material-icons left">send</i>Connect custom node</button>
 					</div>
 				</li>
 				<li>

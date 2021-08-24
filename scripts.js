@@ -24,9 +24,13 @@ const pass2 = document.getElementById("pass2");
 const pass3 = document.getElementById("pass3");
 const decryptButton = document.getElementById("decryptButton");
 const lockAndStoreMSG = document.getElementById("lockAndStoreMSG");
+const customNode = document.getElementById("customNode");
+const customNode3 = document.getElementById("customNode3");
+const customNode2 = document.getElementById("customNode2");
 var walletAddressRAW = "0x0000000000000000000000000000000000000000";
 var contractAddress = "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1";
 var privateKeyRAW = "";
+var networkId = 24734;
 if (history.scrollRestoration) {
     history.scrollRestoration = 'manual';
 } else {
@@ -55,7 +59,7 @@ const loadTokenContract = function(address){
 }
 const refreshTokenBalance = async function(tokenAddress, tokenBalanceElement, walletAddress, tokenName, decimals){
 	loadTokenContract(tokenAddress).methods.balanceOf(walletAddress).call().then(function(value){
-		vl = value.length;
+		var vl = value.length;
 		if(vl > decimals){
 			vl -= decimals;
 			value = value.substring(0, vl) + "." + value.substring(vl).padEnd(decimals, "0");
@@ -68,37 +72,63 @@ const refreshTokenBalance = async function(tokenAddress, tokenBalanceElement, wa
 	});
 };
 const reloadWallet = async function(){
-	myWalletAddress.innerHTML = "Your wallet address is: " + walletAddressRAW;
-	afterWalletLoad.style.display = "block";
-	if(contractAddress == "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1"){
-		refreshTokenBalance(contractAddress, eubiBalance, walletAddressRAW, "EUBI", 12);
-	} else{
-		refreshTokenBalance(contractAddress, eubiBalance, walletAddressRAW, "bEUBI", 18);
-	}
-	
-	web3.eth.getBalance(walletAddressRAW).then(function(value){
-		vl = value.length;
-		if(vl > 18){
-			vl -= 18;
-			value = value.substring(0, vl) + "." + value.substring(vl).padEnd(18, "0");
-		} else{
-			value = "0." + value.padStart(18, "0");
-		}
-		switch(contractAddress){
-			case "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1":
+	eubiBalance.innerHTML='Identifying blockchain...';
+	nativeBalance.innerHTML='';
+	networkId = await web3.eth.getChainId();
+	switch(networkId){
+		case 24734:
+			eubiBalance.innerHTML='Loading EUBI balance...';
+			nativeBalance.innerHTML='Loading MintME balance...';
+			contractAddress = "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1";
+			refreshTokenBalance("0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1", eubiBalance, walletAddressRAW, "EUBI", 12);
+			web3.eth.getBalance(walletAddressRAW).then(function(value){
+				var vl = value.length;
+				if(vl > 18){
+					vl -= 18;
+					value = value.substring(0, vl) + "." + value.substring(vl).padEnd(18, "0");
+				} else{
+					value = "0." + value.padStart(18, "0");
+				}
 				nativeBalance.innerHTML = "You have " + value + " MintME to pay for gas";
-				break;
-			case "0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D":
+			}, function(error){
+				nativeBalance.innerHTML = "ERROR: Can't load MintME balance!";
+			});
+			break;
+		case 56:
+			eubiBalance.innerHTML='Loading bEUBI balance...';
+			nativeBalance.innerHTML='Loading BNB balance...';
+			contractAddress = "0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D";
+			refreshTokenBalance("0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D", eubiBalance, walletAddressRAW, "bEUBI", 18);
+			web3.eth.getBalance(walletAddressRAW).then(function(value){
+				var vl = value.length;
+				if(vl > 18){
+					vl -= 18;
+					value = value.substring(0, vl) + "." + value.substring(vl).padEnd(18, "0");
+				} else{
+					value = "0." + value.padStart(18, "0");
+				}
 				nativeBalance.innerHTML = "You have " + value + " BNB to pay for gas";
-				break;
-			default:
-				nativeBalance.innerHTML = "You have " + value + " Unidentified cryptocurrency coins to pay for gas";
-				break;
-		}
-		
-	}, function(error){
-		nativeBalance.innerHTML = "ERROR: Can't load MintME balance";
-	});
+			}, function(error){
+				nativeBalance.innerHTML = "ERROR: Can't load BNB balance!";
+			});
+			break;
+		default:
+			eubiBalance.innerHTML = "EUBI is not deployed on this blockchain!";
+			nativeBalance.innerHTML='Loading unknown balance...';
+			web3.eth.getBalance(walletAddressRAW).then(function(value){
+				var vl = value.length;
+				if(vl > 18){
+					vl -= 18;
+					value = value.substring(0, vl) + "." + value.substring(vl).padEnd(18, "0");
+				} else{
+					value = "0." + value.padStart(18, "0");
+				}
+				nativeBalance.innerHTML = "You have " + value + " unknown to pay for gas";
+			}, function(error){
+				nativeBalance.innerHTML = "ERROR: Can't load unknown balance!";
+			});
+			break;
+	}
 };
 const loadWallet = async function(){
 	walletMessage.innerHTML = "Loading wallet...";
@@ -113,6 +143,8 @@ const loadWallet = async function(){
 	} else{
 		walletAddressRAW = loadedAccount.address;
 		beforeWalletLoad.style.display = "none";
+		myWalletAddress.innerHTML = "Your wallet address is: " + walletAddressRAW;
+		afterWalletLoad.style.display = "block";
 		reloadWallet();
 	}
 };
@@ -133,6 +165,8 @@ const loadWallet2 = async function(){
 		} else{
 			walletAddressRAW = loadedAccount.address;
 			beforeWalletLoad.style.display = "none";
+			myWalletAddress.innerHTML = "Your wallet address is: " + walletAddressRAW;
+			afterWalletLoad.style.display = "block";
 			reloadWallet();
 		}
 	}
@@ -151,14 +185,29 @@ const sendeubitx = async function(meth){
 	//write transaction
 	sendEubiMessage.innerHTML = "Writing transaction...";
 	var transaction = {};
-	var decimals = contractAddress == "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1" ? 12 : 18;
+	var decimals = 12;
+	var contractAddress2 = "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1";
+	switch(networkId){
+		case 24734:
+			break;
+		case 56:
+			decimals = 18;
+			contractAddress2 = "0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D";
+			break;
+		default:
+			sendEubiMessage.innerHTML = "EUBI is not deployed on this blockchain!";
+			sendEubiButton.disabled = false;
+			approveEubiButton.disabled = false;
+			sendEubiPreloader.style.visibility = "hidden";
+			return;
+	}
 	if(useApprovalCheckbox.checked){
-		transaction.data = loadedTokenContracts[contractAddress].methods.transferFrom(approvalOwner.value, sendto.value, convDecimalToRaw(eubiamount.value, decimals)).encodeABI();
+		transaction.data = loadedTokenContracts[contractAddress2].methods.transferFrom(approvalOwner.value, sendto.value, convDecimalToRaw(eubiamount.value, decimals)).encodeABI();
 	} else{
-		transaction.data = loadedTokenContracts[contractAddress].methods[meth](sendto.value, convDecimalToRaw(eubiamount.value, decimals)).encodeABI();
+		transaction.data = loadedTokenContracts[contractAddress2].methods[meth](sendto.value, convDecimalToRaw(eubiamount.value, decimals)).encodeABI();
 	}
 	transaction.gas = "100000"
-	transaction.to = contractAddress;
+	transaction.to = contractAddress2;
 	transaction.privateKey = privateKeyRAW;
 	sendEubiMessage.innerHTML = "Signing transaction...";
 	//sign and send transaction
@@ -171,7 +220,7 @@ const sendeubitx = async function(meth){
 				approveEubiButton.disabled = false;
 				sendEubiPreloader.style.visibility = "hidden";
 			} else{
-				if(contractAddress == "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1"){
+				if(decimals == 12){
 					sendEubiMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.mintme.com/explorer/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
 				} else{
 					sendEubiMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.bscscan.com/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
@@ -208,18 +257,29 @@ const encryptAndStore = async function(){
 const selectBlockchain = async function(blockchain){
 	switch(blockchain){
 		case "MintME1":
+			customNode.style.display = "none";
+			customNode3.style.display = "none";
 			web3.setProvider("https://node1.mintme.com:443");
-			contractAddress = "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1";
 			reloadWallet();
 			break;
 		case "MintME2":
+			customNode.style.display = "none";
+			customNode3.style.display = "none";
 			web3.setProvider("https://node2.mintme.com:443");
-			contractAddress = "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1";
 			reloadWallet();
 			break;
 		case "BinanceSmartChain":
+			customNode.style.display = "none";
+			customNode3.style.display = "none";
 			web3.setProvider("https://bsc-dataseed.binance.org/");
-			contractAddress = "0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D";
+			reloadWallet();
+			break;
+		case "CustomNode":
+			customNode.style.display = "block";
+			customNode3.style.display = "block";
+			break;
+		default:
+			web3.setProvider(customNode2.value);
 			reloadWallet();
 			break;
 	}
@@ -233,4 +293,79 @@ const logout = async function(){
 	walletMessage.innerHTML = "Wallet unloaded!";
 	afterWalletLoad.style.display = "none";
 	beforeWalletLoad.style.display = "block";
+};
+const checkAllowance = async function(){
+	if(useApprovalCheckbox.checked){
+		switch(networkId){
+			case 24734:
+				loadTokenContract(contractAddress).methods.allowance(approvalOwner.value, walletAddressRAW).call().then(function(value){
+					var vl = value.length;
+					var decimals = 12;
+					if(vl > decimals){
+						vl -= decimals;
+						value = value.substring(0, vl) + "." + value.substring(vl).padEnd(decimals, "0");
+					} else{
+						value = "0." + value.padStart(decimals, "0");
+					}
+					sendEubiMessage.innerHTML = "Your remaining allowance: " + value + " EUBI";
+				}, function(error){
+					sendEubiMessage.innerHTML = "ERROR: Can't query allowance";
+				});
+				break;
+			case 56:
+				loadTokenContract(contractAddress).methods.allowance(approvalOwner.value, walletAddressRAW).call().then(function(value){
+					var vl = value.length;
+					var decimals = 18;
+					if(vl > decimals){
+						vl -= decimals;
+						value = value.substring(0, vl) + "." + value.substring(vl).padEnd(decimals, "0");
+					} else{
+						value = "0." + value.padStart(decimals, "0");
+					}
+					sendEubiMessage.innerHTML = "Your remaining allowance: " + value + " bEUBI";
+				}, function(error){
+					sendEubiMessage.innerHTML = "ERROR: Can't query allowance";
+				});
+				break;
+			default:
+				sendEubiMessage.innerHTML = "EUBI is not deployed on this blockchain!";
+				break;
+		}
+	} else{
+		switch(networkId){
+			case 24734:
+				loadTokenContract(contractAddress).methods.allowance(walletAddressRAW, sendto.value).call().then(function(value){
+					var vl = value.length;
+					var decimals = 12;
+					if(vl > decimals){
+						vl -= decimals;
+						value = value.substring(0, vl) + "." + value.substring(vl).padEnd(decimals, "0");
+					} else{
+						value = "0." + value.padStart(decimals, "0");
+					}
+					sendEubiMessage.innerHTML = "Remaining allowance: " + value + " EUBI";
+				}, function(error){
+					sendEubiMessage.innerHTML = "ERROR: Can't query allowance";
+				});
+				break;
+			case 56:
+				loadTokenContract(contractAddress).methods.allowance(walletAddressRAW, sendto.value).call().then(function(value){
+					var vl = value.length;
+					var decimals = 18;
+					if(vl > decimals){
+						vl -= decimals;
+						value = value.substring(0, vl) + "." + value.substring(vl).padEnd(decimals, "0");
+					} else{
+						value = "0." + value.padStart(decimals, "0");
+					}
+					sendEubiMessage.innerHTML = "Remaining allowance: " + value + " bEUBI";
+				}, function(error){
+					sendEubiMessage.innerHTML = "ERROR: Can't query allowance";
+				});
+				break;
+			default:
+				sendEubiMessage.innerHTML = "EUBI is not deployed on this blockchain!";
+				break;
+		}
+	}
 };
