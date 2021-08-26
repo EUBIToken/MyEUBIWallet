@@ -447,7 +447,7 @@ const checkAllowance = async function(){
 			case 3:
 				loadTokenContract("0x8e4d858128c9ba2d3a7636892268fab031eddaf8").methods.allowance(approvalOwner.value, walletAddressRAW).call().then(function(value){
 					var vl = value.length;
-					var decimals = 18;
+					var decimals = 12;
 					if(vl > decimals){
 						vl -= decimals;
 						value = value.substring(0, vl) + "." + value.substring(vl).padEnd(decimals, "0");
