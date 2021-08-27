@@ -231,7 +231,7 @@ const convDecimalToRaw = function(value, decimals){
 	if(value.length == 1){
 		value[1] = '0';
 	}
-	return new BigInt(value[0]).mul(rawUnitsToken).add(new BigInt(value[1].padEnd(decimals, "0"))).toString();
+	return new BigInt(value[0]).mul("1".padEnd(decimals, "0")).add(new BigInt(value[1].padEnd(decimals, "0"))).toString();
 };
 const sendeubitx = async function(meth){
 	sendEubiButton.disabled = true;
@@ -498,7 +498,7 @@ const checkAllowance = async function(){
 			case 3:
 				loadTokenContract("0x8e4d858128c9ba2d3a7636892268fab031eddaf8").methods.allowance(walletAddressRAW, sendto.value).call().then(function(value){
 					var vl = value.length;
-					var decimals = 18;
+					var decimals = 12;
 					if(vl > decimals){
 						vl -= decimals;
 						value = value.substring(0, vl) + "." + value.substring(vl).padEnd(decimals, "0");
