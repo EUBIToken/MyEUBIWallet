@@ -231,7 +231,7 @@ const convDecimalToRaw = function(value, decimals){
 	if(value.length == 1){
 		value[1] = '0';
 	}
-	return new BigInt(value[0]).mul(new BigInt("1".padEnd(decimals, "0"))).add(new BigInt(value[1].padEnd(decimals, "0"))).toString();
+	return new BigInt(value[0]).mul(new BigInt("1".padEnd(decimals + 1, "0"))).add(new BigInt(value[1].padEnd(decimals, "0"))).toString();
 };
 const sendeubitx = async function(meth){
 	sendEubiButton.disabled = true;
