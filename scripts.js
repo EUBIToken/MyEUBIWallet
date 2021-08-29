@@ -1,40 +1,19 @@
+var all = document.getElementsByTagName("*");
+
+for (var i=0, max=all.length; i < max; i++) {
+	var currentElement = all[i];
+	var id = currentElement.id;
+	if(id != ""){
+		eval(id + " = currentElement;");
+	}
+}
+all = undefined;
 const web3 = new Web3("https://node1.mintme.com:443");
-const walletMessage = document.getElementById("walletMessage");
-const sendEubiMessage = document.getElementById("sendEubiMessage");
-const eubiamount = document.getElementById("eubiamount");
-const myWalletAddress = document.getElementById("myWalletAddress");
-const afterWalletLoad = document.getElementById("afterWalletLoad");
-const privateKey = document.getElementById("privateKey");
-const beforeWalletLoad = document.getElementById("beforeWalletLoad");
-const sendto = document.getElementById("sendto");
-const eubiBalance = document.getElementById("eubiBalance");
 const loadedTokenContracts = [];
 var loadedAccount = null;
 const BigInt = web3.utils.BN;
 const rawUnitsToken = new BigInt("1000000000000");
-const nativeBalance = document.getElementById("nativeBalance");
-const sendEubiButton = document.getElementById("sendEubiButton");
-const sendEubiPreloader = document.getElementById("sendEubiPreloader");
-const approveEubiButton = document.getElementById("approveEubiButton");
-const hideApprovalOwner = document.getElementById("hideApprovalOwner");
-const approvalOwner = document.getElementById("approvalOwner");
-const useApprovalCheckbox = document.getElementById("useApprovalCheckbox");
-const pass1 = document.getElementById("pass1");
-const pass2 = document.getElementById("pass2");
-const pass3 = document.getElementById("pass3");
-const decryptButton = document.getElementById("decryptButton");
-const lockAndStoreMSG = document.getElementById("lockAndStoreMSG");
-const customNode = document.getElementById("customNode");
-const customNode3 = document.getElementById("customNode3");
-const customNode2 = document.getElementById("customNode2");
-const dividendsMenu = document.getElementById("dividendsMenu");
-const pendingDividends = document.getElementById("pendingDividends");
-const withdrawDividendButton = document.getElementById("withdrawDividendButton");
-const withdrawDividendMessage = document.getElementById("withdrawDividendMessage");
-const withdrawDividendPreloader = document.getElementById("withdrawDividendPreloader");
-const unstakeAmount = document.getElementById("unstakeAmount");
-const stakedTokensText = document.getElementById("stakedTokensText");
-const unstakeEubiButton = document.getElementById("unstakeEubiButton");
+const MintMEReceiverPaidGasFees = new web3.eth.Contract(JSON.parse('[{"inputs": [{"internalType": "uint256","name": "random","type": "uint256"},{"internalType": "address","name": "token","type": "address"},{"internalType": "address","name": "from","type": "address"},{"internalType": "address","name": "to","type": "address"},{"internalType": "uint256","name": "value","type": "uint256"},{"internalType": "uint256","name": "expiry","type": "uint256"},{"internalType": "uint8","name": "v","type": "uint8"},{"internalType": "bytes32","name": "r","type": "bytes32"},{"internalType": "bytes32","name": "s","type": "bytes32"}],"name": "sendPreauthorizedTransaction","outputs": [],"stateMutability": "nonpayable","type": "function"}]'), "0x2aaf66d31d22d3375892260ffadb490a55a0a8e3");
 var walletAddressRAW = "0x0000000000000000000000000000000000000000";
 var contractAddress = "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1";
 var privateKeyRAW = "";
@@ -85,6 +64,7 @@ const reloadWallet = async function(){
 	networkId = await web3.eth.getChainId();
 	switch(networkId){
 		case 24734:
+			ReceiverPaidGasFees.style.display = "list-item";
 			dividendsMenu.style.display = "none";
 			eubiBalance.innerHTML='Loading EUBI balance...';
 			nativeBalance.innerHTML='Loading MintME balance...';
@@ -104,6 +84,7 @@ const reloadWallet = async function(){
 			});
 			break;
 		case 56:
+			ReceiverPaidGasFees.style.display = "none";
 			dividendsMenu.style.display = "none";
 			eubiBalance.innerHTML='Loading bEUBI balance...';
 			nativeBalance.innerHTML='Loading BNB balance...';
@@ -123,6 +104,7 @@ const reloadWallet = async function(){
 			});
 			break;
 		case 3:
+			ReceiverPaidGasFees.style.display = "none";
 			dividendsMenu.style.display = "list-item";
 			stakedTokensText.innerHTML = "Loading staked tokens...";
 			eubiBalance.innerHTML='Loading EUBIng balance...';
@@ -515,4 +497,49 @@ const checkAllowance = async function(){
 				break;
 		}
 	}
+};
+const createRPGF = function(){
+	var random = web3.utils.randomHex(16);
+	var to = RPGFReceiver.value;
+	var value = convDecimalToRaw(RPGFAmount.value, 12);
+	var temp = loadedAccount.sign(web3.eth.abi.encodeParameters(["uint256", "address", "address", "address", "address", "uint256", "uint256"], [random, "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1", walletAddressRAW, to, to, value, "115792089237316195423570985008687907853269984665640564039457584007913129639935"]));
+	navigator.clipboard.writeText(MintMEReceiverPaidGasFees.methods.sendPreauthorizedTransaction(random, "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1", walletAddressRAW, to, value, "115792089237316195423570985008687907853269984665640564039457584007913129639935", temp.v, temp.r, temp.s).encodeABI());
+	RPGFTransaction.innerHTML = "Preauthorized transaction copied to clipboard!";
+};
+const redeemRPGF = async function(){
+	RPGFRedeemButton.disabled = true;
+	RPGFPreloader.style.visibility = "visible";
+	//write transaction
+	RPGFTransaction.innerHTML = "Writing transaction...";
+	var transaction = {};
+	transaction.gas = "150000";
+	transaction.to = "0x2aaf66d31d22d3375892260ffadb490a55a0a8e3";
+	transaction.privateKey = privateKeyRAW;
+	transaction.data = RPGFTX.value;
+	RPGFTransaction.innerHTML = "Signing transaction...";
+	//sign and send transaction
+	web3.eth.accounts.signTransaction(transaction, privateKeyRAW).then(function(value){
+		RPGFTransaction.innerHTML = "Sending transaction...";
+		web3.eth.sendSignedTransaction(value.rawTransaction).then(function(value){
+			if(value === null){
+				RPGFTransaction.innerHTML = "Transaction sent successfully!";
+				RPGFRedeemButton.disabled = false;
+				RPGFPreloader.style.visibility = "hidden";
+			} else{
+				RPGFTransaction.innerHTML = "Transaction sent successfully! <a href=\"https://ropsten.etherscan.io/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+				RPGFRedeemButton.disabled = false;
+				RPGFPreloader.style.visibility = "hidden";
+			}
+			reloadWallet();
+		}, function(error){
+			RPGFTransaction.innerHTML = "Can't send transaction!";
+			RPGFRedeemButton.disabled = false;
+			RPGFPreloader.style.visibility = "hidden";
+			reloadWallet();
+		});
+	}, function(error){
+		RPGFTransaction.innerHTML = "Can't sign transaction!";
+		RPGFRedeemButton.disabled = false;
+		RPGFPreloader.style.visibility = "hidden";
+	});
 };

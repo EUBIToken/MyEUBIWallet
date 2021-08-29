@@ -135,7 +135,7 @@
 						<strong class="flow-text">Blockchain settings</strong>
 					</div>
 					<div class="collapsible-body row">
-						<strong class="flow-text" id="myWalletAddress">Which blockchain do you want to use?</strong><br/>
+						<strong class="flow-text">Which blockchain do you want to use?</strong><br/>
 						<p>
 							<label>
 								<input name="group1" type="radio" checked onclick="selectBlockchain('MintME1');"/>
@@ -195,6 +195,38 @@
 							<strong id="withdrawDividendMessage" class="flow-text"></strong><br/>
 						</div>
 						<div class="col s12 m12 l6 progress" id="withdrawDividendPreloader" style="visibility: hidden;">
+							<div class="indeterminate"></div>
+						</div>
+					</div>
+				</li>
+				<li id="ReceiverPaidGasFees">
+					<div class="collapsible-header">
+						<strong class="flow-text">Receiver-paid gas fees</strong>
+					</div>
+					<div class="collapsible-body row">
+						<strong>Receiver-paid gas fees work by using complex cryptography to give someone permission to withdraw from your wallet without broadcasting anything to the blockchain. Receiver-paid gas fees work similarly to checks in the real world financial system. Before you can use receiver-paid gas fees for the first time, you need to approve a special smart contract to spend your tokens.</strong><br/>
+						<strong>Contract address: 0x2aaf66d31d22d3375892260ffadb490a55a0a8e3</strong><br/>
+						<div class="input-field col s12">
+							<i class="material-icons prefix">vpn_key</i>
+							<input id="RPGFReceiver" type="text"/>
+							<label for="RPGFReceiver">Receiver's address</label>
+						</div>
+						<div class="input-field col s12">
+							<i class="material-icons prefix">attach_money</i>
+							<input id="RPGFAmount" type="text"/>
+							<label for="RPGFAmount">Amount</label>
+						</div>
+						<button class="waves-effect waves-light btn col s12 m12 l6" onclick='createRPGF();'><i class="material-icons left">check</i>Generate preauthorized transaction</button>
+						<div class="input-field col s12">
+							<i class="material-icons prefix">redeem</i>
+							<input id="RPGFTX" type="text"/>
+							<label for="RPGFTX">Preauthorized transaction</label>
+						</div>
+						<button class="waves-effect waves-light btn col s12 m12 l6" onclick='redeemRPGF();' id="RPGFRedeemButton"><i class="material-icons left">redeem</i>Redeem preauthorized transaction</button>
+						<div class="col s12">
+							<strong class="flow-text" id="RPGFTransaction"></strong>
+						</div>
+						<div class="col s12 m12 l6 progress" id="RPGFPreloader" style="visibility: hidden;">
 							<div class="indeterminate"></div>
 						</div>
 					</div>
