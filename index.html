@@ -96,6 +96,30 @@
 				</li>
 				<li>
 					<div class="collapsible-header">
+						<strong class="flow-text" id="CoinTypeText">Send MintME</strong>
+					</div>
+					<div class="collapsible-body row">
+						<div class="input-field col s12">
+							<i class="material-icons prefix">vpn_key</i>
+							<input id="sendtoNative" type="text"/>
+							<label for="sendtoNative">Receiver's address</label>
+						</div>
+						<div class="input-field col s12">
+							<i class="material-icons prefix">attach_money</i>
+							<input id="NativeAmount" type="text"/>
+							<label for="NativeAmount">Amount</label>
+						</div>
+						<button class="waves-effect waves-light btn col s12 m12 l6" id="sendNativeButton" onclick='NativeSend();'><i class="material-icons left">send</i>Send</button>
+						<div class="col s12">
+							<strong class="flow-text" id="sendNativeMessage"></strong>
+						</div>
+						<div class="col s12 m12 l6 progress" id="sendNativePreloader" style="visibility: hidden;">
+							<div class="indeterminate"></div>
+						</div>
+					</div>
+				</li>
+				<li>
+					<div class="collapsible-header">
 						<strong class="flow-text">Quick wallet access</strong>
 					</div>
 					<div class="collapsible-body row">

@@ -65,6 +65,7 @@ const reloadWallet = async function(){
 	switch(networkId){
 		case 24734:
 			ReceiverPaidGasFees.style.display = "list-item";
+			CoinTypeText.innerHTML = "Send MintME";
 			dividendsMenu.style.display = "none";
 			eubiBalance.innerHTML='Loading EUBI balance...';
 			nativeBalance.innerHTML='Loading MintME balance...';
@@ -85,6 +86,7 @@ const reloadWallet = async function(){
 			break;
 		case 56:
 			ReceiverPaidGasFees.style.display = "none";
+			CoinTypeText.innerHTML = "Send BNB";
 			dividendsMenu.style.display = "none";
 			eubiBalance.innerHTML='Loading bEUBI balance...';
 			nativeBalance.innerHTML='Loading BNB balance...';
@@ -105,6 +107,7 @@ const reloadWallet = async function(){
 			break;
 		case 3:
 			ReceiverPaidGasFees.style.display = "none";
+			CoinTypeText.innerHTML = "Send Testnet Ethereum";
 			dividendsMenu.style.display = "list-item";
 			stakedTokensText.innerHTML = "Loading staked tokens...";
 			eubiBalance.innerHTML='Loading EUBIng balance...';
@@ -215,6 +218,61 @@ const convDecimalToRaw = function(value, decimals){
 	}
 	return new BigInt(value[0]).mul(new BigInt("1".padEnd(decimals + 1, "0"))).add(new BigInt(value[1].padEnd(decimals, "0"))).toString();
 };
+const NativeSend = async function(){
+	sendNativeButton.disabled = true;
+	sendNativePreloader.style.visibility = "visible";
+	//write transaction
+	sendNativeMessage.innerHTML = "Writing transaction...";
+	var transaction = {};
+	transaction.to = sendtoNative.value;
+	transaction.value = convDecimalToRaw(NativeAmount.value, 18);
+	sendNativeMessage.innerHTML = "Estimating gas usage...";
+	var networkId2 = networkId;
+	var realNativeSend = async function(value){
+		transaction.gas = value;
+		sendNativeMessage.innerHTML = "Signing transaction...";
+		//sign and send transaction
+		loadedAccount.signTransaction(transaction).then(function(value){
+			sendNativeMessage.innerHTML = "Sending transaction...";
+			web3.eth.sendSignedTransaction(value.rawTransaction).then(function(value){
+				if(value === null){
+					sendNativeMessage.innerHTML = "Transaction sent successfully!";
+					sendNativeButton.disabled = false;
+					sendNativePreloader.style.visibility = "hidden";
+				} else{
+					switch(networkId2){
+						case 24734:
+							sendNativeMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.mintme.com/explorer/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+							break;
+						case 56:
+							sendNativeMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.bscscan.com/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+							break;
+						case 3:
+							sendNativeMessage.innerHTML = "Transaction sent successfully! <a href=\"https://ropsten.etherscan.io/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+							break;
+					}
+					sendNativeButton.disabled = false;
+					sendNativePreloader.style.visibility = "hidden";
+				}
+				reloadWallet();
+			}, function(error){
+				sendNativeMessage.innerHTML = "Can't send transaction!";
+				sendNativeButton.disabled = false;
+				sendNativePreloader.style.visibility = "hidden";
+				reloadWallet();
+			});
+		}, function(error){
+			sendNativeMessage.innerHTML = "Can't sign transaction!";
+			sendNativeButton.disabled = false;
+			sendNativePreloader.style.visibility = "hidden";
+		});
+	};
+	web3.eth.estimateGas(transaction).then(async function(value){
+		realNativeSend(value);
+	}, function(error){
+		realNativeSend("21000");
+	});
+};
 const sendeubitx = async function(meth){
 	sendEubiButton.disabled = true;
 	approveEubiButton.disabled = true;
@@ -247,45 +305,52 @@ const sendeubitx = async function(meth){
 	} else{
 		transaction.data = loadedTokenContracts[contractAddress2].methods[meth](sendto.value, convDecimalToRaw(eubiamount.value, decimals)).encodeABI();
 	}
-	transaction.gas = "100000"
 	transaction.to = contractAddress2;
-	transaction.privateKey = privateKeyRAW;
-	sendEubiMessage.innerHTML = "Signing transaction...";
-	//sign and send transaction
-	web3.eth.accounts.signTransaction(transaction, privateKeyRAW).then(function(value){
-		sendEubiMessage.innerHTML = "Sending transaction...";
-		web3.eth.sendSignedTransaction(value.rawTransaction).then(function(value){
-			if(value === null){
-				sendEubiMessage.innerHTML = "Transaction sent successfully!";
-				sendEubiButton.disabled = false;
-				approveEubiButton.disabled = false;
-				sendEubiPreloader.style.visibility = "hidden";
-			} else{
-				switch(networkId2){
-					case 24734:
-						sendEubiMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.mintme.com/explorer/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
-						break;
-					case 56:
-						sendEubiMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.bscscan.com/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
-						break;
-					case 3:
-						sendEubiMessage.innerHTML = "Transaction sent successfully! <a href=\"https://ropsten.etherscan.io/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
-						break;
+	sendEubiMessage.innerHTML = "Estimating gas usage...";
+	web3.eth.estimateGas(transaction).then(function(value){
+		transaction.gas = value;
+		sendEubiMessage.innerHTML = "Signing transaction...";
+		//sign and send transaction
+		loadedAccount.signTransaction(transaction).then(function(value){
+			sendEubiMessage.innerHTML = "Sending transaction...";
+			web3.eth.sendSignedTransaction(value.rawTransaction).then(function(value){
+				if(value === null){
+					sendEubiMessage.innerHTML = "Transaction sent successfully!";
+					sendEubiButton.disabled = false;
+					approveEubiButton.disabled = false;
+					sendEubiPreloader.style.visibility = "hidden";
+				} else{
+					switch(networkId2){
+						case 24734:
+							sendEubiMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.mintme.com/explorer/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+							break;
+						case 56:
+							sendEubiMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.bscscan.com/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+							break;
+						case 3:
+							sendEubiMessage.innerHTML = "Transaction sent successfully! <a href=\"https://ropsten.etherscan.io/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+							break;
+					}
+					sendEubiButton.disabled = false;
+					approveEubiButton.disabled = false;
+					sendEubiPreloader.style.visibility = "hidden";
 				}
+				reloadWallet();
+			}, function(error){
+				sendEubiMessage.innerHTML = "Can't send transaction!";
 				sendEubiButton.disabled = false;
 				approveEubiButton.disabled = false;
 				sendEubiPreloader.style.visibility = "hidden";
-			}
-			reloadWallet();
+				reloadWallet();
+			});
 		}, function(error){
-			sendEubiMessage.innerHTML = "Can't send transaction!";
+			sendEubiMessage.innerHTML = "Can't sign transaction!";
 			sendEubiButton.disabled = false;
 			approveEubiButton.disabled = false;
 			sendEubiPreloader.style.visibility = "hidden";
-			reloadWallet();
 		});
 	}, function(error){
-		sendEubiMessage.innerHTML = "Can't sign transaction!";
+		sendEubiMessage.innerHTML = "Can't estimate gas!";
 		sendEubiButton.disabled = false;
 		approveEubiButton.disabled = false;
 		sendEubiPreloader.style.visibility = "hidden";
