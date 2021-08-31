@@ -370,10 +370,9 @@ const ManageDividends = async function(action){
 	}
 	transaction.gas = "100000"
 	transaction.to = "0x8e4d858128c9ba2d3a7636892268fab031eddaf8";
-	transaction.privateKey = privateKeyRAW;
 	withdrawDividendMessage.innerHTML = "Signing transaction...";
 	//sign and send transaction
-	web3.eth.accounts.signTransaction(transaction, privateKeyRAW).then(function(value){
+	loadedAccount.signTransaction(transaction).then(function(value){
 		withdrawDividendMessage.innerHTML = "Sending transaction...";
 		web3.eth.sendSignedTransaction(value.rawTransaction).then(function(value){
 			if(value === null){
@@ -441,6 +440,12 @@ const selectBlockchain = async function(blockchain){
 		case "CustomNode":
 			customNode.style.display = "block";
 			customNode3.style.display = "block";
+			break;
+		case "browser":
+			customNode.style.display = "none";
+			customNode3.style.display = "none";
+			web3.setProvider(Web3.givenProvider);
+			reloadWallet();
 			break;
 		default:
 			web3.setProvider(customNode2.value);
