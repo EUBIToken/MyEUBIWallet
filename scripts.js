@@ -1,13 +1,4 @@
 var all = document.getElementsByTagName("*");
-
-for (var i=0, max=all.length; i < max; i++) {
-	var currentElement = all[i];
-	var id = currentElement.id;
-	if(id != ""){
-		eval(id + " = currentElement;");
-	}
-}
-all = undefined;
 const web3 = new Web3("https://node1.mintme.com:443");
 const loadedTokenContracts = [];
 var loadedAccount = null;
@@ -25,16 +16,73 @@ if (history.scrollRestoration) {
         window.scrollTo(0, 0);
     }
 }
-const collapsibleOptions = [];
-document.addEventListener('DOMContentLoaded', function() {
-	var elems = document.querySelectorAll('.collapsible');
-	var instances = M.Collapsible.init(elems, collapsibleOptions);
+document.addEventListener('DOMContentLoaded', async function() {
+	M.AutoInit();
+	for (var i=0, max=all.length; i < max; i++) {
+		var currentElement = all[i];
+		var id = currentElement.id;
+		if(id != ""){
+			eval(id + " = currentElement;");
+			if(id.endsWith("Modal")){
+				currentElement = M.Modal.getInstance(currentElement);
+				eval(id + "Instance = currentElement;");
+			}
+		}
+	}
+	all = undefined;
 });
+var allSavedWallets = [];
+const escapeHtml = function(text) {
+	var map = {
+		'&': '&amp;',
+		'<': '&lt;',
+		'>': '&gt;',
+		'"': '&quot;',
+		"'": '&#039;'
+	};
+	return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+};
+var selectedTargetWallet = -1;
+const ilierateAllWallets = async function(){
+	listofwallets.innerHTML = "<strong class=\"flow-text\">Which wallet do you want to load?</strong><br/>";
+	var length2 = allSavedWallets.length;
+	for (var i = 0; i < length2; i++) {
+		var walletwallet = allSavedWallets[i];
+		if(walletwallet != "deleted wallet"){
+			listofwallets.insertAdjacentHTML("beforeEnd", "<p><label class=\"tooltipped\" data-position=\"bottom\" data-tooltip=\"" + walletwallet.address + "\"><input name=\"group1\" type=\"radio\" onclick=\"selectedTargetWallet = " + i.toString() + ";\"/><span style=\"color: black;\">" + escapeHtml(walletwallet.name) + "</span></label></p>");
+		}
+	}
+};
+{
+	var walletStorage = localStorage.getItem('savedeubiwallets');
+	if(walletStorage != null){
+		allSavedWallets = JSON.parse(walletStorage);
+	}
+	walletStorage = localStorage.getItem('savedeubiwallet');
+	if(walletStorage != null){
+		walletStorage = "{\"name\": \"Auto-migrated quick wallet access\"," + walletStorage.substring(1);
+		allSavedWallets[allSavedWallets.length] = JSON.parse(walletStorage);
+	}
+	ilierateAllWallets();
+}
+const flushWalletStorage = async function(){
+	localStorage.setItem("savedeubiwallets", JSON.stringify(allSavedWallets));
+	localStorage.removeItem('savedeubiwallet');
+	ilierateAllWallets();
+};
 const loadTokenContractIMPL = function(address){
 	return new web3.eth.Contract(JSON.parse('[{"constant": false,"inputs": [{"name": "spender","type": "address"},{"name": "value","type": "uint256"}],"name": "approve","outputs": [{"name": "","type": "bool"}],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": false,"inputs": [{"name": "from","type": "address"},{"name": "to","type": "address"},{"name": "value","type": "uint256"}],"name": "transferFrom","outputs": [{"name": "","type": "bool"}],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": true,"inputs": [{"name": "owner","type": "address"}],"name": "stakingBalance","outputs": [{"name": "","type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},{"constant": false,"inputs": [],"name": "withdrawDividend","outputs": [],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": true,"inputs": [{"name": "who","type": "address"}],"name": "balanceOf","outputs": [{"name": "","type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},{"constant": true,"inputs": [{"name": "owner","type": "address"}],"name": "dividendOf","outputs": [{"name": "","type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},{"constant": false,"inputs": [{"name": "to","type": "address"},{"name": "value","type": "uint256"}],"name": "transfer","outputs": [{"name": "","type": "bool"}],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": false,"inputs": [{"name": "amount","type": "uint256"}],"name": "withdrawStakedToken","outputs": [{"name": "","type": "bool"}],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": true,"inputs": [{"name": "owner","type": "address"},{"name": "spender","type": "address"}],"name": "allowance","outputs": [{"name": "","type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"}]'), address);
 };
 const createWallet = async function(){
-	walletMessage.innerHTML = "Your private key is: " + web3.eth.accounts.create().privateKey + "<br/>Please store the private key somewhere safe, since you need it to unlock your wallet.";
+	loadedAccount = web3.eth.accounts.create();
+	walletMessage.innerHTML = "Your wallet was successfully created, thank you for using MyEUBIWallet!";
+	MultipurpuseModalInstance.open();
+	walletAddressRAW = loadedAccount.address;
+	privateKeyRAW = loadedAccount.privateKey;
+	beforeWalletLoad.style.display = "none";
+	myWalletAddress.innerHTML = "Your wallet address is: " + walletAddressRAW;
+	afterWalletLoad.style.display = "block";
+	reloadWallet();
 };
 const loadTokenContract = function(address){
 	loadingTokenContract = loadedTokenContracts[address];
@@ -171,7 +219,6 @@ const reloadWallet = async function(){
 	}
 };
 const loadWallet = async function(){
-	walletMessage.innerHTML = "Loading wallet...";
 	privateKeyRAW = privateKey.value;
 	try{
 		loadedAccount = web3.eth.accounts.privateKeyToAccount(privateKeyRAW);
@@ -180,7 +227,10 @@ const loadWallet = async function(){
 	}
 	if(loadedAccount == null){
 		walletMessage.innerHTML = "Can't load wallet";
+		MultipurpuseModalInstance.open();
 	} else{
+		walletMessage.innerHTML = "Your wallet was successfully loaded, thank you for using MyEUBIWallet!";
+		MultipurpuseModalInstance.open();
 		walletAddressRAW = loadedAccount.address;
 		beforeWalletLoad.style.display = "none";
 		myWalletAddress.innerHTML = "Your wallet address is: " + walletAddressRAW;
@@ -189,27 +239,37 @@ const loadWallet = async function(){
 	}
 };
 const loadWallet2 = async function(){
-	walletMessage.innerHTML = "Decrypting and loading wallet...";
-	var walletStorage = localStorage.getItem('savedeubiwallet');
-	if (walletStorage == null){
-		walletMessage.innerHTML = "Quick wallet access not yet set up!";
+	if(selectedTargetWallet < 0){
+		walletMessage.innerHTML = "Please select which wallet to load!";
+		MultipurpuseModalInstance.open();
 	} else{
 		try{
-			loadedAccount = web3.eth.accounts.decrypt(walletStorage, pass3.value);
+			loadedAccount = web3.eth.accounts.decrypt(JSON.stringify(allSavedWallets[selectedTargetWallet]), pass3.value);
 			privateKeyRAW = loadedAccount.privateKey;
 		} catch(err){
 			loadedAccount = null;
 		}
 		if(loadedAccount == null){
 			walletMessage.innerHTML = "Can't load wallet!";
+			MultipurpuseModalInstance.open();
 		} else{
 			walletAddressRAW = loadedAccount.address;
 			beforeWalletLoad.style.display = "none";
 			myWalletAddress.innerHTML = "Your wallet address is: " + walletAddressRAW;
 			afterWalletLoad.style.display = "block";
+			walletMessage.innerHTML = "Your wallet was successfully loaded, thank you for using MyEUBIWallet!";
+			MultipurpuseModalInstance.open();
 			reloadWallet();
 		}
 	}
+};
+const deleteWallet = async function(){
+	allSavedWallets[selectedTargetWallet] = "deleted wallet";
+	flushWalletStorage();
+};
+const renameWallet = async function(){
+	allSavedWallets[selectedTargetWallet].name = storedWalletName2.value;
+	flushWalletStorage();
 };
 const convDecimalToRaw = function(value, decimals){
 	value = value.split(".");
@@ -219,52 +279,45 @@ const convDecimalToRaw = function(value, decimals){
 	return new BigInt(value[0]).mul(new BigInt("1".padEnd(decimals + 1, "0"))).add(new BigInt(value[1].padEnd(decimals, "0"))).toString();
 };
 const NativeSend = async function(){
-	sendNativeButton.disabled = true;
-	sendNativePreloader.style.visibility = "visible";
 	//write transaction
-	sendNativeMessage.innerHTML = "Writing transaction...";
+	sendNativeButton.disabled = true;
 	var transaction = {};
 	transaction.to = sendtoNative.value;
 	transaction.value = convDecimalToRaw(NativeAmount.value, 18);
-	sendNativeMessage.innerHTML = "Estimating gas usage...";
 	var networkId2 = networkId;
 	var realNativeSend = function(value){
 		transaction.gas = value;
-		sendNativeMessage.innerHTML = "Signing transaction...";
 		//sign and send transaction
 		loadedAccount.signTransaction(transaction).then(function(value){
-			sendNativeMessage.innerHTML = "Sending transaction...";
 			web3.eth.sendSignedTransaction(value.rawTransaction).then(function(value){
 				if(value === null){
-					sendNativeMessage.innerHTML = "Transaction sent successfully!";
-					sendNativeButton.disabled = false;
-					sendNativePreloader.style.visibility = "hidden";
+					walletMessage.innerHTML = "Transaction sent successfully!";
 				} else{
 					switch(networkId2){
 						case 24734:
-							sendNativeMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.mintme.com/explorer/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+							walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.mintme.com/explorer/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
 							break;
 						case 56:
-							sendNativeMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.bscscan.com/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+							walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.bscscan.com/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
 							break;
 						case 3:
-							sendNativeMessage.innerHTML = "Transaction sent successfully! <a href=\"https://ropsten.etherscan.io/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+							walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://ropsten.etherscan.io/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
 							break;
 					}
-					sendNativeButton.disabled = false;
-					sendNativePreloader.style.visibility = "hidden";
 				}
+				sendNativeButton.disabled = false;
+				MultipurpuseModalInstance.open();
 				reloadWallet();
 			}, function(error){
-				sendNativeMessage.innerHTML = "Can't send transaction!";
 				sendNativeButton.disabled = false;
-				sendNativePreloader.style.visibility = "hidden";
+				walletMessage.innerHTML = "Can't send transaction!";
+				MultipurpuseModalInstance.open();
 				reloadWallet();
 			});
 		}, function(error){
-			sendNativeMessage.innerHTML = "Can't sign transaction!";
 			sendNativeButton.disabled = false;
-			sendNativePreloader.style.visibility = "hidden";
+			walletMessage.innerHTML = "Can't sign transaction!";
+			MultipurpuseModalInstance.open();
 		});
 	};
 	web3.eth.estimateGas(transaction).then(function(value){
@@ -276,9 +329,7 @@ const NativeSend = async function(){
 const sendeubitx = async function(meth){
 	sendEubiButton.disabled = true;
 	approveEubiButton.disabled = true;
-	sendEubiPreloader.style.visibility = "visible";
 	//write transaction
-	sendEubiMessage.innerHTML = "Writing transaction...";
 	var transaction = {};
 	var decimals = 12;
 	var contractAddress2 = "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1";
@@ -294,10 +345,10 @@ const sendeubitx = async function(meth){
 			contractAddress2 = "0x8e4d858128c9ba2d3a7636892268fab031eddaf8";
 			break;
 		default:
-			sendEubiMessage.innerHTML = "EUBI is not deployed on this blockchain!";
+			walletMessage.innerHTML = "EUBI is not deployed on this blockchain!";
+			MultipurpuseModalInstance.open();
 			sendEubiButton.disabled = false;
 			approveEubiButton.disabled = false;
-			sendEubiPreloader.style.visibility = "hidden";
 			return;
 	}
 	if(useApprovalCheckbox.checked){
@@ -306,54 +357,49 @@ const sendeubitx = async function(meth){
 		transaction.data = loadedTokenContracts[contractAddress2].methods[meth](sendto.value, convDecimalToRaw(eubiamount.value, decimals)).encodeABI();
 	}
 	transaction.to = contractAddress2;
-	sendEubiMessage.innerHTML = "Estimating gas usage...";
-	web3.eth.estimateGas(transaction).then(function(value){
+	var AfterGasEstimate = function(value){
 		transaction.gas = value;
-		sendEubiMessage.innerHTML = "Signing transaction...";
 		//sign and send transaction
 		loadedAccount.signTransaction(transaction).then(function(value){
-			sendEubiMessage.innerHTML = "Sending transaction...";
 			web3.eth.sendSignedTransaction(value.rawTransaction).then(function(value){
 				if(value === null){
-					sendEubiMessage.innerHTML = "Transaction sent successfully!";
+					walletMessage.innerHTML = "Transaction sent successfully!";
 					sendEubiButton.disabled = false;
 					approveEubiButton.disabled = false;
-					sendEubiPreloader.style.visibility = "hidden";
 				} else{
 					switch(networkId2){
 						case 24734:
-							sendEubiMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.mintme.com/explorer/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+							walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.mintme.com/explorer/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
 							break;
 						case 56:
-							sendEubiMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.bscscan.com/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+							walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.bscscan.com/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
 							break;
 						case 3:
-							sendEubiMessage.innerHTML = "Transaction sent successfully! <a href=\"https://ropsten.etherscan.io/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+							walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://ropsten.etherscan.io/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
 							break;
 					}
-					sendEubiButton.disabled = false;
-					approveEubiButton.disabled = false;
-					sendEubiPreloader.style.visibility = "hidden";
 				}
-				reloadWallet();
-			}, function(error){
-				sendEubiMessage.innerHTML = "Can't send transaction!";
 				sendEubiButton.disabled = false;
 				approveEubiButton.disabled = false;
-				sendEubiPreloader.style.visibility = "hidden";
+				MultipurpuseModalInstance.open();
+				reloadWallet();
+			}, function(error){
+				walletMessage.innerHTML = "Can't send transaction!";
+				MultipurpuseModalInstance.open();
+				sendEubiButton.disabled = false;
+				approveEubiButton.disabled = false;
 				reloadWallet();
 			});
 		}, function(error){
-			sendEubiMessage.innerHTML = "Can't sign transaction!";
+			walletMessage.innerHTML = "Can't sign transaction!";
+			MultipurpuseModalInstance.open();
 			sendEubiButton.disabled = false;
 			approveEubiButton.disabled = false;
-			sendEubiPreloader.style.visibility = "hidden";
 		});
-	}, function(error){
-		sendEubiMessage.innerHTML = "Can't estimate gas!";
-		sendEubiButton.disabled = false;
-		approveEubiButton.disabled = false;
-		sendEubiPreloader.style.visibility = "hidden";
+	};
+	
+	web3.eth.estimateGas(transaction).then(AfterGasEstimate, function(error){
+		AfterGasEstimate("100000");
 	});
 };
 const ManageDividends = async function(action){
@@ -402,14 +448,17 @@ const ManageDividends = async function(action){
 	});
 };
 const encryptAndStore = async function(){
-	lockAndStoreMSG.innerHTML = "Encrypting and storing wallet...";
 	var password2 = pass1.value;
 	if(pass2.value == password2){
-		localStorage.setItem("savedeubiwallet", JSON.stringify(web3.eth.accounts.encrypt(privateKeyRAW, password2)));
-		lockAndStoreMSG.innerHTML = "Wallet encrypted and stored!";
+		var encrypted = web3.eth.accounts.encrypt(privateKeyRAW, password2);
+		encrypted.name = escapeHtml(storedWalletName.value);
+		allSavedWallets[allSavedWallets.length] = encrypted;
+		flushWalletStorage();
+		walletMessage.innerHTML = "Wallet encrypted and stored!";
 	} else{
-		lockAndStoreMSG.innerHTML = "The two passwords doesn't match!";
+		walletMessage.innerHTML = "The two passwords doesn't match!";
 	}
+	MultipurpuseModalInstance.open();
 };
 const selectBlockchain = async function(blockchain){
 	switch(blockchain){
@@ -454,6 +503,7 @@ const selectBlockchain = async function(blockchain){
 	}
 };
 const logout = async function(){
+	selectedTargetWallet = -1;
 	loadedAccount = null;
 	privateKeyRAW = "";
 	walletAddressRAW = "0x0000000000000000000000000000000000000000";

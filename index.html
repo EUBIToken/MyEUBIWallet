@@ -1,60 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-	<title>MyEUBIWallet v1.0: Ultimate EUBI web wallet</title>
+	<title>MyEUBIWallet v2.0: Ultimate EUBI web wallet</title>
 	</head>
-	<body class="blue-grey lighten-5">
+	<body style="background-image: url('https://media.istockphoto.com/photos/coins-of-various-cryptocurrencies-picture-id1034363382?k=20&m=1034363382&s=612x612&w=0&h=sCpRmOSicsJJS73_iNQh16nqeBgFKqU3jjfC4u42D_k=');background-repeat: no-repeat;background-attachment: fixed;background-size: cover;">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.css" integrity="sha512-t38vG/f94E72wz6pCsuuhcOPJlHKwPy+PY+n1+tJFzdte3hsIgYE7iEpgg/StngunGszVMrRfvwZinrza0vMTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 		<script src="thirdparty.js"></script>
 		<nav class="blue accent-4 hide-on-med-and-down">
 			<div class="nav-wrapper">
-				<strong class="brand-logo left">MyEUBIWallet v1.0: Ultimate EUBI web wallet</strong>
+				<strong class="brand-logo left">MyEUBIWallet v2.0: Ultimate EUBI web wallet</strong>
 			</div>
 		</nav>
 		<nav class="blue accent-4 hide-on-large-only">
 			<div class="nav-wrapper">
-				<strong class="brand-logo center">MyEUBIWallet v1.0</strong>
+				<strong class="brand-logo center">MyEUBIWallet v2.0</strong>
 			</div>
 		</nav>
 		<br/>
-		<div class="blue-grey lighten-4 container row" id="beforeWalletLoad">
-			<h6><b>You need a private key to load your wallet!</b></h6>
-			<div class="input-field col s12">
-				<i class="material-icons prefix">vpn_key</i>
-				<input id="privateKey" type="text"/>
-				<label for="privateKey">Private key</label>
-			</div>
-			<div class="col s12"></div>
-			
-			<button class="waves-effect waves-light btn col s12 m12 l6" onclick="loadWallet();"><i class="material-icons left">account_balance</i>Load Wallet</button>
-			<div class="col s12">
-				<strong>Or you can use quick wallet access.</strong>
-			</div>
-			<div class="input-field col s12">
-				<i class="material-icons prefix">vpn_key</i>
-				<input id="pass3" type="password"/>
-				<label for="pass3">Enter wallet encryption password</label>
-			</div>
-			<div class="col s12"></div>
+		<div class="blue-grey lighten-5 container row" id="beforeWalletLoad">
+			<strong class="flow-text">Welcome to MyEUBIWallet! Before you can use MyEUBIWallet, you need to load your wallet. How would you want to load your wallet?</strong><br/>
 			<div class="row">
-				<button class="waves-effect waves-light btn col s12 m12 l6" onclick="loadWallet2();"><i class="material-icons left">account_balance</i>Decrypt and load Wallet</button>
+				<div class="col s12">
+					<ul class="tabs row tabs-fixed-width">
+						<li class="tab"><a href="#loadmode1">Create wallet</a></li>
+						<li class="tab"><a href="#loadmode2">Private key</a></li>
+						<li class="tab"><a class="active" href="#loadmode3">Browser storage</a></li>
+					</ul>
+				</div>
 			</div>
-			<div class="col s12">
-				<strong>If you no longer want to use quick wallet access, you can delete quick wallet access.</strong>
-			</div>
-			<div class="row">
-				<button class="waves-effect waves-light btn col s12 m12 l6 red" onclick="localStorage.removeItem('savedeubiwallet');walletMessage.innerHTML = 'Deleted quick wallet access!';"><i class="material-icons left">clear</i>Delete quick wallet access</button>
-			</div>
-			<div class="col s12">
-				<strong>Don't have a private key? No worries! You can create a new wallet.</strong>
-			</div>
-			<div class="row">
+			<div id="loadmode1" class="col s12 row">
+				<strong class="flow-text">Remember to backup your wallet after creation!</strong><br/>
 				<button class="waves-effect waves-light btn col s12 m12 l6" onclick="createWallet();"><i class="material-icons left">account_balance</i>Create Wallet</button>
 			</div>
-			<strong id="walletMessage"></strong><br/>
+			<div id="loadmode2" class="col s12 row">
+				<div class="input-field col s12">
+					<i class="material-icons prefix">vpn_key</i>
+					<input id="privateKey" type="text"/>
+					<label for="privateKey">Private key</label>
+					<div class="col s12"></div>
+					<button class="waves-effect waves-light btn col s12 m12 l6" onclick="loadWallet();"><i class="material-icons left">account_balance</i>Load Wallet</button>
+				</div>
+			</div>
+			<div id="loadmode3" class="col s12 row">
+				<form id="listofwallets">
+				
+				</form>
+				<div class="input-field col s12 row">
+					<i class="material-icons prefix">vpn_key</i>
+					<input id="pass3" type="password"/>
+					<label for="pass3">Wallet encryption password</label>
+				</div>
+				<button class="waves-effect waves-light btn col s12 m12 l6" onclick="loadWallet2();"><i class="material-icons left">account_balance</i>Load Wallet</button>
+				<button class="waves-effect waves-light btn col s12 m12 l6 red" onclick="deleteWallet();"><i class="material-icons left">clear</i>Delete wallet</button>
+				<div class="input-field col s12">
+					<i class="material-icons prefix">create</i>
+					<input id="storedWalletName2" type="text"/>
+					<label for="storedWalletName2">Give the wallet a name</label>
+				</div>
+				<button class="waves-effect waves-light btn col s12 m12 l6" onclick="renameWallet();"><i class="material-icons left">create</i>Rename wallet</button>
+			</div>
 		</div>
-		<div class="blue-grey lighten-4 container" id="afterWalletLoad" style="display: none;">
+		</div>
+		<div class="blue-grey lighten-5 container" id="afterWalletLoad" style="display: none;">
 			<strong class="flow-text">Welcome to your EUBI and bEUBI web wallet!</strong><br/>
 			<ul class="collapsible">
 				<li>
@@ -83,15 +91,9 @@
 								<strong>Spend using approval</strong>
 							</span>
 						</label>
-						<button class="waves-effect waves-light btn col s12 m12 l6" id="sendEubiButton" onclick='sendeubitx("transfer");'><i class="material-icons left">send</i>Send</button>
-						<button class="waves-effect waves-light btn col s12 m12 l6" id="approveEubiButton" onclick='sendeubitx("approve");'><i class="material-icons left">check</i>Set approval</button>
+						<button class="waves-effect waves-light btn col s12 m12 l6" id="sendEubiButton" onclick='sendmode="transfer";SendEUBIModalInstance.open();'><i class="material-icons left">send</i>Send</button>
+						<button class="waves-effect waves-light btn col s12 m12 l6" id="approveEubiButton" onclick='sendmode="approve";SendEUBIModalInstance.open();'><i class="material-icons left">check</i>Set approval</button>
 						<button class="waves-effect waves-light btn col s12 m12 l6" onclick='checkAllowance();'><i class="material-icons left">search</i>Query approval</button>
-						<div class="col s12">
-							<strong class="flow-text" id="sendEubiMessage"></strong>
-						</div>
-						<div class="col s12 m12 l6 progress" id="sendEubiPreloader" style="visibility: hidden;">
-							<div class="indeterminate"></div>
-						</div>
 					</div>
 				</li>
 				<li>
@@ -109,7 +111,7 @@
 							<input id="NativeAmount" type="text"/>
 							<label for="NativeAmount">Amount</label>
 						</div>
-						<button class="waves-effect waves-light btn col s12 m12 l6" id="sendNativeButton" onclick='NativeSend();'><i class="material-icons left">send</i>Send</button>
+						<button class="waves-effect waves-light btn col s12 m12 l6" id="sendNativeButton" onclick='NativeSendModalInstance.open();'><i class="material-icons left">send</i>Send</button>
 						<div class="col s12">
 							<strong class="flow-text" id="sendNativeMessage"></strong>
 						</div>
@@ -120,10 +122,10 @@
 				</li>
 				<li>
 					<div class="collapsible-header">
-						<strong class="flow-text">Quick wallet access</strong>
+						<strong class="flow-text">Browser-stored wallet</strong>
 					</div>
 					<div class="collapsible-body row">
-						<strong>Setting up quick wallet access allows you to access your wallet without copying and pasting the private key, which can enhance security. Do not rely on quick wallet access as the sole mean of storing your private key, and always backup your private key somewhere else. If you already set up quick wallet access, your previous quick wallet access configuration will be overwritten!</strong><br/>
+						<strong>Storing the wallet in the browser can make MyEUBIWallet more convenient to use. Do not rely on browser storage as the sole mean of storing your private key, and always backup your private key somewhere else.</strong><br/>
 						<div class="input-field col s12">
 							<i class="material-icons prefix">vpn_key</i>
 							<input id="pass1" type="password"/>
@@ -133,6 +135,11 @@
 							<i class="material-icons prefix">vpn_key</i>
 							<input id="pass2" type="password"/>
 							<label for="pass2">Confirm wallet encryption password</label>
+						</div>
+						<div class="input-field col s12">
+							<i class="material-icons prefix">create</i>
+							<input id="storedWalletName" type="text"/>
+							<label for="storedWalletName">Give the wallet a name</label>
 						</div>
 						<button class="waves-effect waves-light btn col s12 m12 l6" onclick="encryptAndStore();"><i class="material-icons left">lock</i>Encrypt and store</button>
 						<div class="col s12">
@@ -148,7 +155,7 @@
 						<strong class="flow-text" id="myWalletAddress"></strong><br/>
 						<strong class="flow-text" id="eubiBalance">Fetching EUBI balance...</strong><br/>
 						<strong class="flow-text" id="nativeBalance">Fetching MintME balance...</strong><br/>
-						<strong>You need approximately 0.008 MintMe or 0.00025 BNB to pay for gas costs for an EUBI transfer.</strong><br/>
+						<strong>You need approximately 0.00006 MintME or 0.00019 BNB to pay for gas costs for an EUBI transfer.</strong><br/>
 						<button class="waves-effect waves-light btn col s12 m12 l6" onclick="reloadWallet();"><i class="material-icons left">refresh</i>Reload wallet</button>
 						<button class="waves-effect waves-light btn col s12 m12 l6" onclick="navigator.clipboard.writeText(privateKeyRAW)"><i class="material-icons left">content_copy</i>Copy private key</button>
 						<button class="waves-effect waves-light btn col s12 m12 l6 red" onclick="logout();"><i class="material-icons left">clear</i>Unload wallet</button>
@@ -160,48 +167,50 @@
 					</div>
 					<div class="collapsible-body row">
 						<strong class="flow-text">Which blockchain do you want to use?</strong><br/>
-						<p>
-							<label>
-								<input name="group1" type="radio" checked onclick="selectBlockchain('MintME1');"/>
-								<span style="color: black;">MintME (node 1)</span>
-							</label>
-						</p>
-						<p>
-							<label>
-								<input name="group1" type="radio" onclick="selectBlockchain('MintME2');"/>
-								<span style="color: black;">MintME (node 2)</span>
-							</label>
-						</p>
-						<p>
-							<label>
-								<input name="group1" type="radio" onclick="selectBlockchain('BinanceSmartChain');"/>
-								<span style="color: black;">Binance Smart Chain</span>
-							</label>
-						</p>
-						<p>
-							<label>
-								<input name="group1" type="radio" onclick="selectBlockchain('ropsten');"/>
-								<span style="color: black;">Ethereum Ropsten testnet</span>
-							</label>
-						</p>
-						<p>
-							<label>
-								<input name="group1" type="radio" onclick="selectBlockchain('browser');"/>
-								<span style="color: black;">Browser-provided Web3 provider</span>
-							</label>
-						</p>
-						<p>
-							<label>
-								<input name="group1" type="radio" onclick="selectBlockchain('CustomNode');"/>
-								<span style="color: black;">Custom node</span>
-							</label>
-						</p>
-						<div class="input-field col s12" id="customNode" style="display: none;">
-							<i class="material-icons prefix">send</i>
-							<input id="customNode2" type="text"/>
-							<label for="approvalOwner">Enter node URL</label>
-						</div>
-						<button class="waves-effect waves-light btn col s12 m12 l6" id="customNode3" onclick='selectBlockchain("");' style="display: none;"><i class="material-icons left">send</i>Connect custom node</button>
+						<form>
+							<p>
+								<label>
+									<input name="group1" type="radio" checked onclick="selectBlockchain('MintME1');"/>
+									<span style="color: black;">MintME (node 1)</span>
+								</label>
+							</p>
+							<p>
+								<label>
+									<input name="group1" type="radio" onclick="selectBlockchain('MintME2');"/>
+									<span style="color: black;">MintME (node 2)</span>
+								</label>
+							</p>
+							<p>
+								<label>
+									<input name="group1" type="radio" onclick="selectBlockchain('BinanceSmartChain');"/>
+									<span style="color: black;">Binance Smart Chain</span>
+								</label>
+							</p>
+							<p>
+								<label>
+									<input name="group1" type="radio" onclick="selectBlockchain('ropsten');"/>
+									<span style="color: black;">Ethereum Ropsten testnet</span>
+								</label>
+							</p>
+							<p>
+								<label>
+									<input name="group1" type="radio" onclick="selectBlockchain('browser');"/>
+									<span style="color: black;">Browser-provided Web3 provider</span>
+								</label>
+							</p>
+							<p>
+								<label>
+									<input name="group1" type="radio" onclick="selectBlockchain('CustomNode');"/>
+									<span style="color: black;">Custom node</span>
+								</label>
+							</p>
+							<div class="input-field col s12" id="customNode" style="display: none;">
+								<i class="material-icons prefix">send</i>
+								<input id="customNode2" type="text"/>
+								<label for="approvalOwner">Enter node URL</label>
+							</div>
+							<button class="waves-effect waves-light btn col s12 m12 l6" id="customNode3" onclick='selectBlockchain("");' style="display: none;"><i class="material-icons left">send</i>Connect custom node</button>
+						</form>
 					</div>
 				</li>
 				<li id="dividendsMenu" style="display: none;">
@@ -274,6 +283,32 @@
 					</div>
 				</li>
 			</ul>
+		</div>
+		<div id="MultipurpuseModal" class="modal">
+			<div class="modal-content">
+				<strong class="flow-text" id="walletMessage">Undefined modal</strong>
+			</div>
+			<div class="modal-footer">
+				<a href="#!" class="modal-close waves-effect waves-light btn-flat green" onclick="walletMessage.innerHTML = 'Undefined modal';">Ok</a>
+			</div>
+		</div>
+		<div id="SendEUBIModal" class="modal">
+			<div class="modal-content">
+				<strong class="flow-text">Are you sure you want to transfer EUBI?</strong>
+			</div>
+			<div class="modal-footer">
+				<a href="#!" class="modal-close waves-effect waves-light btn-flat green" onclick="sendeubitx(sendmode);">Yes</a>
+				<a href="#!" class="modal-close waves-effect waves-light btn-flat red">No</a>
+			</div>
+		</div>
+		<div id="NativeSendModal" class="modal">
+			<div class="modal-content">
+				<strong class="flow-text">Are you sure you want to transfer MintME?</strong>
+			</div>
+			<div class="modal-footer">
+				<a href="#!" class="modal-close waves-effect waves-light btn-flat green" onclick="NativeSend();">Yes</a>
+				<a href="#!" class="modal-close waves-effect waves-light btn-flat red">No</a>
+			</div>
 		</div>
 		<script src="scripts.js"></script>
 	</body>
