@@ -3,7 +3,6 @@ var all = document.getElementsByTagName("*");
 for (var i=0, max=all.length; i < max; i++) {
 	var currentElement = all[i];
 	var id = currentElement.id;
-	if(id != ""){
 		eval(id + " = currentElement;");
 	}
 }
@@ -228,7 +227,7 @@ const NativeSend = async function(){
 	transaction.value = convDecimalToRaw(NativeAmount.value, 18);
 	sendNativeMessage.innerHTML = "Estimating gas usage...";
 	var networkId2 = networkId;
-	var realNativeSend = async function(value){
+	var realNativeSend = function(value){
 		transaction.gas = value;
 		sendNativeMessage.innerHTML = "Signing transaction...";
 		//sign and send transaction
@@ -267,7 +266,7 @@ const NativeSend = async function(){
 			sendNativePreloader.style.visibility = "hidden";
 		});
 	};
-	web3.eth.estimateGas(transaction).then(async function(value){
+	web3.eth.estimateGas(transaction).then(function(value){
 		realNativeSend(value);
 	}, function(error){
 		realNativeSend("21000");
