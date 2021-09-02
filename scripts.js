@@ -3,6 +3,7 @@ var all = document.getElementsByTagName("*");
 for (var i=0, max=all.length; i < max; i++) {
 	var currentElement = all[i];
 	var id = currentElement.id;
+	if(id != ""){
 		eval(id + " = currentElement;");
 	}
 }
