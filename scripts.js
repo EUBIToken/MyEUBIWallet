@@ -114,6 +114,8 @@ const reloadWallet = async function(){
 		case 24734:
 			ReceiverPaidGasFees.style.display = "list-item";
 			CoinTypeText.innerHTML = "Send MintME";
+			SendNativeMessage2.innerHTML = "Are you sure you want to send MintME?";
+			SendEubiMessage2.innerHTML = "Are you sure you want to send EUBI?";
 			dividendsMenu.style.display = "none";
 			eubiBalance.innerHTML='Loading EUBI balance...';
 			nativeBalance.innerHTML='Loading MintME balance...';
@@ -135,6 +137,8 @@ const reloadWallet = async function(){
 		case 56:
 			ReceiverPaidGasFees.style.display = "none";
 			CoinTypeText.innerHTML = "Send BNB";
+			SendNativeMessage2.innerHTML = "Are you sure you want to send BNB?";
+			SendEubiMessage2.innerHTML = "Are you sure you want to send bEUBI?";
 			dividendsMenu.style.display = "none";
 			eubiBalance.innerHTML='Loading bEUBI balance...';
 			nativeBalance.innerHTML='Loading BNB balance...';
@@ -156,6 +160,8 @@ const reloadWallet = async function(){
 		case 3:
 			ReceiverPaidGasFees.style.display = "none";
 			CoinTypeText.innerHTML = "Send Testnet Ethereum";
+			SendNativeMessage2.innerHTML = "Are you sure you want to send Testnet Ethereum?";
+			SendEubiMessage2.innerHTML = "Are you sure you want to send EUBI?";
 			dividendsMenu.style.display = "list-item";
 			stakedTokensText.innerHTML = "Loading staked tokens...";
 			eubiBalance.innerHTML='Loading EUBIng balance...';
@@ -405,46 +411,42 @@ const sendeubitx = async function(meth){
 const ManageDividends = async function(action){
 	withdrawDividendButton.disabled = true;
 	unstakeEubiButton.disabled = true;
-	withdrawDividendPreloader.style.visibility = "visible";
 	//write transaction
-	withdrawDividendMessage.innerHTML = "Writing transaction...";
 	var transaction = {};
 	if(action == "withdraw"){
 		transaction.data = loadedTokenContracts["0x8e4d858128c9ba2d3a7636892268fab031eddaf8"].methods.withdrawDividend().encodeABI();
 	} else{
 		transaction.data = loadedTokenContracts["0x8e4d858128c9ba2d3a7636892268fab031eddaf8"].methods.withdrawStakedToken(convDecimalToRaw(unstakeAmount.value, 12)).encodeABI();
 	}
-	transaction.gas = "100000"
+	transaction.gas = "200000"
 	transaction.to = "0x8e4d858128c9ba2d3a7636892268fab031eddaf8";
-	withdrawDividendMessage.innerHTML = "Signing transaction...";
 	//sign and send transaction
 	loadedAccount.signTransaction(transaction).then(function(value){
-		withdrawDividendMessage.innerHTML = "Sending transaction...";
 		web3.eth.sendSignedTransaction(value.rawTransaction).then(function(value){
 			if(value === null){
-				withdrawDividendMessage.innerHTML = "Transaction sent successfully!";
+				walletMessage.innerHTML = "Transaction sent successfully!";
+				MultipurpuseModalInstance.open();
 				withdrawDividendButton.disabled = false;
 				unstakeEubiButton.disabled = false;
-				withdrawDividendPreloader.style.visibility = "hidden";
 			} else{
-				withdrawDividendMessage.innerHTML = "Transaction sent successfully! <a href=\"https://ropsten.etherscan.io/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+				walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://ropsten.etherscan.io/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+				MultipurpuseModalInstance.open();
 				withdrawDividendButton.disabled = false;
 				unstakeEubiButton.disabled = false;
-				withdrawDividendPreloader.style.visibility = "hidden";
 			}
 			reloadWallet();
 		}, function(error){
-			withdrawDividendMessage.innerHTML = "Can't send transaction!";
+			walletMessage.innerHTML = "Can't send transaction!";
+			MultipurpuseModalInstance.open();
 			withdrawDividendButton.disabled = false;
 			unstakeEubiButton.disabled = false;
-			withdrawDividendPreloader.style.visibility = "hidden";
 			reloadWallet();
 		});
 	}, function(error){
-		withdrawDividendMessage.innerHTML = "Can't sign transaction!";
+		walletMessage.innerHTML = "Can't sign transaction!";
+		MultipurpuseModalInstance.open();
 		withdrawDividendButton.disabled = false;
 		unstakeEubiButton.disabled = false;
-		withdrawDividendPreloader.style.visibility = "hidden";
 	});
 };
 const encryptAndStore = async function(){
@@ -526,9 +528,11 @@ const checkAllowance = async function(){
 					} else{
 						value = "0." + value.padStart(decimals, "0");
 					}
-					sendEubiMessage.innerHTML = "Your remaining allowance: " + value + " EUBI";
+					walletMessage.innerHTML = "Your remaining allowance: " + value + " EUBI";
+					MultipurpuseModalInstance.open();
 				}, function(error){
-					sendEubiMessage.innerHTML = "ERROR: Can't query allowance";
+					walletMessage.innerHTML = "ERROR: Can't query allowance";
+					MultipurpuseModalInstance.open();
 				});
 				break;
 			case 56:
@@ -541,9 +545,11 @@ const checkAllowance = async function(){
 					} else{
 						value = "0." + value.padStart(decimals, "0");
 					}
-					sendEubiMessage.innerHTML = "Your remaining allowance: " + value + " bEUBI";
+					walletMessage.innerHTML = "Your remaining allowance: " + value + " bEUBI";
+					MultipurpuseModalInstance.open();
 				}, function(error){
-					sendEubiMessage.innerHTML = "ERROR: Can't query allowance";
+					walletMessage.innerHTML = "ERROR: Can't query allowance";
+					MultipurpuseModalInstance.open();
 				});
 				break;
 			case 3:
@@ -556,13 +562,16 @@ const checkAllowance = async function(){
 					} else{
 						value = "0." + value.padStart(decimals, "0");
 					}
-					sendEubiMessage.innerHTML = "Your remaining allowance: " + value + " bEUBI";
+					walletMessage.innerHTML = "Your remaining allowance: " + value + " bEUBI";
+					MultipurpuseModalInstance.open();
 				}, function(error){
-					sendEubiMessage.innerHTML = "ERROR: Can't query allowance";
+					walletMessage.innerHTML = "ERROR: Can't query allowance";
+					MultipurpuseModalInstance.open();
 				});
 				break;
 			default:
-				sendEubiMessage.innerHTML = "EUBI is not deployed on this blockchain!";
+				walletMessage.innerHTML = "EUBI is not deployed on this blockchain!";
+				MultipurpuseModalInstance.open();
 				break;
 		}
 	} else{
@@ -577,9 +586,11 @@ const checkAllowance = async function(){
 					} else{
 						value = "0." + value.padStart(decimals, "0");
 					}
-					sendEubiMessage.innerHTML = "Remaining allowance: " + value + " EUBI";
+					walletMessage.innerHTML = "Remaining allowance: " + value + " EUBI";
+					MultipurpuseModalInstance.open();
 				}, function(error){
-					sendEubiMessage.innerHTML = "ERROR: Can't query allowance";
+					walletMessage.innerHTML = "ERROR: Can't query allowance";
+					MultipurpuseModalInstance.open();
 				});
 				break;
 			case 56:
@@ -592,9 +603,11 @@ const checkAllowance = async function(){
 					} else{
 						value = "0." + value.padStart(decimals, "0");
 					}
-					sendEubiMessage.innerHTML = "Remaining allowance: " + value + " bEUBI";
+					walletMessage.innerHTML = "Remaining allowance: " + value + " bEUBI";
+					MultipurpuseModalInstance.open();
 				}, function(error){
-					sendEubiMessage.innerHTML = "ERROR: Can't query allowance";
+					walletMessage.innerHTML = "ERROR: Can't query allowance";
+					MultipurpuseModalInstance.open();
 				});
 				break;
 			case 3:
@@ -607,13 +620,16 @@ const checkAllowance = async function(){
 					} else{
 						value = "0." + value.padStart(decimals, "0");
 					}
-					sendEubiMessage.innerHTML = "Your remaining allowance: " + value + " bEUBI";
+					walletMessage.innerHTML = "Your remaining allowance: " + value + " bEUBI";
+					MultipurpuseModalInstance.open();
 				}, function(error){
-					sendEubiMessage.innerHTML = "ERROR: Can't query allowance";
+					walletMessage.innerHTML = "ERROR: Can't query allowance";
+					MultipurpuseModalInstance.open();
 				});
 				break;
 			default:
-				sendEubiMessage.innerHTML = "EUBI is not deployed on this blockchain!";
+				walletMessage.innerHTML = "EUBI is not deployed on this blockchain!";
+				MultipurpuseModalInstance.open();
 				break;
 		}
 	}
@@ -624,42 +640,39 @@ const createRPGF = function(){
 	var value = convDecimalToRaw(RPGFAmount.value, 12);
 	var temp = loadedAccount.sign(web3.eth.abi.encodeParameters(["uint256", "address", "address", "address", "address", "uint256", "uint256"], [random, "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1", walletAddressRAW, to, to, value, "115792089237316195423570985008687907853269984665640564039457584007913129639935"]));
 	navigator.clipboard.writeText(MintMEReceiverPaidGasFees.methods.sendPreauthorizedTransaction(random, "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1", walletAddressRAW, to, value, "115792089237316195423570985008687907853269984665640564039457584007913129639935", temp.v, temp.r, temp.s).encodeABI());
-	RPGFTransaction.innerHTML = "Preauthorized transaction copied to clipboard!";
+	walletMessage.innerHTML = "Preauthorized transaction copied to clipboard!";
+	MultipurpuseModalInstance.open();
 };
 const redeemRPGF = async function(){
 	RPGFRedeemButton.disabled = true;
-	RPGFPreloader.style.visibility = "visible";
 	//write transaction
-	RPGFTransaction.innerHTML = "Writing transaction...";
 	var transaction = {};
 	transaction.gas = "150000";
 	transaction.to = "0x1d81563e53a18136957ea28f441e06ac7b66de1b";
 	transaction.privateKey = privateKeyRAW;
 	transaction.data = RPGFTX.value;
-	RPGFTransaction.innerHTML = "Signing transaction...";
 	//sign and send transaction
 	web3.eth.accounts.signTransaction(transaction, privateKeyRAW).then(function(value){
-		RPGFTransaction.innerHTML = "Sending transaction...";
 		web3.eth.sendSignedTransaction(value.rawTransaction).then(function(value){
 			if(value === null){
-				RPGFTransaction.innerHTML = "Transaction sent successfully!";
+				walletMessage.innerHTML = "Transaction sent successfully!";
+				MultipurpuseModalInstance.open();
 				RPGFRedeemButton.disabled = false;
-				RPGFPreloader.style.visibility = "hidden";
 			} else{
-				RPGFTransaction.innerHTML = "Transaction sent successfully! <a href=\"https://ropsten.etherscan.io/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+				walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://ropsten.etherscan.io/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+				MultipurpuseModalInstance.open();
 				RPGFRedeemButton.disabled = false;
-				RPGFPreloader.style.visibility = "hidden";
 			}
 			reloadWallet();
 		}, function(error){
-			RPGFTransaction.innerHTML = "Can't send transaction!";
+			walletMessage.innerHTML = "Can't send transaction!";
+			MultipurpuseModalInstance.open();
 			RPGFRedeemButton.disabled = false;
-			RPGFPreloader.style.visibility = "hidden";
 			reloadWallet();
 		});
 	}, function(error){
-		RPGFTransaction.innerHTML = "Can't sign transaction!";
+		walletMessage.innerHTML = "Can't sign transaction!";
+		MultipurpuseModalInstance.open();
 		RPGFRedeemButton.disabled = false;
-		RPGFPreloader.style.visibility = "hidden";
 	});
 };

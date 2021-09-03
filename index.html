@@ -52,7 +52,7 @@
 					<label for="pass3">Wallet encryption password</label>
 				</div>
 				<button class="waves-effect waves-light btn col s12 m12 l6" onclick="loadWallet2();"><i class="material-icons left">account_balance</i>Load Wallet</button>
-				<button class="waves-effect waves-light btn col s12 m12 l6 red" onclick="deleteWallet();"><i class="material-icons left">clear</i>Delete wallet</button>
+				<button class="waves-effect waves-light btn col s12 m12 l6 red" onclick="deleteWalletModalInstance.open();"><i class="material-icons left">clear</i>Delete wallet</button>
 				<div class="input-field col s12">
 					<i class="material-icons prefix">create</i>
 					<input id="storedWalletName2" type="text"/>
@@ -223,19 +223,13 @@
 						<strong class="flow-text">Send ether to 0x8e4d858128c9ba2d3a7636892268fab031eddaf8 to distribute dividends!</strong><br/>
 						<strong id="pendingDividends" class="flow-text">Loading pending dividends...</strong><br/>
 						<strong id="stakedTokensText" class="flow-text">Loading staked tokens...</strong><br/>
-						<button class="waves-effect waves-light btn col s12 m12 l6" onclick="ManageDividends('withdraw');" id="withdrawDividendButton"><i class="material-icons left">account_balance</i>Withdraw dividends</button>
+						<button class="waves-effect waves-light btn col s12 m12 l6" onclick="WithdrawDividendsModalInstance.open();" id="withdrawDividendButton"><i class="material-icons left">account_balance</i>Withdraw dividends</button>
 						<div class="input-field col s12">
 							<i class="material-icons prefix">attach_money</i>
 							<input id="unstakeAmount" type="text"/>
 							<label for="unstakeAmount">Amount</label>
 						</div>
-						<button class="waves-effect waves-light btn col s12 m12 l6" onclick="ManageDividends('unstake');" id="unstakeEubiButton"><i class="material-icons left">account_balance</i>Unstake tokens</button>
-						<div class="col s12">
-							<strong id="withdrawDividendMessage" class="flow-text"></strong><br/>
-						</div>
-						<div class="col s12 m12 l6 progress" id="withdrawDividendPreloader" style="visibility: hidden;">
-							<div class="indeterminate"></div>
-						</div>
+						<button class="waves-effect waves-light btn col s12 m12 l6" onclick="UnstakeTokensModalInstance.open();" id="unstakeEubiButton"><i class="material-icons left">account_balance</i>Unstake tokens</button>
 					</div>
 				</li>
 				<li id="ReceiverPaidGasFees">
@@ -261,13 +255,7 @@
 							<input id="RPGFTX" type="text"/>
 							<label for="RPGFTX">Preauthorized transaction</label>
 						</div>
-						<button class="waves-effect waves-light btn col s12 m12 l6" onclick='redeemRPGF();' id="RPGFRedeemButton"><i class="material-icons left">redeem</i>Redeem preauthorized transaction</button>
-						<div class="col s12">
-							<strong class="flow-text" id="RPGFTransaction"></strong>
-						</div>
-						<div class="col s12 m12 l6 progress" id="RPGFPreloader" style="visibility: hidden;">
-							<div class="indeterminate"></div>
-						</div>
+						<button class="waves-effect waves-light btn col s12 m12 l6" onclick='RPGFModalInstance.open();' id="RPGFRedeemButton"><i class="material-icons left">redeem</i>Redeem preauthorized transaction</button>
 					</div>
 				</li>
 				<li>
@@ -294,7 +282,7 @@
 		</div>
 		<div id="SendEUBIModal" class="modal">
 			<div class="modal-content">
-				<strong class="flow-text">Are you sure you want to transfer EUBI?</strong>
+				<strong class="flow-text" id="SendEubiMessage2">Are you sure you want to send EUBI?</strong>
 			</div>
 			<div class="modal-footer">
 				<a href="#!" class="modal-close waves-effect waves-light btn-flat green" onclick="sendeubitx(sendmode);">Yes</a>
@@ -303,10 +291,46 @@
 		</div>
 		<div id="NativeSendModal" class="modal">
 			<div class="modal-content">
-				<strong class="flow-text">Are you sure you want to transfer MintME?</strong>
+				<strong class="flow-text" id="SendNativeMessage2">Are you sure you want to send MintME?</strong>
 			</div>
 			<div class="modal-footer">
 				<a href="#!" class="modal-close waves-effect waves-light btn-flat green" onclick="NativeSend();">Yes</a>
+				<a href="#!" class="modal-close waves-effect waves-light btn-flat red">No</a>
+			</div>
+		</div>
+		<div id="WithdrawDividendsModal" class="modal">
+			<div class="modal-content">
+				<strong class="flow-text">Are you sure you want to withdraw dividends?</strong>
+			</div>
+			<div class="modal-footer">
+				<a href="#!" class="modal-close waves-effect waves-light btn-flat green" onclick="ManageDividends('withdraw');">Yes</a>
+				<a href="#!" class="modal-close waves-effect waves-light btn-flat red">No</a>
+			</div>
+		</div>
+		<div id="UnstakeTokensModal" class="modal">
+			<div class="modal-content">
+				<strong class="flow-text">Are you sure you want to unstake tokens?</strong>
+			</div>
+			<div class="modal-footer">
+				<a href="#!" class="modal-close waves-effect waves-light btn-flat green" onclick="ManageDividends('unstake');">Yes</a>
+				<a href="#!" class="modal-close waves-effect waves-light btn-flat red">No</a>
+			</div>
+		</div>
+		<div id="RPGFModal" class="modal">
+			<div class="modal-content">
+				<strong class="flow-text">Are you sure you want to redeem preauthorized transaction?</strong>
+			</div>
+			<div class="modal-footer">
+				<a href="#!" class="modal-close waves-effect waves-light btn-flat green" onclick="redeemRPGF();">Yes</a>
+				<a href="#!" class="modal-close waves-effect waves-light btn-flat red">No</a>
+			</div>
+		</div>
+		<div id="deleteWalletModal" class="modal">
+			<div class="modal-content">
+				<strong class="flow-text">Are you sure you want to delete this wallet?</strong>
+			</div>
+			<div class="modal-footer">
+				<a href="#!" class="modal-close waves-effect waves-light btn-flat green" onclick="deleteWallet();">Yes</a>
 				<a href="#!" class="modal-close waves-effect waves-light btn-flat red">No</a>
 			</div>
 		</div>
