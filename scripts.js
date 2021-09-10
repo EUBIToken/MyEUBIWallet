@@ -5,6 +5,7 @@ var loadedAccount = null;
 const BigInt = web3.utils.BN;
 const rawUnitsToken = new BigInt("1000000000000");
 const MintMEReceiverPaidGasFees = new web3.eth.Contract(JSON.parse('[{"inputs": [{"internalType": "uint256","name": "random","type": "uint256"},{"internalType": "address","name": "token","type": "address"},{"internalType": "address","name": "from","type": "address"},{"internalType": "address","name": "to","type": "address"},{"internalType": "uint256","name": "value","type": "uint256"},{"internalType": "uint256","name": "expiry","type": "uint256"},{"internalType": "uint8","name": "v","type": "uint8"},{"internalType": "bytes32","name": "r","type": "bytes32"},{"internalType": "bytes32","name": "s","type": "bytes32"}],"name": "sendPreauthorizedTransaction","outputs": [],"stateMutability": "nonpayable","type": "function"}]'), "0x1d81563e53a18136957ea28f441e06ac7b66de1b");
+const PancakeRouter = new web3.eth.Contract(JSON.parse('[{"inputs": [{"internalType": "uint256","name": "amountIn","type": "uint256"},{"internalType": "uint256","name": "amountOutMin","type": "uint256"},{"internalType": "address[]","name": "path","type": "address[]"},{"internalType": "address","name": "to","type": "address"},{"internalType": "uint256","name": "deadline","type": "uint256"}],"name": "swapExactTokensForTokens","outputs": [{"internalType": "uint256[]","name": "amounts","type": "uint256[]"}],"stateMutability": "nonpayable","type": "function"}]', "0x05ff2b0db69458a0750badebc4f9e13add608c7f"));
 var walletAddressRAW = "0x0000000000000000000000000000000000000000";
 var contractAddress = "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1";
 var privateKeyRAW = "";
@@ -112,6 +113,7 @@ const reloadWallet = async function(){
 	networkId = await web3.eth.getChainId();
 	switch(networkId){
 		case 24734:
+			PancakeSwap.style.display = "none";
 			ReceiverPaidGasFees.style.display = "list-item";
 			CoinTypeText.innerHTML = "Send MintME";
 			SendNativeMessage2.innerHTML = "Are you sure you want to send MintME?";
@@ -135,6 +137,7 @@ const reloadWallet = async function(){
 			});
 			break;
 		case 56:
+			PancakeSwap.style.display = "list-item";
 			ReceiverPaidGasFees.style.display = "none";
 			CoinTypeText.innerHTML = "Send BNB";
 			SendNativeMessage2.innerHTML = "Are you sure you want to send BNB?";
@@ -158,6 +161,7 @@ const reloadWallet = async function(){
 			});
 			break;
 		case 3:
+			PancakeSwap.style.display = "none";
 			ReceiverPaidGasFees.style.display = "none";
 			CoinTypeText.innerHTML = "Send Testnet Ethereum";
 			SendNativeMessage2.innerHTML = "Are you sure you want to send Testnet Ethereum?";
@@ -674,5 +678,39 @@ const redeemRPGF = async function(){
 		walletMessage.innerHTML = "Can't sign transaction!";
 		MultipurpuseModalInstance.open();
 		RPGFRedeemButton.disabled = false;
+	});
+};
+const PancakeSellEUBI = async function(){
+	var transaction = {};
+	transaction.data = PancakeRouter.swapExactTokensForTokens(convDecimalToRaw(PancakeAmount, 18), 0, ["0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D", PancakeTarget.value], walletAddressRAW, "115792089237316195423570985008687907853269984665640564039457584007913129639935");
+	transaction.gas = "300000";
+	transaction.to = "0x05ff2b0db69458a0750badebc4f9e13add608c7f";
+	//sign and send transaction
+	loadedAccount.signTransaction(transaction).then(function(value){
+		web3.eth.sendSignedTransaction(value.rawTransaction).then(function(value){
+			if(value === null){
+				walletMessage.innerHTML = "Transaction sent successfully!";
+				MultipurpuseModalInstance.open();
+				withdrawDividendButton.disabled = false;
+				unstakeEubiButton.disabled = false;
+			} else{
+				walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.bscscan.com/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+				MultipurpuseModalInstance.open();
+				withdrawDividendButton.disabled = false;
+				unstakeEubiButton.disabled = false;
+			}
+			reloadWallet();
+		}, function(error){
+			walletMessage.innerHTML = "Can't send transaction!";
+			MultipurpuseModalInstance.open();
+			withdrawDividendButton.disabled = false;
+			unstakeEubiButton.disabled = false;
+			reloadWallet();
+		});
+	}, function(error){
+		walletMessage.innerHTML = "Can't sign transaction!";
+		MultipurpuseModalInstance.open();
+		withdrawDividendButton.disabled = false;
+		unstakeEubiButton.disabled = false;
 	});
 };
