@@ -188,8 +188,8 @@
 							</p>
 							<p>
 								<label>
-									<input name="group1" type="radio" onclick="selectBlockchain('ropsten');"/>
-									<span style="color: black;">Ethereum Ropsten testnet</span>
+									<input name="group1" type="radio" onclick="selectBlockchain('rinkeby');"/>
+									<span style="color: black;">Ethereum rinkeby testnet</span>
 								</label>
 							</p>
 							<p>
@@ -218,18 +218,19 @@
 						<strong class="flow-text">Dividends-paying token</strong>
 					</div>
 					<div class="collapsible-body row">
-						<strong class="flow-text">In order to receive dividends, you have to stake your tokens.</strong><br/>
-						<strong class="flow-text">Stake address: 0x8e4d858128c9ba2d3a7636892268fab031eddaf8</strong><br/>
-						<strong class="flow-text">Send ether to 0x8e4d858128c9ba2d3a7636892268fab031eddaf8 to distribute dividends!</strong><br/>
+						<strong class="flow-text">In order to receive dividends, you have to stake or burn your tokens for dividends. You will get 2 dividend points for each EUBI burned for dividends, and 1 dividend point for each EUBI staked for dividends. All dividends are distributed by dividend points.</strong><br/>
 						<strong id="pendingDividends" class="flow-text">Loading pending dividends...</strong><br/>
 						<strong id="stakedTokensText" class="flow-text">Loading staked tokens...</strong><br/>
-						<button class="waves-effect waves-light btn col s12 m12 l6" onclick="WithdrawDividendsModalInstance.open();" id="withdrawDividendButton"><i class="material-icons left">account_balance</i>Withdraw dividends</button>
+						<strong id="burnedTokensText" class="flow-text">Loading burned tokens...</strong><br/>
 						<div class="input-field col s12">
 							<i class="material-icons prefix">attach_money</i>
-							<input id="unstakeAmount" type="text"/>
-							<label for="unstakeAmount">Amount</label>
+							<input id="NGAmount" type="text"/>
+							<label for="NGAmount">Amount</label>
 						</div>
+						<button class="waves-effect waves-light btn col s12 m12 l6" onclick="WithdrawDividendsModalInstance.open();" id="withdrawDividendButton"><i class="material-icons left">account_balance</i>Withdraw dividends</button>
 						<button class="waves-effect waves-light btn col s12 m12 l6" onclick="UnstakeTokensModalInstance.open();" id="unstakeEubiButton"><i class="material-icons left">account_balance</i>Unstake tokens</button>
+						<button class="waves-effect waves-light btn col s12 m12 l6" onclick="StakeTokensModalInstance.open();" id="stakeEubiButton"><i class="material-icons left">account_balance</i>Stake tokens for dividends</button>
+						<button class="waves-effect waves-light btn col s12 m12 l6 red" onclick="BurnTokensModalInstance.open();" id="burnEubiButton"><i class="material-icons left">clear</i>Burn tokens for dividends</button>
 					</div>
 				</li>
 				<li id="ReceiverPaidGasFees">
@@ -332,6 +333,24 @@
 			</div>
 			<div class="modal-footer">
 				<a href="#!" class="modal-close waves-effect waves-light btn-flat green" onclick="ManageDividends('unstake');">Yes</a>
+				<a href="#!" class="modal-close waves-effect waves-light btn-flat red">No</a>
+			</div>
+		</div>
+		<div id="StakeTokensModal" class="modal">
+			<div class="modal-content">
+				<strong class="flow-text">Are you sure you want to stake tokens for dividends?</strong>
+			</div>
+			<div class="modal-footer">
+				<a href="#!" class="modal-close waves-effect waves-light btn-flat green" onclick="ManageDividends('stake');">Yes</a>
+				<a href="#!" class="modal-close waves-effect waves-light btn-flat red">No</a>
+			</div>
+		</div>
+		<div id="BurnTokensModal" class="modal">
+			<div class="modal-content">
+				<strong class="flow-text">Are you sure you want to burn tokens for dividends?</strong>
+			</div>
+			<div class="modal-footer">
+				<a href="#!" class="modal-close waves-effect waves-light btn-flat green" onclick="ManageDividends('burn');">Yes</a>
 				<a href="#!" class="modal-close waves-effect waves-light btn-flat red">No</a>
 			</div>
 		</div>
