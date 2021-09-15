@@ -243,10 +243,14 @@ const reloadWallet = async function(){
 };
 const loadWallet = async function(){
 	privateKeyRAW = privateKey.value;
-	try{
-		loadedAccount = web3.eth.accounts.privateKeyToAccount(privateKeyRAW);
-	} catch(err){
-		loadedAccount = null;
+	loadedAccount = null;
+	if(privateKeyRAW.length == 66){
+		try{
+			loadedAccount = web3.eth.accounts.privateKeyToAccount(privateKeyRAW);
+		} catch(err){
+			loadedAccount = null;
+			privateKeyRAW = "";
+		}
 	}
 	if(loadedAccount == null){
 		walletMessage.innerHTML = "Can't load wallet";
@@ -291,22 +295,53 @@ const deleteWallet = async function(){
 	flushWalletStorage();
 };
 const renameWallet = async function(){
-	allSavedWallets[selectedTargetWallet].name = storedWalletName2.value;
+	allSavedWallets[selectedTargetWallet].name = escapeHtml(storedWalletName2.value);
 	flushWalletStorage();
 };
 const convDecimalToRaw = function(value, decimals){
-	value = value.split(".");
-	if(value.length == 1){
-		value[1] = '0';
+	var ret = "invalid";
+	try{
+		while(value.startsWith("0")){
+			value = value.substring(1);
+		}
+		value = value.split(".");
+		if(value.length == 1){
+			value[1] = '0';
+		}
+		if(value.length == 2 && decimals >= value[1].length){
+			var bigpart1 = new BigInt(value[0]);
+			if(bigpart1.toString() == value[0]){
+				var bigpartREV = "1".padEnd(decimals + 1, "0");
+				var bigpart2 = new BigInt(bigpartREV);
+				if(bigpart2.toString() == bigpartREV){
+					bigpartREV = value[1].padEnd(decimals, "0");
+					var bigpart3 = new BigInt(bigpartREV);
+					if(bigpart3.toString().padStart(decimals, "0") == bigpartREV){
+						ret = bigpart1.mul(bigpart2).add(bigpart3).toString();
+					}
+				}
+			}
+		}
+	} catch(err){
+		
 	}
-	return new BigInt(value[0]).mul(new BigInt("1".padEnd(decimals + 1, "0"))).add(new BigInt(value[1].padEnd(decimals, "0"))).toString();
+	if(ret == "invalid"){
+		walletMessage.innerHTML = "Invalid amount!";
+		MultipurpuseModalInstance.open();
+	}
+	return ret;
 };
 const NativeSend = async function(){
 	//write transaction
 	sendNativeButton.disabled = true;
 	var transaction = {};
 	transaction.to = sendtoNative.value;
-	transaction.value = convDecimalToRaw(NativeAmount.value, 18);
+	var tmpconv = convDecimalToRaw(NativeAmount.value, 18);
+	if(tmpconv === "invalid"){
+		sendNativeButton.disabled = false;
+		return;
+	}
+	transaction.value = tmpconv;
 	var networkId2 = networkId;
 	var realNativeSend = function(value){
 		transaction.gas = value;
@@ -374,10 +409,16 @@ const sendeubitx = async function(meth){
 			approveEubiButton.disabled = false;
 			return;
 	}
-	if(useApprovalCheckbox.checked){
-		transaction.data = loadedTokenContracts[contractAddress2].methods.transferFrom(approvalOwner.value, sendto.value, convDecimalToRaw(eubiamount.value, decimals)).encodeABI();
+	var tempconv = convDecimalToRaw(eubiamount.value, decimals);
+	if(tempconv == "invalid"){
+		sendEubiButton.disabled = false;
+		approveEubiButton.disabled = false;
+		return;
+	}
+	else if(useApprovalCheckbox.checked){
+		transaction.data = loadedTokenContracts[contractAddress2].methods.transferFrom(approvalOwner.value, sendto.value, tempconv).encodeABI();
 	} else{
-		transaction.data = loadedTokenContracts[contractAddress2].methods[meth](sendto.value, convDecimalToRaw(eubiamount.value, decimals)).encodeABI();
+		transaction.data = loadedTokenContracts[contractAddress2].methods[meth](sendto.value, tempconv).encodeABI();
 	}
 	transaction.to = contractAddress2;
 	var AfterGasEstimate = function(value){
@@ -432,18 +473,28 @@ const ManageDividends = async function(action){
 	burnEubiButton.disabled = true;
 	//write transaction
 	var transaction = {};
+	var tempvalue = convDecimalToRaw(NGAmount.value, 18);
+	if(tempvalue == "invalid"){
+		withdrawDividendButton.disabled = false;
+		unstakeEubiButton.disabled = false;
+		stakeEubiButton.disabled = false;
+		burnEubiButton.disabled = false;
+		walletMessage.innerHTML = "Please enter amount!";
+		MultipurpuseModalInstance.open();
+		return;
+	}
 	switch(action){
 		case "withdraw":
-			transaction.data = loadedTokenContracts["0x8e4d858128c9ba2d3a7636892268fab031eddaf8"].methods.withdrawDividendsTo(walletAddressRAW, convDecimalToRaw(NGAmount.value, 18), "0x00").encodeABI();
+			transaction.data = loadedTokenContracts["0x8e4d858128c9ba2d3a7636892268fab031eddaf8"].methods.withdrawDividendsTo(walletAddressRAW, tempvalue, "0x00").encodeABI();
 			break;
 		case "unstake":
-			transaction.data = loadedTokenContracts["0x8e4d858128c9ba2d3a7636892268fab031eddaf8"].methods.unstake(walletAddressRAW, convDecimalToRaw(NGAmount.value, 18)).encodeABI();
+			transaction.data = loadedTokenContracts["0x8e4d858128c9ba2d3a7636892268fab031eddaf8"].methods.unstake(walletAddressRAW, tempvalue).encodeABI();
 			break;
 		case "stake":
-			transaction.data = loadedTokenContracts["0x8e4d858128c9ba2d3a7636892268fab031eddaf8"].methods.stakeForDividends(walletAddressRAW, convDecimalToRaw(NGAmount.value, 18)).encodeABI();
+			transaction.data = loadedTokenContracts["0x8e4d858128c9ba2d3a7636892268fab031eddaf8"].methods.stakeForDividends(walletAddressRAW, tempvalue).encodeABI();
 			break;
 		case "burn":
-			transaction.data = loadedTokenContracts["0x8e4d858128c9ba2d3a7636892268fab031eddaf8"].methods.burnForDividends(walletAddressRAW, convDecimalToRaw(NGAmount.value, 18)).encodeABI();
+			transaction.data = loadedTokenContracts["0x8e4d858128c9ba2d3a7636892268fab031eddaf8"].methods.burnForDividends(walletAddressRAW, tempvalue).encodeABI();
 			break;
 		default:
 			withdrawDividendButton.disabled = false;
@@ -682,10 +733,12 @@ const createRPGF = function(){
 	var random = web3.utils.randomHex(16);
 	var to = RPGFReceiver.value;
 	var value = convDecimalToRaw(RPGFAmount.value, 12);
-	var temp = loadedAccount.sign(web3.eth.abi.encodeParameters(["uint256", "address", "address", "address", "address", "uint256", "uint256"], [random, "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1", walletAddressRAW, to, to, value, "115792089237316195423570985008687907853269984665640564039457584007913129639935"]));
-	navigator.clipboard.writeText(MintMEReceiverPaidGasFees.methods.sendPreauthorizedTransaction(random, "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1", walletAddressRAW, to, value, "115792089237316195423570985008687907853269984665640564039457584007913129639935", temp.v, temp.r, temp.s).encodeABI());
-	walletMessage.innerHTML = "Preauthorized transaction copied to clipboard!";
-	MultipurpuseModalInstance.open();
+	if(value != "invalid"){
+		var temp = loadedAccount.sign(web3.eth.abi.encodeParameters(["uint256", "address", "address", "address", "address", "uint256", "uint256"], [random, "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1", walletAddressRAW, to, to, value, "115792089237316195423570985008687907853269984665640564039457584007913129639935"]));
+		navigator.clipboard.writeText(MintMEReceiverPaidGasFees.methods.sendPreauthorizedTransaction(random, "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1", walletAddressRAW, to, value, "115792089237316195423570985008687907853269984665640564039457584007913129639935", temp.v, temp.r, temp.s).encodeABI());
+		walletMessage.innerHTML = "Preauthorized transaction copied to clipboard!";
+		MultipurpuseModalInstance.open();
+	}
 };
 const redeemRPGF = async function(){
 	RPGFRedeemButton.disabled = true;
@@ -722,35 +775,35 @@ const redeemRPGF = async function(){
 };
 const PancakeSellEUBI = async function(){
 	var transaction = {};
-	transaction.data = PancakeRouter.swapExactTokensForTokens(convDecimalToRaw(PancakeAmount, 18), 0, ["0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D", PancakeTarget.value], walletAddressRAW, "115792089237316195423570985008687907853269984665640564039457584007913129639935");
-	transaction.gas = "300000";
-	transaction.to = "0x05ff2b0db69458a0750badebc4f9e13add608c7f";
-	//sign and send transaction
-	loadedAccount.signTransaction(transaction).then(function(value){
-		web3.eth.sendSignedTransaction(value.rawTransaction).then(function(value){
-			if(value === null){
-				walletMessage.innerHTML = "Transaction sent successfully!";
+	var pa = convDecimalToRaw(PancakeAmount.value, 18);
+	if(pa != "invalid"){
+		PancakeButton.disabled = true;
+		transaction.data = PancakeRouter.swapExactTokensForTokens(pa, 0, ["0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D", PancakeTarget.value], walletAddressRAW, "115792089237316195423570985008687907853269984665640564039457584007913129639935");
+		transaction.gas = "300000";
+		transaction.to = "0x05ff2b0db69458a0750badebc4f9e13add608c7f";
+		//sign and send transaction
+		loadedAccount.signTransaction(transaction).then(function(value){
+			web3.eth.sendSignedTransaction(value.rawTransaction).then(function(value){
+				if(value === null){
+					walletMessage.innerHTML = "Transaction sent successfully!";
+					MultipurpuseModalInstance.open();
+					PancakeButton.disabled = false;
+				} else{
+					walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.bscscan.com/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+					MultipurpuseModalInstance.open();
+					PancakeButton.disabled = false;
+				}
+				reloadWallet();
+			}, function(error){
+				walletMessage.innerHTML = "Can't send transaction!";
 				MultipurpuseModalInstance.open();
-				withdrawDividendButton.disabled = false;
-				unstakeEubiButton.disabled = false;
-			} else{
-				walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.bscscan.com/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
-				MultipurpuseModalInstance.open();
-				withdrawDividendButton.disabled = false;
-				unstakeEubiButton.disabled = false;
-			}
-			reloadWallet();
+				PancakeButton.disabled = false;
+				reloadWallet();
+			});
 		}, function(error){
-			walletMessage.innerHTML = "Can't send transaction!";
+			walletMessage.innerHTML = "Can't sign transaction!";
 			MultipurpuseModalInstance.open();
-			withdrawDividendButton.disabled = false;
-			unstakeEubiButton.disabled = false;
-			reloadWallet();
+			PancakeButton.disabled = false;
 		});
-	}, function(error){
-		walletMessage.innerHTML = "Can't sign transaction!";
-		MultipurpuseModalInstance.open();
-		withdrawDividendButton.disabled = false;
-		unstakeEubiButton.disabled = false;
-	});
+	}
 };
