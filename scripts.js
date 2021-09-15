@@ -50,7 +50,7 @@ const ilierateAllWallets = async function(){
 	for (var i = 0; i < length2; i++) {
 		var walletwallet = allSavedWallets[i];
 		if(walletwallet != "deleted wallet"){
-			listofwallets.insertAdjacentHTML("beforeEnd", "<p><label class=\"tooltipped\" data-position=\"bottom\" data-tooltip=\"" + walletwallet.address + "\"><input name=\"group1\" type=\"radio\" onclick=\"selectedTargetWallet = " + i.toString() + ";\"/><span style=\"color: black;\">" + escapeHtml(walletwallet.name) + "</span></label></p>");
+			listofwallets.insertAdjacentHTML("beforeEnd", "<p><label class=\"tooltipped\" data-position=\"bottom\" data-tooltip=\"" + escapeHtml(walletwallet.address) + "\"><input name=\"group1\" type=\"radio\" onclick=\"selectedTargetWallet = " + i.toString() + ";\"/><span style=\"color: black;\">" + escapeHtml(walletwallet.name) + "</span></label></p>");
 		}
 	}
 };
@@ -81,7 +81,7 @@ const createWallet = async function(){
 	walletAddressRAW = loadedAccount.address;
 	privateKeyRAW = loadedAccount.privateKey;
 	beforeWalletLoad.style.display = "none";
-	myWalletAddress.innerHTML = "Your wallet address is: " + walletAddressRAW;
+	myWalletAddress.innerHTML = "Your wallet address is: " + escapeHtml(walletAddressRAW);
 	afterWalletLoad.style.display = "block";
 	reloadWallet();
 };
@@ -94,6 +94,7 @@ const loadTokenContract = function(address){
 	return loadingTokenContract;
 }
 const refreshTokenBalance = async function(tokenAddress, tokenBalanceElement, walletAddress, tokenName, decimals){
+	tokenName = escapeHtml(tokenName);
 	loadTokenContract(tokenAddress).methods.balanceOf(walletAddress).call().then(function(value){
 		var vl = value.length;
 		if(vl > decimals){
@@ -102,7 +103,7 @@ const refreshTokenBalance = async function(tokenAddress, tokenBalanceElement, wa
 		} else{
 			value = "0." + value.padStart(decimals, "0");
 		}
-		tokenBalanceElement.innerHTML = "You have " + value + " " + tokenName + " Tokens";
+		tokenBalanceElement.innerHTML = "You have " + escapeHtml(value) + " " + tokenName + " Tokens";
 	}, function(error){
 		tokenBalanceElement.innerHTML = "ERROR: Can't load " + tokenName + " balance";
 	});
@@ -131,7 +132,7 @@ const reloadWallet = async function(){
 				} else{
 					value = "0." + value.padStart(18, "0");
 				}
-				nativeBalance.innerHTML = "You have " + value + " MintME to pay for gas";
+				nativeBalance.innerHTML = "You have " + escapeHtml(value) + " MintME to pay for gas";
 			}, function(error){
 				nativeBalance.innerHTML = "ERROR: Can't load MintME balance!";
 			});
@@ -155,7 +156,7 @@ const reloadWallet = async function(){
 				} else{
 					value = "0." + value.padStart(18, "0");
 				}
-				nativeBalance.innerHTML = "You have " + value + " BNB to pay for gas";
+				nativeBalance.innerHTML = "You have " + escapeHtml(value) + " BNB to pay for gas";
 			}, function(error){
 				nativeBalance.innerHTML = "ERROR: Can't load BNB balance!";
 			});
@@ -181,7 +182,7 @@ const reloadWallet = async function(){
 				} else{
 					value = "0." + value.padStart(18, "0");
 				}
-				nativeBalance.innerHTML = "You have " + value + " Testnet Ethereum to pay for gas";
+				nativeBalance.innerHTML = "You have " + escapeHtml(value) + " Testnet Ethereum to pay for gas";
 			}, function(error){
 				nativeBalance.innerHTML = "ERROR: Can't load Testnet Ethereum balance!";
 			});
@@ -194,7 +195,7 @@ const reloadWallet = async function(){
 				} else{
 					value = "0." + value.padStart(18, "0");
 				}
-				pendingDividends.innerHTML = "You have " + value + " ETH worth of pending dividends";
+				pendingDividends.innerHTML = "You have " + escapeHtml(value) + " ETH worth of pending dividends";
 			}, function(error){
 				pendingDividends.innerHTML = "ERROR: Can't load pending dividends";
 			});
@@ -206,7 +207,7 @@ const reloadWallet = async function(){
 				} else{
 					value = "0." + value.padStart(18, "0");
 				}
-				stakedTokensText.innerHTML = "You have " + value + " EUBI staked for dividends";
+				stakedTokensText.innerHTML = "You have " + escapeHtml(value) + " EUBI staked for dividends";
 			}, function(error){
 				stakedTokensText.innerHTML = "ERROR: Can't load staking balance!";
 			});
@@ -218,7 +219,7 @@ const reloadWallet = async function(){
 				} else{
 					value = "0." + value.padStart(18, "0");
 				}
-				burnedTokensText.innerHTML = "You have " + value + " EUBI burned for dividends";
+				burnedTokensText.innerHTML = "You have " + escapeHtml(value) + " EUBI burned for dividends";
 			}, function(error){
 				burnedTokensText.innerHTML = "ERROR: Can't load staking balance!";
 			});
@@ -234,7 +235,7 @@ const reloadWallet = async function(){
 				} else{
 					value = "0." + value.padStart(18, "0");
 				}
-				nativeBalance.innerHTML = "You have " + value + " unknown to pay for gas";
+				nativeBalance.innerHTML = "You have " + escapeHtml(value) + " unknown to pay for gas";
 			}, function(error){
 				nativeBalance.innerHTML = "ERROR: Can't load unknown balance!";
 			});
@@ -260,7 +261,7 @@ const loadWallet = async function(){
 		MultipurpuseModalInstance.open();
 		walletAddressRAW = loadedAccount.address;
 		beforeWalletLoad.style.display = "none";
-		myWalletAddress.innerHTML = "Your wallet address is: " + walletAddressRAW;
+		myWalletAddress.innerHTML = "Your wallet address is: " + escapeHtml(walletAddressRAW);
 		afterWalletLoad.style.display = "block";
 		reloadWallet();
 	}
@@ -282,7 +283,7 @@ const loadWallet2 = async function(){
 		} else{
 			walletAddressRAW = loadedAccount.address;
 			beforeWalletLoad.style.display = "none";
-			myWalletAddress.innerHTML = "Your wallet address is: " + walletAddressRAW;
+			myWalletAddress.innerHTML = "Your wallet address is: " + escapeHtml(walletAddressRAW);
 			afterWalletLoad.style.display = "block";
 			walletMessage.innerHTML = "Your wallet was successfully loaded, thank you for using MyEUBIWallet!";
 			MultipurpuseModalInstance.open();
@@ -353,13 +354,13 @@ const NativeSend = async function(){
 				} else{
 					switch(networkId2){
 						case 24734:
-							walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.mintme.com/explorer/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+							walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.mintme.com/explorer/tx/" + escapeHtml(value.transactionHash) + "\">view on blockchain explorer</a>";
 							break;
 						case 56:
-							walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.bscscan.com/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+							walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.bscscan.com/tx/" + escapeHtml(value.transactionHash) + "\">view on blockchain explorer</a>";
 							break;
 						case 4:
-							walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://rinkeby.etherscan.io/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+							walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://rinkeby.etherscan.io/tx/" + escapeHtml(value.transactionHash) + "\">view on blockchain explorer</a>";
 							break;
 					}
 				}
@@ -433,13 +434,13 @@ const sendeubitx = async function(meth){
 				} else{
 					switch(networkId2){
 						case 24734:
-							walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.mintme.com/explorer/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+							walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.mintme.com/explorer/tx/" + escapeHtml(value.transactionHash) + "\">view on blockchain explorer</a>";
 							break;
 						case 56:
-							walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.bscscan.com/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+							walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.bscscan.com/tx/" + escapeHtml(value.transactionHash) + "\">view on blockchain explorer</a>";
 							break;
 						case 4:
-							walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://rinkeby.etherscan.io/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+							walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://rinkeby.etherscan.io/tx/" + escapeHtml(value.transactionHash) + "\">view on blockchain explorer</a>";
 							break;
 					}
 				}
@@ -518,7 +519,7 @@ const ManageDividends = async function(action){
 				stakeEubiButton.disabled = false;
 				burnEubiButton.disabled = false;
 			} else{
-				walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://rinkeby.etherscan.io/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+				walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://rinkeby.etherscan.io/tx/" + escapeHtml(value.transactionHash) + "\">view on blockchain explorer</a>";
 				MultipurpuseModalInstance.open();
 				withdrawDividendButton.disabled = false;
 				unstakeEubiButton.disabled = false;
@@ -623,7 +624,7 @@ const checkAllowance = async function(){
 					} else{
 						value = "0." + value.padStart(decimals, "0");
 					}
-					walletMessage.innerHTML = "Your remaining allowance: " + value + " EUBI";
+					walletMessage.innerHTML = "Your remaining allowance: " + escapeHtml(value) + " EUBI";
 					MultipurpuseModalInstance.open();
 				}, function(error){
 					walletMessage.innerHTML = "ERROR: Can't query allowance";
@@ -640,7 +641,7 @@ const checkAllowance = async function(){
 					} else{
 						value = "0." + value.padStart(decimals, "0");
 					}
-					walletMessage.innerHTML = "Your remaining allowance: " + value + " bEUBI";
+					walletMessage.innerHTML = "Your remaining allowance: " + escapeHtml(value) + " bEUBI";
 					MultipurpuseModalInstance.open();
 				}, function(error){
 					walletMessage.innerHTML = "ERROR: Can't query allowance";
@@ -657,7 +658,7 @@ const checkAllowance = async function(){
 					} else{
 						value = "0." + value.padStart(decimals, "0");
 					}
-					walletMessage.innerHTML = "Your remaining allowance: " + value + " bEUBI";
+					walletMessage.innerHTML = "Your remaining allowance: " + escapeHtml(value) + " bEUBI";
 					MultipurpuseModalInstance.open();
 				}, function(error){
 					walletMessage.innerHTML = "ERROR: Can't query allowance";
@@ -681,7 +682,7 @@ const checkAllowance = async function(){
 					} else{
 						value = "0." + value.padStart(decimals, "0");
 					}
-					walletMessage.innerHTML = "Remaining allowance: " + value + " EUBI";
+					walletMessage.innerHTML = "Remaining allowance: " + escapeHtml(value) + " EUBI";
 					MultipurpuseModalInstance.open();
 				}, function(error){
 					walletMessage.innerHTML = "ERROR: Can't query allowance";
@@ -698,7 +699,7 @@ const checkAllowance = async function(){
 					} else{
 						value = "0." + value.padStart(decimals, "0");
 					}
-					walletMessage.innerHTML = "Remaining allowance: " + value + " bEUBI";
+					walletMessage.innerHTML = "Remaining allowance: " + escapeHtml(value) + " bEUBI";
 					MultipurpuseModalInstance.open();
 				}, function(error){
 					walletMessage.innerHTML = "ERROR: Can't query allowance";
@@ -715,7 +716,7 @@ const checkAllowance = async function(){
 					} else{
 						value = "0." + value.padStart(decimals, "0");
 					}
-					walletMessage.innerHTML = "Your remaining allowance: " + value + " bEUBI";
+					walletMessage.innerHTML = "Your remaining allowance: " + escapeHtml(value) + " bEUBI";
 					MultipurpuseModalInstance.open();
 				}, function(error){
 					walletMessage.innerHTML = "ERROR: Can't query allowance";
@@ -756,7 +757,7 @@ const redeemRPGF = async function(){
 				MultipurpuseModalInstance.open();
 				RPGFRedeemButton.disabled = false;
 			} else{
-				walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://rinkeby.etherscan.io/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+				walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://rinkeby.etherscan.io/tx/" + escapeHtml(value.transactionHash) + "\">view on blockchain explorer</a>";
 				MultipurpuseModalInstance.open();
 				RPGFRedeemButton.disabled = false;
 			}
@@ -789,7 +790,7 @@ const PancakeSellEUBI = async function(){
 					MultipurpuseModalInstance.open();
 					PancakeButton.disabled = false;
 				} else{
-					walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.bscscan.com/tx/" + value.transactionHash + "\">view on blockchain explorer</a>";
+					walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.bscscan.com/tx/" + escapeHtml(value.transactionHash) + "\">view on blockchain explorer</a>";
 					MultipurpuseModalInstance.open();
 					PancakeButton.disabled = false;
 				}
