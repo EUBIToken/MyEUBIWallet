@@ -105,7 +105,7 @@ const refreshTokenBalance = async function(tokenAddress, tokenBalanceElement, wa
 		}
 		tokenBalanceElement.innerHTML = "You have " + escapeHtml(value) + " " + tokenName + " Tokens";
 	}, function(error){
-		tokenBalanceElement.innerHTML = "ERROR: Can't load " + tokenName + " balance";
+		tokenBalanceElement.innerHTML = "ERROR: Can't load " + tokenName + " balance: " + escapeHtml(error.message) + "!";
 	});
 };
 const reloadWallet = async function(){
@@ -134,7 +134,7 @@ const reloadWallet = async function(){
 				}
 				nativeBalance.innerHTML = "You have " + escapeHtml(value) + " MintME to pay for gas";
 			}, function(error){
-				nativeBalance.innerHTML = "ERROR: Can't load MintME balance!";
+				nativeBalance.innerHTML = "ERROR: Can't load MintME balance: " + escapeHtml(error.message) + "!";
 			});
 			break;
 		case 56:
@@ -158,7 +158,7 @@ const reloadWallet = async function(){
 				}
 				nativeBalance.innerHTML = "You have " + escapeHtml(value) + " BNB to pay for gas";
 			}, function(error){
-				nativeBalance.innerHTML = "ERROR: Can't load BNB balance!";
+				nativeBalance.innerHTML = "ERROR: Can't load BNB balance: " + escapeHtml(error.message) + "!";
 			});
 			break;
 		case 4:
@@ -184,7 +184,7 @@ const reloadWallet = async function(){
 				}
 				nativeBalance.innerHTML = "You have " + escapeHtml(value) + " Testnet Ethereum to pay for gas";
 			}, function(error){
-				nativeBalance.innerHTML = "ERROR: Can't load Testnet Ethereum balance!";
+				nativeBalance.innerHTML = "ERROR: Can't load Testnet Ethereum balance: " + escapeHtml(error.message) + "!";
 			});
 			var tempTokenContract = loadTokenContract("0x8e4d858128c9ba2d3a7636892268fab031eddaf8");
 			tempTokenContract.methods.pendingDividends(walletAddressRAW).call().then(function(value){
@@ -197,7 +197,7 @@ const reloadWallet = async function(){
 				}
 				pendingDividends.innerHTML = "You have " + escapeHtml(value) + " ETH worth of pending dividends";
 			}, function(error){
-				pendingDividends.innerHTML = "ERROR: Can't load pending dividends";
+				pendingDividends.innerHTML = "ERROR: Can't load pending dividends: " + escapeHtml(error.message) + "!";
 			});
 			tempTokenContract.methods.stakedForDividends(walletAddressRAW).call().then(function(value){
 				var vl = value.length;
@@ -209,7 +209,7 @@ const reloadWallet = async function(){
 				}
 				stakedTokensText.innerHTML = "You have " + escapeHtml(value) + " EUBI staked for dividends";
 			}, function(error){
-				stakedTokensText.innerHTML = "ERROR: Can't load staking balance!";
+				stakedTokensText.innerHTML = "ERROR: Can't load staking balance: " + escapeHtml(error.message) + "!";
 			});
 			tempTokenContract.methods.burnedForDividends(walletAddressRAW).call().then(function(value){
 				var vl = value.length;
@@ -221,7 +221,7 @@ const reloadWallet = async function(){
 				}
 				burnedTokensText.innerHTML = "You have " + escapeHtml(value) + " EUBI burned for dividends";
 			}, function(error){
-				burnedTokensText.innerHTML = "ERROR: Can't load staking balance!";
+				burnedTokensText.innerHTML = "ERROR: Can't load staking balance: " + escapeHtml(error.message) + "!";
 			});
 			break;
 		default:
@@ -237,7 +237,7 @@ const reloadWallet = async function(){
 				}
 				nativeBalance.innerHTML = "You have " + escapeHtml(value) + " unknown to pay for gas";
 			}, function(error){
-				nativeBalance.innerHTML = "ERROR: Can't load unknown balance!";
+				nativeBalance.innerHTML = "ERROR: Can't load unknown balance: " + escapeHtml(error.message) + "!";
 			});
 			break;
 	}
@@ -304,20 +304,31 @@ const convDecimalToRaw = function(value, decimals){
 	try{
 		while(value.startsWith("0")){
 			value = value.substring(1);
+			if(value.startsWith(".") || value == ""){
+				value = "0" + value;
+				break;
+			}
 		}
 		value = value.split(".");
 		if(value.length == 1){
 			value[1] = '0';
 		}
+		if(value.length == 1){
+			value = [value[0], "0"];
+		}
 		if(value.length == 2 && decimals >= value[1].length){
+			console.log("t2");
 			var bigpart1 = new BigInt(value[0]);
 			if(bigpart1.toString() == value[0]){
+				console.log("t2");
 				var bigpartREV = "1".padEnd(decimals + 1, "0");
 				var bigpart2 = new BigInt(bigpartREV);
 				if(bigpart2.toString() == bigpartREV){
+					console.log("t2");
 					bigpartREV = value[1].padEnd(decimals, "0");
 					var bigpart3 = new BigInt(bigpartREV);
 					if(bigpart3.toString().padStart(decimals, "0") == bigpartREV){
+						console.log("t2");
 						ret = bigpart1.mul(bigpart2).add(bigpart3).toString();
 					}
 				}
@@ -338,7 +349,7 @@ const NativeSend = async function(){
 	var transaction = {};
 	transaction.to = sendtoNative.value;
 	var tmpconv = convDecimalToRaw(NativeAmount.value, 18);
-	if(tmpconv === "invalid"){
+	if(tmpconv == "invalid"){
 		sendNativeButton.disabled = false;
 		return;
 	}
@@ -369,21 +380,29 @@ const NativeSend = async function(){
 				reloadWallet();
 			}, function(error){
 				sendNativeButton.disabled = false;
-				walletMessage.innerHTML = "Can't send transaction!";
+				walletMessage.innerHTML = "Can't send transaction: " + escapeHtml(error.message) + "!";
 				MultipurpuseModalInstance.open();
 				reloadWallet();
 			});
 		}, function(error){
 			sendNativeButton.disabled = false;
-			walletMessage.innerHTML = "Can't sign transaction!";
+			walletMessage.innerHTML = "Can't sign transaction: " + escapeHtml(error.message) + "!";
 			MultipurpuseModalInstance.open();
 		});
 	};
-	web3.eth.estimateGas(transaction).then(function(value){
-		realNativeSend(value);
-	}, function(error){
-		realNativeSend("21000");
-	});
+	try{
+		web3.eth.estimateGas(transaction).then(function(value){
+			realNativeSend(value);
+		}, function(error){
+			realNativeSend("21000");
+		});
+	} catch (error){
+		walletMessage.innerHTML = "Invalid address!";
+		MultipurpuseModalInstance.open();
+		sendNativeButton.disabled = false;
+		return;
+	}
+	
 };
 const sendeubitx = async function(meth){
 	sendEubiButton.disabled = true;
@@ -410,17 +429,28 @@ const sendeubitx = async function(meth){
 			approveEubiButton.disabled = false;
 			return;
 	}
-	var tempconv = convDecimalToRaw(eubiamount.value, decimals);
-	if(tempconv == "invalid"){
+
+	try{
+		var send2 = sendto.value;
+		var tempconv = convDecimalToRaw(eubiamount.value, decimals);
+		if(tempconv == "invalid"){
+			sendEubiButton.disabled = false;
+			approveEubiButton.disabled = false;
+			return;
+		}
+		else if(useApprovalCheckbox.checked){
+			transaction.data = loadedTokenContracts[contractAddress2].methods.transferFrom(approvalOwner.value, send2, tempconv).encodeABI();
+		} else{
+			transaction.data = loadedTokenContracts[contractAddress2].methods[meth](send2, tempconv).encodeABI();
+		}
+	} catch (error){
+		walletMessage.innerHTML = "Invalid address!";
+		MultipurpuseModalInstance.open();
 		sendEubiButton.disabled = false;
 		approveEubiButton.disabled = false;
 		return;
 	}
-	else if(useApprovalCheckbox.checked){
-		transaction.data = loadedTokenContracts[contractAddress2].methods.transferFrom(approvalOwner.value, sendto.value, tempconv).encodeABI();
-	} else{
-		transaction.data = loadedTokenContracts[contractAddress2].methods[meth](sendto.value, tempconv).encodeABI();
-	}
+	
 	transaction.to = contractAddress2;
 	var AfterGasEstimate = function(value){
 		transaction.gas = value;
@@ -449,14 +479,14 @@ const sendeubitx = async function(meth){
 				MultipurpuseModalInstance.open();
 				reloadWallet();
 			}, function(error){
-				walletMessage.innerHTML = "Can't send transaction!";
+				walletMessage.innerHTML = "Can't send transaction: " + escapeHtml(error.message) + "!";
 				MultipurpuseModalInstance.open();
 				sendEubiButton.disabled = false;
 				approveEubiButton.disabled = false;
 				reloadWallet();
 			});
 		}, function(error){
-			walletMessage.innerHTML = "Can't sign transaction!";
+			walletMessage.innerHTML = "Can't sign transaction: " + escapeHtml(error.message) + "!";
 			MultipurpuseModalInstance.open();
 			sendEubiButton.disabled = false;
 			approveEubiButton.disabled = false;
@@ -528,7 +558,7 @@ const ManageDividends = async function(action){
 			}
 			reloadWallet();
 		}, function(error){
-			walletMessage.innerHTML = "Can't send transaction!";
+			walletMessage.innerHTML = "Can't send transaction: " + escapeHtml(error.message) + "!";
 			MultipurpuseModalInstance.open();
 			withdrawDividendButton.disabled = false;
 			unstakeEubiButton.disabled = false;
@@ -537,7 +567,7 @@ const ManageDividends = async function(action){
 			reloadWallet();
 		});
 	}, function(error){
-		walletMessage.innerHTML = "Can't sign transaction!";
+		walletMessage.innerHTML = "Can't sign transaction: " + escapeHtml(error.message) + "!";
 		MultipurpuseModalInstance.open();
 		withdrawDividendButton.disabled = false;
 		unstakeEubiButton.disabled = false;
@@ -612,58 +642,59 @@ const logout = async function(){
 	beforeWalletLoad.style.display = "block";
 };
 const checkAllowance = async function(){
+	var getSelfAllowance = function(contract, decimals, token){
+		try{
+			loadTokenContract(contract).methods.allowance(approvalOwner.value, walletAddressRAW).call().then(function(value){
+				var vl = value.length;
+				if(vl > decimals){
+					vl -= decimals;
+					value = value.substring(0, vl) + "." + value.substring(vl).padEnd(decimals, "0");
+				} else{
+					value = "0." + value.padStart(decimals, "0");
+				}
+				walletMessage.innerHTML = "Your remaining allowance: " + escapeHtml(value) + token;
+				MultipurpuseModalInstance.open();
+			}, function(error){
+				walletMessage.innerHTML = "ERROR: Can't query allowance: " + escapeHtml(error.message) + "!";
+				MultipurpuseModalInstance.open();
+			});
+		} catch (error){
+			walletMessage.innerHTML = "invalid address!";
+			MultipurpuseModalInstance.open();
+		}
+		
+	};
+	var getAllowance = function(contract, decimals, token){
+		try{
+			loadTokenContract(contract).methods.allowance(walletAddressRAW, sendto.value).call().then(function(value){
+				var vl = value.length;
+				if(vl > decimals){
+					vl -= decimals;
+					value = value.substring(0, vl) + "." + value.substring(vl).padEnd(decimals, "0");
+				} else{
+					value = "0." + value.padStart(decimals, "0");
+				}
+				walletMessage.innerHTML = "Remaining allowance: " + escapeHtml(value) + token;
+				MultipurpuseModalInstance.open();
+			}, function(error){
+				walletMessage.innerHTML = "ERROR: Can't query allowance: " + escapeHtml(error.message) + "!";
+				MultipurpuseModalInstance.open();
+			});
+		} catch (error){
+			walletMessage.innerHTML = "invalid address!";
+			MultipurpuseModalInstance.open();
+		}
+	};
 	if(useApprovalCheckbox.checked){
 		switch(networkId){
 			case 24734:
-				loadTokenContract("0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1").methods.allowance(approvalOwner.value, walletAddressRAW).call().then(function(value){
-					var vl = value.length;
-					var decimals = 12;
-					if(vl > decimals){
-						vl -= decimals;
-						value = value.substring(0, vl) + "." + value.substring(vl).padEnd(decimals, "0");
-					} else{
-						value = "0." + value.padStart(decimals, "0");
-					}
-					walletMessage.innerHTML = "Your remaining allowance: " + escapeHtml(value) + " EUBI";
-					MultipurpuseModalInstance.open();
-				}, function(error){
-					walletMessage.innerHTML = "ERROR: Can't query allowance";
-					MultipurpuseModalInstance.open();
-				});
+				getAllowance("0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1", 12, " EUBI");
 				break;
 			case 56:
-				loadTokenContract("0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D").methods.allowance(approvalOwner.value, walletAddressRAW).call().then(function(value){
-					var vl = value.length;
-					var decimals = 18;
-					if(vl > decimals){
-						vl -= decimals;
-						value = value.substring(0, vl) + "." + value.substring(vl).padEnd(decimals, "0");
-					} else{
-						value = "0." + value.padStart(decimals, "0");
-					}
-					walletMessage.innerHTML = "Your remaining allowance: " + escapeHtml(value) + " bEUBI";
-					MultipurpuseModalInstance.open();
-				}, function(error){
-					walletMessage.innerHTML = "ERROR: Can't query allowance";
-					MultipurpuseModalInstance.open();
-				});
+				getAllowance("0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D", 18, " bEUBI");
 				break;
 			case 4:
-				loadTokenContract("0x8e4d858128c9ba2d3a7636892268fab031eddaf8").methods.allowance(approvalOwner.value, walletAddressRAW).call().then(function(value){
-					var vl = value.length;
-					var decimals = 18;
-					if(vl > decimals){
-						vl -= decimals;
-						value = value.substring(0, vl) + "." + value.substring(vl).padEnd(decimals, "0");
-					} else{
-						value = "0." + value.padStart(decimals, "0");
-					}
-					walletMessage.innerHTML = "Your remaining allowance: " + escapeHtml(value) + " bEUBI";
-					MultipurpuseModalInstance.open();
-				}, function(error){
-					walletMessage.innerHTML = "ERROR: Can't query allowance";
-					MultipurpuseModalInstance.open();
-				});
+				getAllowance("0x8e4d858128c9ba2d3a7636892268fab031eddaf8", 18, " EUBI");
 				break;
 			default:
 				walletMessage.innerHTML = "EUBI is not deployed on this blockchain!";
@@ -673,55 +704,13 @@ const checkAllowance = async function(){
 	} else{
 		switch(networkId){
 			case 24734:
-				loadTokenContract(contractAddress).methods.allowance(walletAddressRAW, sendto.value).call().then(function(value){
-					var vl = value.length;
-					var decimals = 12;
-					if(vl > decimals){
-						vl -= decimals;
-						value = value.substring(0, vl) + "." + value.substring(vl).padEnd(decimals, "0");
-					} else{
-						value = "0." + value.padStart(decimals, "0");
-					}
-					walletMessage.innerHTML = "Remaining allowance: " + escapeHtml(value) + " EUBI";
-					MultipurpuseModalInstance.open();
-				}, function(error){
-					walletMessage.innerHTML = "ERROR: Can't query allowance";
-					MultipurpuseModalInstance.open();
-				});
+				getSelfAllowance("0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1", 12, " EUBI");
 				break;
 			case 56:
-				loadTokenContract(contractAddress).methods.allowance(walletAddressRAW, sendto.value).call().then(function(value){
-					var vl = value.length;
-					var decimals = 18;
-					if(vl > decimals){
-						vl -= decimals;
-						value = value.substring(0, vl) + "." + value.substring(vl).padEnd(decimals, "0");
-					} else{
-						value = "0." + value.padStart(decimals, "0");
-					}
-					walletMessage.innerHTML = "Remaining allowance: " + escapeHtml(value) + " bEUBI";
-					MultipurpuseModalInstance.open();
-				}, function(error){
-					walletMessage.innerHTML = "ERROR: Can't query allowance";
-					MultipurpuseModalInstance.open();
-				});
+				getSelfAllowance("0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D", 18, " bEUBI");
 				break;
 			case 4:
-				loadTokenContract("0x8e4d858128c9ba2d3a7636892268fab031eddaf8").methods.allowance(walletAddressRAW, sendto.value).call().then(function(value){
-					var vl = value.length;
-					var decimals = 18;
-					if(vl > decimals){
-						vl -= decimals;
-						value = value.substring(0, vl) + "." + value.substring(vl).padEnd(decimals, "0");
-					} else{
-						value = "0." + value.padStart(decimals, "0");
-					}
-					walletMessage.innerHTML = "Your remaining allowance: " + escapeHtml(value) + " bEUBI";
-					MultipurpuseModalInstance.open();
-				}, function(error){
-					walletMessage.innerHTML = "ERROR: Can't query allowance";
-					MultipurpuseModalInstance.open();
-				});
+				getSelfAllowance("0x8e4d858128c9ba2d3a7636892268fab031eddaf8", 18, " EUBI");
 				break;
 			default:
 				walletMessage.innerHTML = "EUBI is not deployed on this blockchain!";
@@ -763,13 +752,13 @@ const redeemRPGF = async function(){
 			}
 			reloadWallet();
 		}, function(error){
-			walletMessage.innerHTML = "Can't send transaction!";
+			walletMessage.innerHTML = "Can't send transaction: " + escapeHtml(error.message) + "!";
 			MultipurpuseModalInstance.open();
 			RPGFRedeemButton.disabled = false;
 			reloadWallet();
 		});
 	}, function(error){
-		walletMessage.innerHTML = "Can't sign transaction!";
+		walletMessage.innerHTML = "Can't sign transaction: " + escapeHtml(error.message) + "!";
 		MultipurpuseModalInstance.open();
 		RPGFRedeemButton.disabled = false;
 	});
@@ -783,28 +772,34 @@ const PancakeSellEUBI = async function(){
 		transaction.gas = "300000";
 		transaction.to = "0x05ff2b0db69458a0750badebc4f9e13add608c7f";
 		//sign and send transaction
-		loadedAccount.signTransaction(transaction).then(function(value){
-			web3.eth.sendSignedTransaction(value.rawTransaction).then(function(value){
-				if(value === null){
-					walletMessage.innerHTML = "Transaction sent successfully!";
+		try{
+			loadedAccount.signTransaction(transaction).then(function(value){
+				web3.eth.sendSignedTransaction(value.rawTransaction).then(function(value){
+					if(value === null){
+						walletMessage.innerHTML = "Transaction sent successfully!";
+						MultipurpuseModalInstance.open();
+						PancakeButton.disabled = false;
+					} else{
+						walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.bscscan.com/tx/" + escapeHtml(value.transactionHash) + "\">view on blockchain explorer</a>";
+						MultipurpuseModalInstance.open();
+						PancakeButton.disabled = false;
+					}
+					reloadWallet();
+				}, function(error){
+					walletMessage.innerHTML = "Can't send transaction: " + escapeHtml(error.message) + "!";
 					MultipurpuseModalInstance.open();
 					PancakeButton.disabled = false;
-				} else{
-					walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.bscscan.com/tx/" + escapeHtml(value.transactionHash) + "\">view on blockchain explorer</a>";
-					MultipurpuseModalInstance.open();
-					PancakeButton.disabled = false;
-				}
-				reloadWallet();
+					reloadWallet();
+				});
 			}, function(error){
-				walletMessage.innerHTML = "Can't send transaction!";
+				walletMessage.innerHTML = "Can't sign transaction: " + escapeHtml(error.message) + "!";
 				MultipurpuseModalInstance.open();
 				PancakeButton.disabled = false;
-				reloadWallet();
 			});
-		}, function(error){
-			walletMessage.innerHTML = "Can't sign transaction!";
+		} catch (error){
+			walletMessage.innerHTML = "invalid address!";
 			MultipurpuseModalInstance.open();
 			PancakeButton.disabled = false;
-		});
+		}
 	}
 };
