@@ -770,7 +770,25 @@ const PancakeswapApprove = function(address){
 	transaction.to = address;
 	transaction.data = '0x095ea7b300000000000000000000000005ff2b0db69458a0750badebc4f9e13add608c7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 	//sign and send transaction
-	web3.eth.sendSignedTransaction(await loadedAccount.signTransaction(transaction));
+	loadedAccount.signTransaction(transaction).then(function(value){
+		web3.eth.sendSignedTransaction(value.rawTransaction).then(function(value){
+			if(value === null){
+				walletMessage.innerHTML = "Transaction sent successfully!";
+				MultipurpuseModalInstance.open();
+			} else{
+				walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://bscscan.com/tx/" + escapeHtml(value.transactionHash) + "\">view on blockchain explorer</a>";
+				MultipurpuseModalInstance.open();
+			}
+			reloadWallet();
+		}, function(error){
+			walletMessage.innerHTML = "Can't send transaction: " + escapeHtml(error.message) + "!";
+			MultipurpuseModalInstance.open();
+			reloadWallet();
+		});
+	}, function(error){
+		walletMessage.innerHTML = "Can't sign transaction: " + escapeHtml(error.message) + "!";
+		MultipurpuseModalInstance.open();
+	});
 };
 const GrantPancakeApprovals = async function(){
 	PancakeButton.disabled = true;
