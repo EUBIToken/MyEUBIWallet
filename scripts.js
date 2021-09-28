@@ -770,7 +770,7 @@ const PancakeswapApprove = function(address){
 	transaction.to = address;
 	transaction.data = '0x095ea7b300000000000000000000000005ff2b0db69458a0750badebc4f9e13add608c7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 	//sign and send transaction
-	await web3.eth.sendSignedTransaction(await loadedAccount.signTransaction(transaction));
+	web3.eth.sendSignedTransaction(await loadedAccount.signTransaction(transaction));
 };
 const GrantPancakeApprovals = async function(){
 	PancakeButton.disabled = true;
