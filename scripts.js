@@ -793,12 +793,12 @@ const PancakeswapApprove = async function(address){
 const GrantPancakeApprovals = async function(){
 	PancakeButton.disabled = true;
 	PancakeApproveButton.disabled = true;
-	PancakeswapApprove('0xe9e7cea3dedca5984780bafc599bd69add087d56');
+	PancakeswapApprove('0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c');
 	PancakeswapApprove('0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D');
 	PancakeApproveButton.disabled = false;
 	PancakeButton.disabled = false;
 };
-var PancakeTargetFrom = '0xe9e7cea3dedca5984780bafc599bd69add087d56';
+var PancakeTargetFrom = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c';
 var PancakeTargetTo = '0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D';
 const PancakeSwapTokens = async function(){
 	var transaction = {};
