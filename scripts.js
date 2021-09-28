@@ -805,7 +805,7 @@ const PancakeSwapTokens = async function(){
 	var pa = convDecimalToRaw(PancakeAmount.value, 18);
 	if(pa != "invalid"){
 		PancakeButton.disabled = true;
-		transaction.data = PancakeRouter.methods.swapExactTokensForTokens(pa, 0, [PancakeTargetFrom, PancakeTargetTo], walletAddressRAW, "115792089237316195423570985008687907853269984665640564039457584007913129639935");
+		transaction.data = PancakeRouter.methods.swapExactTokensForTokens(pa, 0, [PancakeTargetFrom, PancakeTargetTo], walletAddressRAW, "115792089237316195423570985008687907853269984665640564039457584007913129639935").encodeABI();
 		transaction.gas = "300000";
 		transaction.to = "0x05ff2b0db69458a0750badebc4f9e13add608c7f";
 		//sign and send transaction
