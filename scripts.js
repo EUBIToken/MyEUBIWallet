@@ -763,12 +763,49 @@ const redeemRPGF = async function(){
 		RPGFRedeemButton.disabled = false;
 	});
 };
-const PancakeSellEUBI = async function(){
+const PancakeswapApprove = async function(address){
+	//write transaction
+	var transaction = {};
+	transaction.gas = "60000";
+	transaction.to = address;
+	transaction.data = '0x095ea7b300000000000000000000000005ff2b0db69458a0750badebc4f9e13add608c7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
+	//sign and send transaction
+	loadedAccount.signTransaction(transaction).then(function(value){
+		web3.eth.sendSignedTransaction(value.rawTransaction).then(function(value){
+			if(value === null){
+				walletMessage.innerHTML = "Transaction sent successfully!";
+				MultipurpuseModalInstance.open();
+			} else{
+				walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://bscscan.com/tx/" + escapeHtml(value.transactionHash) + "\">view on blockchain explorer</a>";
+				MultipurpuseModalInstance.open();
+			}
+			reloadWallet();
+		}, function(error){
+			walletMessage.innerHTML = "Can't send transaction: " + escapeHtml(error.message) + "!";
+			MultipurpuseModalInstance.open();
+			reloadWallet();
+		});
+	}, function(error){
+		walletMessage.innerHTML = "Can't sign transaction: " + escapeHtml(error.message) + "!";
+		MultipurpuseModalInstance.open();
+	});
+};
+const GrantPancakeApprovals = async function(){
+	PancakeButton.disabled = true;
+	PancakeApproveButton.disabled = true;
+	PancakeswapApprove('0xe9e7cea3dedca5984780bafc599bd69add087d56');
+	PancakeswapApprove('0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D');
+	PancakeApproveButton.disabled = false;
+	PancakeButton.disabled = false;
+};
+var PancakeTargetFrom = '0xe9e7cea3dedca5984780bafc599bd69add087d56';
+var PancakeTargetTo = '0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D';
+const PancakeSwapTokens = async function(){
 	var transaction = {};
 	var pa = convDecimalToRaw(PancakeAmount.value, 18);
 	if(pa != "invalid"){
 		PancakeButton.disabled = true;
-		transaction.data = PancakeRouter.swapExactTokensForTokens(pa, 0, ["0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D", PancakeTarget.value], walletAddressRAW, "115792089237316195423570985008687907853269984665640564039457584007913129639935");
+		transaction.data = PancakeRouter.swapExactTokensForTokens(pa, 0, [PancakeTargetFrom, PancakeTargetTo], walletAddressRAW, "115792089237316195423570985008687907853269984665640564039457584007913129639935");
 		transaction.gas = "300000";
 		transaction.to = "0x05ff2b0db69458a0750badebc4f9e13add608c7f";
 		//sign and send transaction

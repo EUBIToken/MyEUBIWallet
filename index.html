@@ -264,18 +264,28 @@
 						<strong class="flow-text">PancakeSwap</strong>
 					</div>
 					<div class="collapsible-body row">
-						<strong>Please approve 0x05ff2b0db69458a0750badebc4f9e13add608c7f to spend your bEUBI tokens in order to use PancakeSwap</strong><br/>
+						<strong>MyEUBIWallet PancakeSwap Integration is still EXTREMELY EXPIREMENTAL! use at your own risk.</strong><br/>
 						<div class="input-field col s12">
 							<i class="material-icons prefix">attach_money</i>
 							<input id="PancakeAmount" type="text"/>
 							<label for="PancakeAmount">Amount</label>
 						</div>
-						<div class="input-field col s12">
-							<i class="material-icons prefix">vpn_key</i>
-							<input id="PancakeTarget" type="text"/>
-							<label for="PancakeTarget">Target token address</label>
-						</div>
-						<button class="waves-effect waves-light btn col s12 m12 l6" onclick='PancakeModalInstance.open();' id="PancakeButton"><i class="material-icons left">attach_money</i>Sell bEUBI Tokens</button>
+						<form>
+							<p>
+								<label>
+									<input name="group1" type="radio" checked onclick="PancakeTargetFrom = '0xe9e7cea3dedca5984780bafc599bd69add087d56';PancakeTargetTo = '0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D';"/>
+									<span style="color: black;">BUSD => bEUBI</span></span>
+								</label>
+							</p>
+							<p>
+								<label>
+									<input name="group1" type="radio" onclick="PancakeTargetFrom = '0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D';PancakeTargetTo = '0xe9e7cea3dedca5984780bafc599bd69add087d56';"/>
+									<span style="color: black;">bEUBI => BUSD</span></span>
+								</label>
+							</p>
+						</form>
+						<button class="waves-effect waves-light btn col s12 m12 l6" onclick='PancakeModalInstance.open();' id="PancakeButton"><i class="material-icons left">attach_money</i>Trade</button>
+						<button class="waves-effect waves-light btn col s12 m12 l6" onclick='GrantPancakeApprovals();' id="PancakeApproveButton"><i class="material-icons left">check</i>Grant approvals</button>
 					</div>
 				</li>
 				<li>
@@ -374,7 +384,7 @@
 		</div>
 		<div id="PancakeModal" class="modal">
 			<div class="modal-content">
-				<strong class="flow-text">Are you sure you want to sell EUBI via PancakeSwap?</strong>
+				<strong class="flow-text">Are you sure you want to swap tokens via PancakeSwap?</strong>
 			</div>
 			<div class="modal-footer">
 				<a href="#!" class="modal-close waves-effect waves-light btn-flat green" onclick="PancakeSellEUBI();">Yes</a>
