@@ -810,11 +810,10 @@ const PancakeSwapTokens = async function(){
 		} else{
 			var swapmeth;
 			if(PancakeTargetTo == '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'){
-				swapmeth = PancakeRouter.methods.swapExactTokensForETH;
+				transaction.data = PancakeRouter.methods.swapExactTokensForETH(pa, 0, [PancakeTargetFrom, PancakeTargetTo], walletAddressRAW, "115792089237316195423570985008687907853269984665640564039457584007913129639935").encodeABI();
 			} else{
-				swapmeth = PancakeRouter.methods.swapExactTokensForTokens;
+				transaction.data = PancakeRouter.methods.swapExactTokensForTokens(pa, 0, [PancakeTargetFrom, PancakeTargetTo], walletAddressRAW, "115792089237316195423570985008687907853269984665640564039457584007913129639935").encodeABI();
 			}
-			transaction.data = swapmeth(pa, 0, [PancakeTargetFrom, PancakeTargetTo], walletAddressRAW, "115792089237316195423570985008687907853269984665640564039457584007913129639935").encodeABI();
 		}
 		
 		transaction.gas = "300000";
