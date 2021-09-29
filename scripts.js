@@ -5,7 +5,7 @@ var loadedAccount = null;
 const BigInt = web3.utils.BN;
 const rawUnitsToken = new BigInt("1000000000000");
 const MintMEReceiverPaidGasFees = new web3.eth.Contract(JSON.parse('[{"inputs": [{"internalType": "uint256","name": "random","type": "uint256"},{"internalType": "address","name": "token","type": "address"},{"internalType": "address","name": "from","type": "address"},{"internalType": "address","name": "to","type": "address"},{"internalType": "uint256","name": "value","type": "uint256"},{"internalType": "uint256","name": "expiry","type": "uint256"},{"internalType": "uint8","name": "v","type": "uint8"},{"internalType": "bytes32","name": "r","type": "bytes32"},{"internalType": "bytes32","name": "s","type": "bytes32"}],"name": "sendPreauthorizedTransaction","outputs": [],"stateMutability": "nonpayable","type": "function"}]'), "0x1d81563e53a18136957ea28f441e06ac7b66de1b");
-const PancakeRouter = new web3.eth.Contract(JSON.parse('[{"inputs": [{"internalType": "uint256","name": "amountIn","type": "uint256"},{"internalType": "uint256","name": "amountOutMin","type": "uint256"},{"internalType": "address[]","name": "path","type": "address[]"},{"internalType": "address","name": "to","type": "address"},{"internalType": "uint256","name": "deadline","type": "uint256"}],"name": "swapExactTokensForTokens","outputs": [{"internalType": "uint256[]","name": "amounts","type": "uint256[]"}],"stateMutability": "nonpayable","type": "function"}]', "0x05ff2b0db69458a0750badebc4f9e13add608c7f"));
+const PancakeRouter = new web3.eth.Contract(JSON.parse('[{"inputs": [{"internalType": "uint256","name": "amountOutMin","type": "uint256"},{"internalType": "address[]","name": "path","type": "address[]"},{"internalType": "address","name": "to","type": "address"},{"internalType": "uint256","name": "deadline","type": "uint256"}],"name": "swapExactETHForTokens","outputs": [{"internalType": "uint256[]","name": "amounts","type": "uint256[]"}],"stateMutability": "payable","type": "function"},{"inputs": [{"internalType": "uint256","name": "amountIn","type": "uint256"},{"internalType": "uint256","name": "amountOutMin","type": "uint256"},{"internalType": "address[]","name": "path","type": "address[]"},{"internalType": "address","name": "to","type": "address"},{"internalType": "uint256","name": "deadline","type": "uint256"}],"name": "swapExactTokensForETH","outputs": [{"internalType": "uint256[]","name": "amounts","type": "uint256[]"}],"stateMutability": "nonpayable","type": "function"},{"inputs": [{"internalType": "uint256","name": "amountIn","type": "uint256"},{"internalType": "uint256","name": "amountOutMin","type": "uint256"},{"internalType": "address[]","name": "path","type": "address[]"},{"internalType": "address","name": "to","type": "address"},{"internalType": "uint256","name": "deadline","type": "uint256"}],"name": "swapExactTokensForTokens","outputs": [{"internalType": "uint256[]","name": "amounts","type": "uint256[]"}],"stateMutability": "nonpayable","type": "function"}]', "0x05ff2b0db69458a0750badebc4f9e13add608c7f"));
 var walletAddressRAW = "0x0000000000000000000000000000000000000000";
 var contractAddress = "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1";
 var privateKeyRAW = "";
@@ -793,7 +793,6 @@ const PancakeswapApprove = function(address){
 const GrantPancakeApprovals = async function(){
 	PancakeButton.disabled = true;
 	PancakeApproveButton.disabled = true;
-	PancakeswapApprove('0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c');
 	PancakeswapApprove('0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D');
 	PancakeApproveButton.disabled = false;
 	PancakeButton.disabled = false;
@@ -805,7 +804,19 @@ const PancakeSwapTokens = async function(){
 	var pa = convDecimalToRaw(PancakeAmount.value, 18);
 	if(pa != "invalid"){
 		PancakeButton.disabled = true;
-		transaction.data = PancakeRouter.methods.swapExactTokensForTokens(pa, 0, [PancakeTargetFrom, PancakeTargetTo], walletAddressRAW, "115792089237316195423570985008687907853269984665640564039457584007913129639935").encodeABI();
+		if(PancakeTargetFrom == '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'){
+			transaction.value = pa;
+			transaction.data = PancakeRouter.methods.swapExactETHForTokens(0, [PancakeTargetFrom, PancakeTargetTo], walletAddressRAW, "115792089237316195423570985008687907853269984665640564039457584007913129639935").encodeABI();
+		} else{
+			var swapmeth;
+			if(PancakeTargetTo == '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'){
+				swapmeth = PancakeRouter.methods.swapExactTokensForETH;
+			} else{
+				swapmeth = PancakeRouter.methods.swapExactTokensForTokens;
+			}
+			transaction.data = swapmeth(pa, 0, [PancakeTargetFrom, PancakeTargetTo], walletAddressRAW, "115792089237316195423570985008687907853269984665640564039457584007913129639935").encodeABI();
+		}
+		
 		transaction.gas = "300000";
 		transaction.to = "0x05ff2b0db69458a0750badebc4f9e13add608c7f";
 		//sign and send transaction
