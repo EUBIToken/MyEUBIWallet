@@ -317,18 +317,14 @@ const convDecimalToRaw = function(value, decimals){
 			value = [value[0], "0"];
 		}
 		if(value.length == 2 && decimals >= value[1].length){
-			console.log("t2");
 			var bigpart1 = new BigInt(value[0]);
 			if(bigpart1.toString() == value[0]){
-				console.log("t2");
 				var bigpartREV = "1".padEnd(decimals + 1, "0");
 				var bigpart2 = new BigInt(bigpartREV);
 				if(bigpart2.toString() == bigpartREV){
-					console.log("t2");
 					bigpartREV = value[1].padEnd(decimals, "0");
 					var bigpart3 = new BigInt(bigpartREV);
 					if(bigpart3.toString().padStart(decimals, "0") == bigpartREV){
-						console.log("t2");
 						ret = bigpart1.mul(bigpart2).add(bigpart3).toString();
 					}
 				}
