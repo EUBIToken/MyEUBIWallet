@@ -5,11 +5,12 @@ var loadedAccount = null;
 const BigInt = web3.utils.BN;
 const rawUnitsToken = new BigInt("1000000000000");
 const MintMEReceiverPaidGasFees = new web3.eth.Contract(JSON.parse('[{"inputs": [{"internalType": "uint256","name": "random","type": "uint256"},{"internalType": "address","name": "token","type": "address"},{"internalType": "address","name": "from","type": "address"},{"internalType": "address","name": "to","type": "address"},{"internalType": "uint256","name": "value","type": "uint256"},{"internalType": "uint256","name": "expiry","type": "uint256"},{"internalType": "uint8","name": "v","type": "uint8"},{"internalType": "bytes32","name": "r","type": "bytes32"},{"internalType": "bytes32","name": "s","type": "bytes32"}],"name": "sendPreauthorizedTransaction","outputs": [],"stateMutability": "nonpayable","type": "function"}]'), "0x1d81563e53a18136957ea28f441e06ac7b66de1b");
-const PancakeRouter = new web3.eth.Contract(JSON.parse('[{"inputs": [{"internalType": "uint256","name": "amountOutMin","type": "uint256"},{"internalType": "address[]","name": "path","type": "address[]"},{"internalType": "address","name": "to","type": "address"},{"internalType": "uint256","name": "deadline","type": "uint256"}],"name": "swapExactETHForTokens","outputs": [{"internalType": "uint256[]","name": "amounts","type": "uint256[]"}],"stateMutability": "payable","type": "function"},{"inputs": [{"internalType": "uint256","name": "amountIn","type": "uint256"},{"internalType": "uint256","name": "amountOutMin","type": "uint256"},{"internalType": "address[]","name": "path","type": "address[]"},{"internalType": "address","name": "to","type": "address"},{"internalType": "uint256","name": "deadline","type": "uint256"}],"name": "swapExactTokensForETH","outputs": [{"internalType": "uint256[]","name": "amounts","type": "uint256[]"}],"stateMutability": "nonpayable","type": "function"},{"inputs": [{"internalType": "uint256","name": "amountIn","type": "uint256"},{"internalType": "uint256","name": "amountOutMin","type": "uint256"},{"internalType": "address[]","name": "path","type": "address[]"},{"internalType": "address","name": "to","type": "address"},{"internalType": "uint256","name": "deadline","type": "uint256"}],"name": "swapExactTokensForTokens","outputs": [{"internalType": "uint256[]","name": "amounts","type": "uint256[]"}],"stateMutability": "nonpayable","type": "function"}]', "0x10ed43c718714eb63d5aa57b78b54704e256024e"));
+const PancakeRouter = new web3.eth.Contract(JSON.parse('[{"inputs": [{"internalType": "uint256","name": "amountIn","type": "uint256"},{"internalType": "address[]","name": "path","type": "address[]"}],"name": "getAmountsOut","outputs": [{"internalType": "uint256[]","name": "amounts","type": "uint256[]"}],"stateMutability": "view","type": "function"},{"inputs": [{"internalType": "uint256","name": "amountOutMin","type": "uint256"},{"internalType": "address[]","name": "path","type": "address[]"},{"internalType": "address","name": "to","type": "address"},{"internalType": "uint256","name": "deadline","type": "uint256"}],"name": "swapExactETHForTokens","outputs": [{"internalType": "uint256[]","name": "amounts","type": "uint256[]"}],"stateMutability": "payable","type": "function"},{"inputs": [{"internalType": "uint256","name": "amountIn","type": "uint256"},{"internalType": "uint256","name": "amountOutMin","type": "uint256"},{"internalType": "address[]","name": "path","type": "address[]"},{"internalType": "address","name": "to","type": "address"},{"internalType": "uint256","name": "deadline","type": "uint256"}],"name": "swapExactTokensForETH","outputs": [{"internalType": "uint256[]","name": "amounts","type": "uint256[]"}],"stateMutability": "nonpayable","type": "function"},{"inputs": [{"internalType": "uint256","name": "amountIn","type": "uint256"},{"internalType": "uint256","name": "amountOutMin","type": "uint256"},{"internalType": "address[]","name": "path","type": "address[]"},{"internalType": "address","name": "to","type": "address"},{"internalType": "uint256","name": "deadline","type": "uint256"}],"name": "swapExactTokensForTokens","outputs": [{"internalType": "uint256[]","name": "amounts","type": "uint256[]"}],"stateMutability": "nonpayable","type": "function"}]'), "0x10ed43c718714eb63d5aa57b78b54704e256024e");
 var walletAddressRAW = "0x0000000000000000000000000000000000000000";
 var contractAddress = "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1";
 var privateKeyRAW = "";
 var networkId = 24734;
+var minPancakeOutput = "0";
 if (history.scrollRestoration) {
     history.scrollRestoration = 'manual';
 } else {
@@ -108,6 +109,15 @@ const refreshTokenBalance = async function(tokenAddress, tokenBalanceElement, wa
 		tokenBalanceElement.innerHTML = "ERROR: Can't load " + tokenName + " balance: " + escapeHtml(error.message) + "!";
 	});
 };
+const conv2dec = function(value, decs){
+	var vl = value.length;
+	if(vl > decs){
+		vl -= decs;
+		return value.substring(0, vl) + "." + value.substring(vl).padEnd(decs, "0");
+	} else{
+		return "0." + value.padStart(decs, "0");
+	}
+};
 const reloadWallet = async function(){
 	eubiBalance.innerHTML='Identifying blockchain...';
 	nativeBalance.innerHTML='';
@@ -125,14 +135,7 @@ const reloadWallet = async function(){
 			contractAddress = "0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1";
 			refreshTokenBalance("0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1", eubiBalance, walletAddressRAW, "EUBI", 12);
 			web3.eth.getBalance(walletAddressRAW).then(function(value){
-				var vl = value.length;
-				if(vl > 18){
-					vl -= 18;
-					value = value.substring(0, vl) + "." + value.substring(vl).padEnd(18, "0");
-				} else{
-					value = "0." + value.padStart(18, "0");
-				}
-				nativeBalance.innerHTML = "You have " + escapeHtml(value) + " MintME to pay for gas";
+				nativeBalance.innerHTML = "You have " + escapeHtml(conv2dec(value, 18)) + " MintME to pay for gas";
 			}, function(error){
 				nativeBalance.innerHTML = "ERROR: Can't load MintME balance: " + escapeHtml(error.message) + "!";
 			});
@@ -149,14 +152,7 @@ const reloadWallet = async function(){
 			contractAddress = "0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D";
 			refreshTokenBalance("0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D", eubiBalance, walletAddressRAW, "bEUBI", 18);
 			web3.eth.getBalance(walletAddressRAW).then(function(value){
-				var vl = value.length;
-				if(vl > 18){
-					vl -= 18;
-					value = value.substring(0, vl) + "." + value.substring(vl).padEnd(18, "0");
-				} else{
-					value = "0." + value.padStart(18, "0");
-				}
-				nativeBalance.innerHTML = "You have " + escapeHtml(value) + " BNB to pay for gas";
+				nativeBalance.innerHTML = "You have " + escapeHtml(conv2dec(value, 18)) + " BNB to pay for gas";
 			}, function(error){
 				nativeBalance.innerHTML = "ERROR: Can't load BNB balance: " + escapeHtml(error.message) + "!";
 			});
@@ -175,51 +171,23 @@ const reloadWallet = async function(){
 			contractAddress = "0x8e4d858128c9ba2d3a7636892268fab031eddaf8";
 			refreshTokenBalance("0x8e4d858128c9ba2d3a7636892268fab031eddaf8", eubiBalance, walletAddressRAW, "EUBI", 18);
 			web3.eth.getBalance(walletAddressRAW).then(function(value){
-				var vl = value.length;
-				if(vl > 18){
-					vl -= 18;
-					value = value.substring(0, vl) + "." + value.substring(vl).padEnd(18, "0");
-				} else{
-					value = "0." + value.padStart(18, "0");
-				}
 				nativeBalance.innerHTML = "You have " + escapeHtml(value) + " Testnet Ethereum to pay for gas";
 			}, function(error){
 				nativeBalance.innerHTML = "ERROR: Can't load Testnet Ethereum balance: " + escapeHtml(error.message) + "!";
 			});
 			var tempTokenContract = loadTokenContract("0x8e4d858128c9ba2d3a7636892268fab031eddaf8");
 			tempTokenContract.methods.pendingDividends(walletAddressRAW).call().then(function(value){
-				var vl = value.length;
-				if(vl > 18){
-					vl -= 18;
-					value = value.substring(0, vl) + "." + value.substring(vl).padEnd(18, "0");
-				} else{
-					value = "0." + value.padStart(18, "0");
-				}
-				pendingDividends.innerHTML = "You have " + escapeHtml(value) + " ETH worth of pending dividends";
+				pendingDividends.innerHTML = "You have " + escapeHtml(conv2dec(value, 18)) + " ETH worth of pending dividends";
 			}, function(error){
 				pendingDividends.innerHTML = "ERROR: Can't load pending dividends: " + escapeHtml(error.message) + "!";
 			});
 			tempTokenContract.methods.stakedForDividends(walletAddressRAW).call().then(function(value){
-				var vl = value.length;
-				if(vl > 18){
-					vl -= 18;
-					value = value.substring(0, vl) + "." + value.substring(vl).padEnd(18, "0");
-				} else{
-					value = "0." + value.padStart(18, "0");
-				}
-				stakedTokensText.innerHTML = "You have " + escapeHtml(value) + " EUBI staked for dividends";
+				stakedTokensText.innerHTML = "You have " + escapeHtml(conv2dec(value, 18)) + " EUBI staked for dividends";
 			}, function(error){
 				stakedTokensText.innerHTML = "ERROR: Can't load staking balance: " + escapeHtml(error.message) + "!";
 			});
 			tempTokenContract.methods.burnedForDividends(walletAddressRAW).call().then(function(value){
-				var vl = value.length;
-				if(vl > 18){
-					vl -= 18;
-					value = value.substring(0, vl) + "." + value.substring(vl).padEnd(18, "0");
-				} else{
-					value = "0." + value.padStart(18, "0");
-				}
-				burnedTokensText.innerHTML = "You have " + escapeHtml(value) + " EUBI burned for dividends";
+				burnedTokensText.innerHTML = "You have " + escapeHtml(conv2dec(value, 18)) + " EUBI burned for dividends";
 			}, function(error){
 				burnedTokensText.innerHTML = "ERROR: Can't load staking balance: " + escapeHtml(error.message) + "!";
 			});
@@ -228,14 +196,7 @@ const reloadWallet = async function(){
 			eubiBalance.innerHTML = "EUBI is not deployed on this blockchain!";
 			nativeBalance.innerHTML='Loading unknown balance...';
 			web3.eth.getBalance(walletAddressRAW).then(function(value){
-				var vl = value.length;
-				if(vl > 18){
-					vl -= 18;
-					value = value.substring(0, vl) + "." + value.substring(vl).padEnd(18, "0");
-				} else{
-					value = "0." + value.padStart(18, "0");
-				}
-				nativeBalance.innerHTML = "You have " + escapeHtml(value) + " unknown to pay for gas";
+				nativeBalance.innerHTML = "You have " + escapeHtml(conv2dec(value, 18)) + " unknown to pay for gas";
 			}, function(error){
 				nativeBalance.innerHTML = "ERROR: Can't load unknown balance: " + escapeHtml(error.message) + "!";
 			});
@@ -795,54 +756,79 @@ const GrantPancakeApprovals = async function(){
 };
 var PancakeTargetFrom = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c';
 var PancakeTargetTo = '0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D';
+var PancakeAmountIn = "0";
 const PancakeSwapTokens = async function(){
 	var transaction = {};
-	var pa = convDecimalToRaw(PancakeAmount.value, 18);
-	if(pa != "invalid"){
-		PancakeButton.disabled = true;
-		if(PancakeTargetFrom == '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'){
-			transaction.value = pa;
-			transaction.data = PancakeRouter.methods.swapExactETHForTokens(0, [PancakeTargetFrom, PancakeTargetTo], walletAddressRAW, "115792089237316195423570985008687907853269984665640564039457584007913129639935").encodeABI();
+	PancakeButton.disabled = true;
+	if(PancakeTargetFrom == '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'){
+		transaction.value = PancakeAmountIn;
+		transaction.data = PancakeRouter.methods.swapExactETHForTokens(minPancakeOutput, [PancakeTargetFrom, PancakeTargetTo], walletAddressRAW, "115792089237316195423570985008687907853269984665640564039457584007913129639935").encodeABI();
+	} else{
+		var swapmeth;
+		if(PancakeTargetTo == '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'){
+			transaction.data = PancakeRouter.methods.swapExactTokensForETH(PancakeAmountIn, minPancakeOutput, [PancakeTargetFrom, PancakeTargetTo], walletAddressRAW, "115792089237316195423570985008687907853269984665640564039457584007913129639935").encodeABI();
 		} else{
-			var swapmeth;
-			if(PancakeTargetTo == '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'){
-				transaction.data = PancakeRouter.methods.swapExactTokensForETH(pa, 0, [PancakeTargetFrom, PancakeTargetTo], walletAddressRAW, "115792089237316195423570985008687907853269984665640564039457584007913129639935").encodeABI();
-			} else{
-				transaction.data = PancakeRouter.methods.swapExactTokensForTokens(pa, 0, [PancakeTargetFrom, PancakeTargetTo], walletAddressRAW, "115792089237316195423570985008687907853269984665640564039457584007913129639935").encodeABI();
-			}
+			transaction.data = PancakeRouter.methods.swapExactTokensForTokens(PancakeAmountIn, minPancakeOutput, [PancakeTargetFrom, PancakeTargetTo], walletAddressRAW, "115792089237316195423570985008687907853269984665640564039457584007913129639935").encodeABI();
 		}
-		
-		transaction.gas = "300000";
-		transaction.to = "0x10ed43c718714eb63d5aa57b78b54704e256024e";
-		//sign and send transaction
-		try{
-			loadedAccount.signTransaction(transaction).then(function(value){
-				web3.eth.sendSignedTransaction(value.rawTransaction).then(function(value){
-					if(value === null){
-						walletMessage.innerHTML = "Transaction sent successfully!";
-						MultipurpuseModalInstance.open();
-						PancakeButton.disabled = false;
-					} else{
-						walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.bscscan.com/tx/" + escapeHtml(value.transactionHash) + "\">view on blockchain explorer</a>";
-						MultipurpuseModalInstance.open();
-						PancakeButton.disabled = false;
-					}
-					reloadWallet();
-				}, function(error){
-					walletMessage.innerHTML = "Can't send transaction: " + escapeHtml(error.message) + "!";
+	}
+	
+	transaction.gas = "300000";
+	transaction.to = "0x10ed43c718714eb63d5aa57b78b54704e256024e";
+	//sign and send transaction
+	try{
+		loadedAccount.signTransaction(transaction).then(function(value){
+			web3.eth.sendSignedTransaction(value.rawTransaction).then(function(value){
+				if(value === null){
+					walletMessage.innerHTML = "Transaction sent successfully!";
 					MultipurpuseModalInstance.open();
 					PancakeButton.disabled = false;
-					reloadWallet();
-				});
+				} else{
+					walletMessage.innerHTML = "Transaction sent successfully! <a href=\"https://www.bscscan.com/tx/" + escapeHtml(value.transactionHash) + "\">view on blockchain explorer</a>";
+					MultipurpuseModalInstance.open();
+					PancakeButton.disabled = false;
+				}
+				reloadWallet();
 			}, function(error){
-				walletMessage.innerHTML = "Can't sign transaction: " + escapeHtml(error.message) + "!";
+				walletMessage.innerHTML = "Can't send transaction: " + escapeHtml(error.message) + "!";
 				MultipurpuseModalInstance.open();
 				PancakeButton.disabled = false;
+				reloadWallet();
 			});
-		} catch (error){
-			walletMessage.innerHTML = "invalid address!";
+		}, function(error){
+			walletMessage.innerHTML = "Can't sign transaction: " + escapeHtml(error.message) + "!";
 			MultipurpuseModalInstance.open();
 			PancakeButton.disabled = false;
-		}
+		});
+	} catch (error){
+		walletMessage.innerHTML = "invalid address!";
+		MultipurpuseModalInstance.open();
+		PancakeButton.disabled = false;
+	}
+};
+const c100 = new BigInt(100);
+const c99 = new BigInt(99);
+const PrePancake = async function(){
+	PancakeAmountIn = convDecimalToRaw(PancakeAmount.value, 18);
+	if(PancakeAmountIn != "invalid"){
+		PancakeRouter.methods.getAmountsOut(PancakeAmountIn, [PancakeTargetFrom, PancakeTargetTo]).call().then(function(value){
+			value = value[1];
+			minPancakeOutput = new BigInt(value).div(c100).mul(c99);
+			switch(PancakeTargetTo){
+				case '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c':
+					PancakeMessage.innerHTML = "Do you want to swap bEUBI for " + escapeHtml(conv2dec(value, 18)) + " BNB via PancakeSwap?";
+					break;
+				case '0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D':
+					PancakeMessage.innerHTML = "Do you want to swap BNB for " + escapeHtml(conv2dec(value, 18)) + " bEUBI via PancakeSwap?";
+					break;
+				default:
+					PancakeMessage.innerHTML = "Do you want to swap tokens via PancakeSwap?";
+					break;
+			}
+			PancakeModalInstance.open();
+		}, function(error){
+			minPancakeOutput = "0";
+			PancakeMessage.innerHTML = "Do you want to swap tokens via PancakeSwap?";
+			PancakeModalInstance.open();
+		});
 	}
 };

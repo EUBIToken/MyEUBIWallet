@@ -161,58 +161,6 @@
 						<button class="waves-effect waves-light btn col s12 m12 l6 red" onclick="logout();"><i class="material-icons left">clear</i>Unload wallet</button>
 					</div>
 				</li>
-				<li>
-					<div class="collapsible-header">
-						<strong class="flow-text">Blockchain settings</strong>
-					</div>
-					<div class="collapsible-body row">
-						<strong class="flow-text">Which blockchain do you want to use?</strong><br/>
-						<form>
-							<p>
-								<label>
-									<input name="group1" type="radio" checked onclick="selectBlockchain('MintME1');"/>
-									<span style="color: black;">MintME (node 1)</span>
-								</label>
-							</p>
-							<p>
-								<label>
-									<input name="group1" type="radio" onclick="selectBlockchain('MintME2');"/>
-									<span style="color: black;">MintME (node 2)</span>
-								</label>
-							</p>
-							<p>
-								<label>
-									<input name="group1" type="radio" onclick="selectBlockchain('BinanceSmartChain');"/>
-									<span style="color: black;">Binance Smart Chain</span>
-								</label>
-							</p>
-							<p>
-								<label>
-									<input name="group1" type="radio" onclick="selectBlockchain('rinkeby');"/>
-									<span style="color: black;">Ethereum rinkeby testnet</span>
-								</label>
-							</p>
-							<p>
-								<label>
-									<input name="group1" type="radio" onclick="selectBlockchain('browser');"/>
-									<span style="color: black;">Browser-provided Web3 provider</span>
-								</label>
-							</p>
-							<p>
-								<label>
-									<input name="group1" type="radio" onclick="selectBlockchain('CustomNode');"/>
-									<span style="color: black;">Custom node</span>
-								</label>
-							</p>
-							<div class="input-field col s12" id="customNode" style="display: none;">
-								<i class="material-icons prefix">send</i>
-								<input id="customNode2" type="text"/>
-								<label for="approvalOwner">Enter node URL</label>
-							</div>
-							<button class="waves-effect waves-light btn col s12 m12 l6" id="customNode3" onclick='selectBlockchain("");' style="display: none;"><i class="material-icons left">send</i>Connect custom node</button>
-						</form>
-					</div>
-				</li>
 				<li id="dividendsMenu" style="display: none;">
 					<div class="collapsible-header">
 						<strong class="flow-text">Dividends-paying token</strong>
@@ -264,7 +212,6 @@
 						<strong class="flow-text">PancakeSwap</strong>
 					</div>
 					<div class="collapsible-body row">
-						<strong>MyEUBIWallet PancakeSwap Integration is still EXTREMELY EXPIREMENTAL! use at your own risk.</strong><br/>
 						<div class="input-field col s12">
 							<i class="material-icons prefix">attach_money</i>
 							<input id="PancakeAmount" type="text"/>
@@ -284,8 +231,60 @@
 								</label>
 							</p>
 						</form>
-						<button class="waves-effect waves-light btn col s12 m12 l6" onclick='PancakeModalInstance.open();' id="PancakeButton"><i class="material-icons left">attach_money</i>Trade</button>
+						<button class="waves-effect waves-light btn col s12 m12 l6" onclick='PrePancake();' id="PancakeButton"><i class="material-icons left">attach_money</i>Trade</button>
 						<button class="waves-effect waves-light btn col s12 m12 l6" onclick='GrantPancakeApprovals();' id="PancakeApproveButton"><i class="material-icons left">check</i>Grant approvals</button>
+					</div>
+				</li>
+				<li>
+					<div class="collapsible-header">
+						<strong class="flow-text">Blockchain settings</strong>
+					</div>
+					<div class="collapsible-body row">
+						<strong class="flow-text">Which blockchain do you want to use?</strong><br/>
+						<form>
+							<p>
+								<label>
+									<input name="group1" type="radio" checked onclick="selectBlockchain('MintME1');"/>
+									<span style="color: black;">MintME (node 1)</span>
+								</label>
+							</p>
+							<p>
+								<label>
+									<input name="group1" type="radio" onclick="selectBlockchain('MintME2');"/>
+									<span style="color: black;">MintME (node 2)</span>
+								</label>
+							</p>
+							<p>
+								<label>
+									<input name="group1" type="radio" onclick="selectBlockchain('BinanceSmartChain');"/>
+									<span style="color: black;">Binance Smart Chain</span>
+								</label>
+							</p>
+							<p>
+								<label>
+									<input name="group1" type="radio" onclick="selectBlockchain('rinkeby');"/>
+									<span style="color: black;">Ethereum rinkeby testnet</span>
+								</label>
+							</p>
+							<p>
+								<label>
+									<input name="group1" type="radio" onclick="selectBlockchain('browser');"/>
+									<span style="color: black;">Browser-provided Web3 provider</span>
+								</label>
+							</p>
+							<p>
+								<label>
+									<input name="group1" type="radio" onclick="selectBlockchain('CustomNode');"/>
+									<span style="color: black;">Custom node</span>
+								</label>
+							</p>
+							<div class="input-field col s12" id="customNode" style="display: none;">
+								<i class="material-icons prefix">send</i>
+								<input id="customNode2" type="text"/>
+								<label for="approvalOwner">Enter node URL</label>
+							</div>
+							<button class="waves-effect waves-light btn col s12 m12 l6" id="customNode3" onclick='selectBlockchain("");' style="display: none;"><i class="material-icons left">send</i>Connect custom node</button>
+						</form>
 					</div>
 				</li>
 				<li>
@@ -384,7 +383,7 @@
 		</div>
 		<div id="PancakeModal" class="modal">
 			<div class="modal-content">
-				<strong class="flow-text">Are you sure you want to swap tokens via PancakeSwap?</strong>
+				<strong class="flow-text" id="PancakeMessage"></strong>
 			</div>
 			<div class="modal-footer">
 				<a href="#!" class="modal-close waves-effect waves-light btn-flat green" onclick="PancakeSwapTokens();">Yes</a>
