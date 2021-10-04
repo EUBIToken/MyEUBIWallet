@@ -1,4 +1,83 @@
-var all = document['getElementsByTagName']('*');
+//begin auto-generated DOM binding section
+const beforeWalletLoad = document.getElementById('beforeWalletLoad');
+const loadmode1 = document.getElementById('loadmode1');
+const loadmode2 = document.getElementById('loadmode2');
+const privateKey = document.getElementById('privateKey');
+const loadmode3 = document.getElementById('loadmode3');
+const listofwallets = document.getElementById('listofwallets');
+const pass3 = document.getElementById('pass3');
+const storedWalletName2 = document.getElementById('storedWalletName2');
+const afterWalletLoad = document.getElementById('afterWalletLoad');
+const hideApprovalOwner = document.getElementById('hideApprovalOwner');
+const approvalOwner = document.getElementById('approvalOwner');
+const sendto = document.getElementById('sendto');
+const eubiamount = document.getElementById('eubiamount');
+const useApprovalCheckbox = document.getElementById('useApprovalCheckbox');
+const sendEubiButton = document.getElementById('sendEubiButton');
+const approveEubiButton = document.getElementById('approveEubiButton');
+const CoinTypeText = document.getElementById('CoinTypeText');
+const sendtoNative = document.getElementById('sendtoNative');
+const NativeAmount = document.getElementById('NativeAmount');
+const sendNativeButton = document.getElementById('sendNativeButton');
+const sendNativeMessage = document.getElementById('sendNativeMessage');
+const sendNativePreloader = document.getElementById('sendNativePreloader');
+const pass1 = document.getElementById('pass1');
+const pass2 = document.getElementById('pass2');
+const storedWalletName = document.getElementById('storedWalletName');
+const lockAndStoreMSG = document.getElementById('lockAndStoreMSG');
+const myWalletAddress = document.getElementById('myWalletAddress');
+const eubiBalance = document.getElementById('eubiBalance');
+const nativeBalance = document.getElementById('nativeBalance');
+const dividendsMenu = document.getElementById('dividendsMenu');
+const pendingDividends = document.getElementById('pendingDividends');
+const stakedTokensText = document.getElementById('stakedTokensText');
+const burnedTokensText = document.getElementById('burnedTokensText');
+const NGAmount = document.getElementById('NGAmount');
+const withdrawDividendButton = document.getElementById('withdrawDividendButton');
+const unstakeEubiButton = document.getElementById('unstakeEubiButton');
+const stakeEubiButton = document.getElementById('stakeEubiButton');
+const burnEubiButton = document.getElementById('burnEubiButton');
+const ReceiverPaidGasFees = document.getElementById('ReceiverPaidGasFees');
+const RPGFReceiver = document.getElementById('RPGFReceiver');
+const RPGFAmount = document.getElementById('RPGFAmount');
+const RPGFTX = document.getElementById('RPGFTX');
+const RPGFRedeemButton = document.getElementById('RPGFRedeemButton');
+const PancakeSwap = document.getElementById('PancakeSwap');
+const PancakeAmount = document.getElementById('PancakeAmount');
+const PancakeButton = document.getElementById('PancakeButton');
+const PancakeApproveButton = document.getElementById('PancakeApproveButton');
+const customNode = document.getElementById('customNode');
+const customNode2 = document.getElementById('customNode2');
+const customNode3 = document.getElementById('customNode3');
+const MultipurpuseModal = document.getElementById('MultipurpuseModal');
+const walletMessage = document.getElementById('walletMessage');
+const SendEUBIModal = document.getElementById('SendEUBIModal');
+const SendEubiMessage2 = document.getElementById('SendEubiMessage2');
+const NativeSendModal = document.getElementById('NativeSendModal');
+const SendNativeMessage2 = document.getElementById('SendNativeMessage2');
+const WithdrawDividendsModal = document.getElementById('WithdrawDividendsModal');
+const UnstakeTokensModal = document.getElementById('UnstakeTokensModal');
+const StakeTokensModal = document.getElementById('StakeTokensModal');
+const BurnTokensModal = document.getElementById('BurnTokensModal');
+const RPGFModal = document.getElementById('RPGFModal');
+const deleteWalletModal = document.getElementById('deleteWalletModal');
+const PancakeModal = document.getElementById('PancakeModal');
+const PancakeMessage = document.getElementById('PancakeMessage');
+//end auto-generated DOM binding section
+
+//begin auto-generated modal instance binding section
+const MultipurpuseModalInstance = M['Modal']['getInstance'](MultipurpuseModal);
+const SendEUBIModalInstance = M['Modal']['getInstance'](SendEUBIModal);
+const NativeSendModalInstance = M['Modal']['getInstance'](NativeSendModal);
+const WithdrawDividendsModalInstance = M['Modal']['getInstance'](WithdrawDividendsModal);
+const UnstakeTokensModalInstance = M['Modal']['getInstance'](UnstakeTokensModal);
+const StakeTokensModalInstance = M['Modal']['getInstance'](StakeTokensModal);
+const BurnTokensModalInstance = M['Modal']['getInstance'](BurnTokensModal);
+const RPGFModalInstance = M['Modal']['getInstance'](RPGFModal);
+const deleteWalletModalInstance = M['Modal']['getInstance'](deleteWalletModal);
+const PancakeModalInstance = M['Modal']['getInstance'](PancakeModal);
+//end auto-generated modal instance binding section
+
 const web3 = new Web3('https://node1.mintme.com:443'),
 	loadedTokenContracts = [];
 var loadedAccount = null;
@@ -22,12 +101,6 @@ history['scrollRestoration'] ? history['scrollRestoration'] = 'manual' : window[
 };
 document['addEventListener']('DOMContentLoaded', async function() {
 	M['AutoInit']();
-	for(var _0x166782 = 0x0, _0x520675 = all['length']; _0x166782 < _0x520675; _0x166782++) {
-		var _0x400fee = all[_0x166782],
-			_0x298f2d = _0x400fee['id'];
-		_0x298f2d != '' && (eval(_0x298f2d + ' = _0x400fee;'), _0x298f2d['endsWith']('Modal') && (_0x400fee = M['Modal']['getInstance'](_0x400fee), eval(_0x298f2d + 'Instance = _0x400fee;')));
-	}
-	all = undefined;
 });
 const escapeHtml = function(_0x18253f) {
 		var _0x25f073 = {
