@@ -25,7 +25,7 @@ document['addEventListener']('DOMContentLoaded', async function() {
 	for(var _0x166782 = 0x0, _0x520675 = all['length']; _0x166782 < _0x520675; _0x166782++) {
 		var _0x400fee = all[_0x166782],
 			_0x298f2d = _0x400fee['id'];
-		_0x298f2d != '' && (eval(_0x298f2d + ' = currentElement;'), _0x298f2d['endsWith']('Modal') && (_0x400fee = M['Modal']['getInstance'](_0x400fee), eval(_0x298f2d + 'Instance = currentElement;')));
+		_0x298f2d != '' && (eval(_0x298f2d + ' = _0x400fee;'), _0x298f2d['endsWith']('Modal') && (_0x400fee = M['Modal']['getInstance'](_0x400fee), eval(_0x298f2d + 'Instance = _0x400fee;')));
 	}
 	all = undefined;
 });
