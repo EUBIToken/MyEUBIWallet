@@ -66,6 +66,7 @@ const PancakeMessage = document.getElementById('PancakeMessage');
 //end auto-generated DOM binding section
 
 //begin auto-generated modal instance binding section
+M['AutoInit']();
 const MultipurpuseModalInstance = M['Modal']['getInstance'](MultipurpuseModal);
 const SendEUBIModalInstance = M['Modal']['getInstance'](SendEUBIModal);
 const NativeSendModalInstance = M['Modal']['getInstance'](NativeSendModal);
@@ -77,7 +78,6 @@ const RPGFModalInstance = M['Modal']['getInstance'](RPGFModal);
 const deleteWalletModalInstance = M['Modal']['getInstance'](deleteWalletModal);
 const PancakeModalInstance = M['Modal']['getInstance'](PancakeModal);
 //end auto-generated modal instance binding section
-
 const web3 = new Web3('https://node1.mintme.com:443'),
 	loadedTokenContracts = [];
 var loadedAccount = null;
@@ -99,9 +99,6 @@ var walletAddressRAW = '0x0000000000000000000000000000000000000000',
 history['scrollRestoration'] ? history['scrollRestoration'] = 'manual' : window['onbeforeunload'] = function() {
 	window['scrollTo'](0x0, 0x0);
 };
-document['addEventListener']('DOMContentLoaded', async function() {
-	M['AutoInit']();
-});
 const escapeHtml = function(_0x18253f) {
 		var _0x25f073 = {
 			'&': '&amp;',
