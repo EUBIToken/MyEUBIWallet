@@ -23,15 +23,10 @@
 			<div class="row">
 				<div class="col s12">
 					<ul class="tabs row tabs-fixed-width">
-						<li class="tab"><a href="#loadmode1">Create wallet</a></li>
-						<li class="tab"><a href="#loadmode2">Private key</a></li>
+						<li class="tab"><a href="#loadmode2">External Wallet</a></li>
 						<li class="tab"><a class="active" href="#loadmode3">Browser storage</a></li>
 					</ul>
 				</div>
-			</div>
-			<div id="loadmode1" class="col s12 row">
-				<strong class="flow-text">Remember to backup your wallet after creation!</strong><br/>
-				<button class="waves-effect waves-light btn col s12 m12 l6" onclick="createWallet();"><i class="material-icons left">account_balance</i>Create Wallet</button>
 			</div>
 			<div id="loadmode2" class="col s12 row">
 				<div class="input-field col s12">
@@ -39,8 +34,10 @@
 					<input id="privateKey" type="text"/>
 					<label for="privateKey">Private key</label>
 					<div class="col s12"></div>
-					<button class="waves-effect waves-light btn col s12 m12 l6" onclick="loadWallet();"><i class="material-icons left">account_balance</i>Load Wallet</button>
 				</div>
+				<button class="waves-effect waves-light btn col s12 m12 l6" onclick="loadWallet();"><i class="material-icons left">account_balance</i>Load Wallet from key</button>
+				<button class="waves-effect waves-light btn col s12 m12 l6" onclick="loadWalletUsingMetaMask();"><i class="material-icons left">account_balance</i>Load Wallet using MetaMask</button>
+				<button class="waves-effect waves-light btn col s12 m12 l6" onclick="createWallet();"><i class="material-icons left">add</i>Create Wallet</button>
 			</div>
 			<div id="loadmode3" class="col s12 row">
 				<form id="listofwallets">
@@ -157,7 +154,7 @@
 						<strong class="flow-text" id="nativeBalance">Fetching MintME balance...</strong><br/>
 						<strong>You need approximately 0.00006 MintME or 0.00019 BNB to pay for gas costs for an EUBI transfer.</strong><br/>
 						<button class="waves-effect waves-light btn col s12 m12 l6" onclick="reloadWallet();"><i class="material-icons left">refresh</i>Reload wallet</button>
-						<button class="waves-effect waves-light btn col s12 m12 l6" onclick="navigator.clipboard.writeText(privateKeyRAW)"><i class="material-icons left">content_copy</i>Copy private key</button>
+						<button class="waves-effect waves-light btn col s12 m12 l6" id="epkb" onclick="navigator.clipboard.writeText(loadedAccount.privateKey);"><i class="material-icons left">content_copy</i>Copy private key</button>
 						<button class="waves-effect waves-light btn col s12 m12 l6 red" onclick="logout();"><i class="material-icons left">clear</i>Unload wallet</button>
 					</div>
 				</li>
@@ -235,7 +232,7 @@
 						<button class="waves-effect waves-light btn col s12 m12 l6" onclick='GrantPancakeApprovals();' id="PancakeApproveButton"><i class="material-icons left">check</i>Grant approvals</button>
 					</div>
 				</li>
-				<li>
+				<li id="BlockchainSettings">
 					<div class="collapsible-header">
 						<strong class="flow-text">Blockchain settings</strong>
 					</div>

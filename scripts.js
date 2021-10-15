@@ -3,6 +3,7 @@ M['AutoInit']();
 const beforeWalletLoad = document['getElementById']('beforeWalletLoad'),
 	loadmode1 = document['getElementById']('loadmode1'),
 	loadmode2 = document['getElementById']('loadmode2'),
+	epkb = document['getElementById']('epkb'),
 	privateKey = document['getElementById']('privateKey'),
 	loadmode3 = document['getElementById']('loadmode3'),
 	listofwallets = document['getElementById']('listofwallets'),
@@ -65,6 +66,7 @@ const beforeWalletLoad = document['getElementById']('beforeWalletLoad'),
 	PancakeModal = document['getElementById']('PancakeModal'),
 	PancakeMessage = document['getElementById']('PancakeMessage'),
 	buyEUBIButton = document['getElementById']('buyEUBIButton'),
+	BlockchainSettings = document['getElementById']('BlockchainSettings'),
 	AsyncFunction = Object['getPrototypeOf'](async function() {})['constructor'],
 	web3 = new Web3('https://node1.mintme.com:443'),
 	loadedTokenContracts = [],
@@ -84,10 +86,8 @@ const beforeWalletLoad = document['getElementById']('beforeWalletLoad'),
 	RPGFModalInstance = M['Modal']['getInstance'](RPGFModal),
 	deleteWalletModalInstance = M['Modal']['getInstance'](deleteWalletModal),
 	PancakeModalInstance = M['Modal']['getInstance'](PancakeModal);
-var walletAddressRAW = '0x0000000000000000000000000000000000000000',
-	loadedAccount = null,
+var loadedAccount = null,
 	contractAddress = '0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1',
-	privateKeyRAW = '',
 	networkId = 0x609e,
 	minPancakeOutput = '0',
 	PancakeTargetFrom = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
@@ -126,7 +126,7 @@ const flushWalletStorage = async function() {
 }, loadTokenContractIMPL = function(_0x435a95) {
 	return new web3['eth']['Contract'](JSON['parse']('[{\"constant\": false,\"inputs\": [{\"name\": \"spender\",\"type\": \"address\"},{\"name\": \"value\",\"type\": \"uint256\"}],\"name\": \"approve\",\"outputs\": [{\"name\": \"\",\"type\": \"bool\"}],\"payable\": false,\"stateMutability\": \"nonpayable\",\"type\": \"function\"},{\"constant\": false,\"inputs\": [{\"name\": \"from\",\"type\": \"address\"},{\"name\": \"to\",\"type\": \"address\"},{\"name\": \"value\",\"type\": \"uint256\"}],\"name\": \"transferFrom\",\"outputs\": [{\"name\": \"\",\"type\": \"bool\"}],\"payable\": false,\"stateMutability\": \"nonpayable\",\"type\": \"function\"},{\"constant\": true,\"inputs\": [{\"name\": \"owner\",\"type\": \"address\"}],\"name\": \"stakedForDividends\",\"outputs\": [{\"name\": \"\",\"type\": \"uint256\"}],\"payable\": false,\"stateMutability\": \"view\",\"type\": \"function\"},{\"constant\": false,\"inputs\": [{\"name\": \"target\",\"type\": \"address\"},{\"name\": \"amount\",\"type\": \"uint256\"}],\"name\": \"burnForDividends\",\"outputs\": [],\"payable\": false,\"stateMutability\": \"nonpayable\",\"type\": \"function\"},{\"constant\": true,\"inputs\": [{\"name\": \"who\",\"type\": \"address\"}],\"name\": \"balanceOf\",\"outputs\": [{\"name\": \"\",\"type\": \"uint256\"}],\"payable\": false,\"stateMutability\": \"view\",\"type\": \"function\"},{\"constant\": false,\"inputs\": [{\"name\": \"addr\",\"type\": \"address\"},{\"name\": \"amount\",\"type\": \"uint256\"},{\"name\": \"data\",\"type\": \"bytes\"}],\"name\": \"withdrawDividendsTo\",\"outputs\": [],\"payable\": false,\"stateMutability\": \"nonpayable\",\"type\": \"function\"},{\"constant\": false,\"inputs\": [{\"name\": \"to\",\"type\": \"address\"},{\"name\": \"value\",\"type\": \"uint256\"}],\"name\": \"transfer\",\"outputs\": [{\"name\": \"\",\"type\": \"bool\"}],\"payable\": false,\"stateMutability\": \"nonpayable\",\"type\": \"function\"},{\"constant\": false,\"inputs\": [{\"name\": \"target\",\"type\": \"address\"},{\"name\": \"amount\",\"type\": \"uint256\"}],\"name\": \"stakeForDividends\",\"outputs\": [],\"payable\": false,\"stateMutability\": \"nonpayable\",\"type\": \"function\"},{\"constant\": false,\"inputs\": [{\"name\": \"to\",\"type\": \"address\"},{\"name\": \"amount\",\"type\": \"uint256\"}],\"name\": \"unstake\",\"outputs\": [],\"payable\": false,\"stateMutability\": \"nonpayable\",\"type\": \"function\"},{\"constant\": true,\"inputs\": [{\"name\": \"addr\",\"type\": \"address\"}],\"name\": \"pendingDividends\",\"outputs\": [{\"name\": \"\",\"type\": \"uint256\"}],\"payable\": false,\"stateMutability\": \"view\",\"type\": \"function\"},{\"constant\": true,\"inputs\": [{\"name\": \"owner\",\"type\": \"address\"},{\"name\": \"spender\",\"type\": \"address\"}],\"name\": \"allowance\",\"outputs\": [{\"name\": \"\",\"type\": \"uint256\"}],\"payable\": false,\"stateMutability\": \"view\",\"type\": \"function\"},{\"constant\": true,\"inputs\": [{\"name\": \"owner\",\"type\": \"address\"}],\"name\": \"burnedForDividends\",\"outputs\": [{\"name\": \"\",\"type\": \"uint256\"}],\"payable\": false,\"stateMutability\": \"view\",\"type\": \"function\"}]'), _0x435a95);
 }, createWallet = async function() {
-	loadedAccount = web3['eth']['accounts']['create'](), walletMessage['innerHTML'] = 'Your wallet was successfully created, thank you for using MyEUBIWallet!', MultipurpuseModalInstance['open'](), walletAddressRAW = loadedAccount['address'], privateKeyRAW = loadedAccount['privateKey'], beforeWalletLoad['style']['display'] = 'none', myWalletAddress['innerHTML'] = 'Your wallet address is: ' + escapeHtml(walletAddressRAW), afterWalletLoad['style']['display'] = 'block', reloadWallet();
+	loadedAccount = web3['eth']['accounts']['create'](), walletMessage['innerHTML'] = 'Your wallet was successfully created, please backup your private key after wallet creation!', MultipurpuseModalInstance['open'](), loadedAccount.address = loadedAccount['address'], beforeWalletLoad['style']['display'] = 'none', afterWalletLoad['style']['display'] = 'block', reloadWallet();
 }, loadTokenContract = function(_0x238b44) {
 	var _0x49c574;
 	return _0x49c574 = loadedTokenContracts[_0x238b44], _0x49c574 == undefined && (_0x49c574 = loadTokenContractIMPL(_0x238b44), loadedTokenContracts[_0x238b44] = _0x49c574), _0x49c574;
@@ -141,45 +141,53 @@ const flushWalletStorage = async function() {
 	var _0x4c2dca = _0x3966d9['length'];
 	return _0x4c2dca > _0x5245fd ? (_0x4c2dca -= _0x5245fd, _0x3966d9['substring'](0x0, _0x4c2dca) + '.' + _0x3966d9['substring'](_0x4c2dca)['padEnd'](_0x5245fd, '0')) : '0.' + _0x3966d9['padStart'](_0x5245fd, '0');
 }, reloadWallet = async function() {
+	if(loadedAccount.metamask){
+		BlockchainSettings.style.display = 'none';
+		epkb.style.display = 'none';
+	} else{
+		BlockchainSettings.style.display = 'list-item';
+		epkb.style.display = 'block';
+	}
+	myWalletAddress['innerHTML'] = 'Your wallet address is: ' + escapeHtml(loadedAccount.address);
 	eubiBalance['innerHTML'] = 'Identifying blockchain...', nativeBalance['innerHTML'] = '', networkId = await web3['eth']['getChainId']();
 	switch(networkId) {
 		case 0x609e:
-			CoinTypeText['innerHTML'] = 'Send MintME', SendNativeMessage2['innerHTML'] = 'Are you sure you want to send MintME?', SendEubiMessage2['innerHTML'] = 'Are you sure you want to send EUBI?', eubiBalance['innerHTML'] = 'Loading EUBI balance...', nativeBalance['innerHTML'] = 'Loading MintME balance...', contractAddress = '0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1', refreshTokenBalance('0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1', eubiBalance, walletAddressRAW, 'EUBI', 0xc), web3['eth']['getBalance'](walletAddressRAW)['then'](function(_0x2d57cb) {
+			CoinTypeText['innerHTML'] = 'Send MintME', SendNativeMessage2['innerHTML'] = 'Are you sure you want to send MintME?', SendEubiMessage2['innerHTML'] = 'Are you sure you want to send EUBI?', eubiBalance['innerHTML'] = 'Loading EUBI balance...', nativeBalance['innerHTML'] = 'Loading MintME balance...', contractAddress = '0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1', refreshTokenBalance('0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1', eubiBalance, loadedAccount.address, 'EUBI', 0xc), web3['eth']['getBalance'](loadedAccount.address)['then'](function(_0x2d57cb) {
 				nativeBalance['innerHTML'] = 'You have ' + escapeHtml(conv2dec(_0x2d57cb, 0x12)) + ' MintME to pay for gas';
 			}, function(_0x2b7454) {
 				nativeBalance['innerHTML'] = 'ERROR: Can\'t load MintME balance: ' + escapeHtml(_0x2b7454['message']) + '!';
 			});
 			break;
 		case 0x38:
-			CoinTypeText['innerHTML'] = 'Send BNB', SendNativeMessage2['innerHTML'] = 'Are you sure you want to send BNB?', SendEubiMessage2['innerHTML'] = 'Are you sure you want to send bEUBI?', eubiBalance['innerHTML'] = 'Loading bEUBI balance...', nativeBalance['innerHTML'] = 'Loading BNB balance...', contractAddress = '0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D', refreshTokenBalance('0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D', eubiBalance, walletAddressRAW, 'bEUBI', 0x12), web3['eth']['getBalance'](walletAddressRAW)['then'](function(_0x279cdd) {
+			CoinTypeText['innerHTML'] = 'Send BNB', SendNativeMessage2['innerHTML'] = 'Are you sure you want to send BNB?', SendEubiMessage2['innerHTML'] = 'Are you sure you want to send bEUBI?', eubiBalance['innerHTML'] = 'Loading bEUBI balance...', nativeBalance['innerHTML'] = 'Loading BNB balance...', contractAddress = '0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D', refreshTokenBalance('0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D', eubiBalance, loadedAccount.address, 'bEUBI', 0x12), web3['eth']['getBalance'](loadedAccount.address)['then'](function(_0x279cdd) {
 				nativeBalance['innerHTML'] = 'You have ' + escapeHtml(conv2dec(_0x279cdd, 0x12)) + ' BNB to pay for gas';
 			}, function(_0x3da997) {
 				nativeBalance['innerHTML'] = 'ERROR: Can\'t load BNB balance: ' + escapeHtml(_0x3da997['message']) + '!';
 			});
 			break;
 		case 0x4:
-			CoinTypeText['innerHTML'] = 'Send Testnet Ethereum', SendNativeMessage2['innerHTML'] = 'Are you sure you want to send Testnet Ethereum?', SendEubiMessage2['innerHTML'] = 'Are you sure you want to send EUBI?', stakedTokensText['innerHTML'] = 'Loading staked tokens...', eubiBalance['innerHTML'] = 'Loading EUBIng balance...', pendingDividends['innerHTML'] = 'Loading pending dividends...', nativeBalance['innerHTML'] = 'Loading Testnet Ethereum balance...', contractAddress = '0x8e4d858128c9ba2d3a7636892268fab031eddaf8', refreshTokenBalance('0x8e4d858128c9ba2d3a7636892268fab031eddaf8', eubiBalance, walletAddressRAW, 'EUBI', 0x12), web3['eth']['getBalance'](walletAddressRAW)['then'](function(_0x36a8db) {
+			CoinTypeText['innerHTML'] = 'Send Testnet Ethereum', SendNativeMessage2['innerHTML'] = 'Are you sure you want to send Testnet Ethereum?', SendEubiMessage2['innerHTML'] = 'Are you sure you want to send EUBI?', stakedTokensText['innerHTML'] = 'Loading staked tokens...', eubiBalance['innerHTML'] = 'Loading EUBIng balance...', pendingDividends['innerHTML'] = 'Loading pending dividends...', nativeBalance['innerHTML'] = 'Loading Testnet Ethereum balance...', contractAddress = '0x8e4d858128c9ba2d3a7636892268fab031eddaf8', refreshTokenBalance('0x8e4d858128c9ba2d3a7636892268fab031eddaf8', eubiBalance, loadedAccount.address, 'EUBI', 0x12), web3['eth']['getBalance'](loadedAccount.address)['then'](function(_0x36a8db) {
 				nativeBalance['innerHTML'] = 'You have ' + escapeHtml(_0x36a8db) + ' Testnet Ethereum to pay for gas';
 			}, function(_0x9739d7) {
 				nativeBalance['innerHTML'] = 'ERROR: Can\'t load Testnet Ethereum balance: ' + escapeHtml(_0x9739d7['message']) + '!';
 			});
 			var _0x498066 = loadTokenContract('0x8e4d858128c9ba2d3a7636892268fab031eddaf8');
-			_0x498066['methods']['pendingDividends'](walletAddressRAW)['call']()['then'](function(_0x2f292a) {
+			_0x498066['methods']['pendingDividends'](loadedAccount.address)['call']()['then'](function(_0x2f292a) {
 				pendingDividends['innerHTML'] = 'You have ' + escapeHtml(conv2dec(_0x2f292a, 0x12)) + ' ETH worth of pending dividends';
 			}, function(_0x517e26) {
 				pendingDividends['innerHTML'] = 'ERROR: Can\'t load pending dividends: ' + escapeHtml(_0x517e26['message']) + '!';
-			}), _0x498066['methods']['stakedForDividends'](walletAddressRAW)['call']()['then'](function(_0x2d381d) {
+			}), _0x498066['methods']['stakedForDividends'](loadedAccount.address)['call']()['then'](function(_0x2d381d) {
 				stakedTokensText['innerHTML'] = 'You have ' + escapeHtml(conv2dec(_0x2d381d, 0x12)) + ' EUBI staked for dividends';
 			}, function(_0x17e9ac) {
 				stakedTokensText['innerHTML'] = 'ERROR: Can\'t load staking balance: ' + escapeHtml(_0x17e9ac['message']) + '!';
-			}), _0x498066['methods']['burnedForDividends'](walletAddressRAW)['call']()['then'](function(_0x24d7a1) {
+			}), _0x498066['methods']['burnedForDividends'](loadedAccount.address)['call']()['then'](function(_0x24d7a1) {
 				burnedTokensText['innerHTML'] = 'You have ' + escapeHtml(conv2dec(_0x24d7a1, 0x12)) + ' EUBI burned for dividends';
 			}, function(_0x3c03b4) {
 				burnedTokensText['innerHTML'] = 'ERROR: Can\'t load staking balance: ' + escapeHtml(_0x3c03b4['message']) + '!';
 			});
 			break;
 		default:
-			eubiBalance['innerHTML'] = 'EUBI is not deployed on this blockchain!', nativeBalance['innerHTML'] = 'Loading unknown balance...', web3['eth']['getBalance'](walletAddressRAW)['then'](function(_0x2b0fbb) {
+			eubiBalance['innerHTML'] = 'EUBI is not deployed on this blockchain!', nativeBalance['innerHTML'] = 'Loading unknown balance...', web3['eth']['getBalance'](loadedAccount.address)['then'](function(_0x2b0fbb) {
 				nativeBalance['innerHTML'] = 'You have ' + escapeHtml(conv2dec(_0x2b0fbb, 0x12)) + ' unknown to pay for gas';
 			}, function(_0x1a86db) {
 				nativeBalance['innerHTML'] = 'ERROR: Can\'t load unknown balance: ' + escapeHtml(_0x1a86db['message']) + '!';
@@ -188,24 +196,24 @@ const flushWalletStorage = async function() {
 	}
 	ReceiverPaidGasFees['style']['display'] = networkId == 0x609e ? 'list-item' : 'none', PancakeSwap['style']['display'] = networkId == 0x38 ? 'list-item' : 'none', dividendsMenu['style']['display'] = networkId == 0x4 ? 'list-item' : 'none';
 }, loadWallet = async function() {
-	privateKeyRAW = privateKey['value'], loadedAccount = null;
-	if(privateKeyRAW['length'] == 0x42)
+	var privateKey2 = privateKey['value'], loadedAccount = null;
+	if(privateKey2['length'] == 0x42)
 		try {
-			loadedAccount = web3['eth']['accounts']['privateKeyToAccount'](privateKeyRAW);
+			loadedAccount = web3['eth']['accounts']['privateKeyToAccount'](privateKey2);
 		} catch (_0x5bb345) {
-			loadedAccount = null, privateKeyRAW = '';
+			loadedAccount = null, privateKey2 = '';
 		}
-	loadedAccount == null ? (walletMessage['innerHTML'] = 'Can\'t load wallet', MultipurpuseModalInstance['open']()) : (walletMessage['innerHTML'] = 'Your wallet was successfully loaded, thank you for using MyEUBIWallet!', MultipurpuseModalInstance['open'](), walletAddressRAW = loadedAccount['address'], beforeWalletLoad['style']['display'] = 'none', myWalletAddress['innerHTML'] = 'Your wallet address is: ' + escapeHtml(walletAddressRAW), afterWalletLoad['style']['display'] = 'block', reloadWallet());
+	loadedAccount == null ? (walletMessage['innerHTML'] = 'Can\'t load wallet', MultipurpuseModalInstance['open']()) : (walletMessage['innerHTML'] = 'Your wallet was successfully loaded, thank you for using MyEUBIWallet!', MultipurpuseModalInstance['open'](), loadedAccount.address = loadedAccount['address'], beforeWalletLoad['style']['display'] = 'none', afterWalletLoad['style']['display'] = 'block', reloadWallet());
 }, loadWallet2 = async function() {
 	if(selectedTargetWallet < 0x0)
 		walletMessage['innerHTML'] = 'Please select which wallet to load!', MultipurpuseModalInstance['open']();
 	else {
 		try {
-			loadedAccount = web3['eth']['accounts']['decrypt'](JSON['stringify'](allSavedWallets[selectedTargetWallet]), pass3['value']), privateKeyRAW = loadedAccount['privateKey'];
+			loadedAccount = web3['eth']['accounts']['decrypt'](JSON['stringify'](allSavedWallets[selectedTargetWallet]), pass3['value']);
 		} catch (_0xe1f177) {
 			loadedAccount = null;
 		}
-		loadedAccount == null ? (walletMessage['innerHTML'] = 'Can\'t load wallet!', MultipurpuseModalInstance['open']()) : (walletAddressRAW = loadedAccount['address'], beforeWalletLoad['style']['display'] = 'none', myWalletAddress['innerHTML'] = 'Your wallet address is: ' + escapeHtml(walletAddressRAW), afterWalletLoad['style']['display'] = 'block', walletMessage['innerHTML'] = 'Your wallet was successfully loaded, thank you for using MyEUBIWallet!', MultipurpuseModalInstance['open'](), reloadWallet());
+		loadedAccount == null ? (walletMessage['innerHTML'] = 'Can\'t load wallet!', MultipurpuseModalInstance['open']()) : (loadedAccount.address = loadedAccount['address'], beforeWalletLoad['style']['display'] = 'none', afterWalletLoad['style']['display'] = 'block', walletMessage['innerHTML'] = 'Your wallet was successfully loaded, thank you for using MyEUBIWallet!', MultipurpuseModalInstance['open'](), reloadWallet());
 	}
 }, deleteWallet = async function() {
 	allSavedWallets[selectedTargetWallet] = 'deleted wallet', flushWalletStorage();
@@ -240,29 +248,51 @@ const flushWalletStorage = async function() {
 	} catch (_0x388b8f) {}
 	return _0x21b23b == 'invalid' && (walletMessage['innerHTML'] = 'Invalid amount!', MultipurpuseModalInstance['open']()), _0x21b23b;
 }, SignAndSendFuckingTransaction = async function(transaction, enableButtons, networkId){
-	loadedAccount['signTransaction'](transaction)['then'](function(_0xecc11f) {
-		web3['eth']['sendSignedTransaction'](_0xecc11f['rawTransaction'])['then'](function(_0x353738) {
-			if(_0x353738 === null)
-				walletMessage['innerHTML'] = 'Transaction sent successfully!';
-			else
-				switch(networkId) {
-					case 0x609e:
-						walletMessage['innerHTML'] = 'Transaction sent successfully! <a href=\"https://www.mintme.com/explorer/tx/' + escapeHtml(_0x353738['transactionHash']) + '\">view on blockchain explorer</a>';
-						break;
-					case 0x38:
-						walletMessage['innerHTML'] = 'Transaction sent successfully! <a href=\"https://www.bscscan.com/tx/' + escapeHtml(_0x353738['transactionHash']) + '\">view on blockchain explorer</a>';
-						break;
-					case 0x4:
-						walletMessage['innerHTML'] = 'Transaction sent successfully! <a href=\"https://rinkeby.etherscan.io/tx/' + escapeHtml(_0x353738['transactionHash']) + '\">view on blockchain explorer</a>';
-						break;
-				}
-			enableButtons(), MultipurpuseModalInstance['open'](), reloadWallet();
-		}, function(_0x4eb6de) {
-			enableButtons(), walletMessage['innerHTML'] = 'Can\'t send transaction: ' + escapeHtml(_0x4eb6de['message']) + '!', MultipurpuseModalInstance['open'](), reloadWallet();
+	if(loadedAccount.metamask){
+		transaction.from = loadedAccount.address;
+		transaction.gas = transaction.gas.toString();
+		ethereum.request({
+			method: 'eth_sendTransaction',
+			params: [transaction],
+		}).then(function(value){
+			walletMessage['innerHTML'] = 'Transaction sent successfully!';
+			enableButtons();
+			MultipurpuseModalInstance.open();
+		}).catch(function(error){
+			if (error.code === 4001) {
+				walletMessage['innerHTML'] = 'MetaMask Transaction rejected!';
+			} else{
+				walletMessage['innerHTML'] = escapeHtml(error);
+			}
+			enableButtons();
+			MultipurpuseModalInstance.open();
 		});
-	}, function(_0x5d67c0) {
-		enableButtons(), walletMessage['innerHTML'] = 'Can\'t sign transaction: ' + escapeHtml(_0x5d67c0['message']) + '!', MultipurpuseModalInstance['open']();
-	});
+	} else{
+		loadedAccount['signTransaction'](transaction)['then'](function(_0xecc11f) {
+			web3['eth']['sendSignedTransaction'](_0xecc11f['rawTransaction'])['then'](function(_0x353738) {
+				if(_0x353738 === null)
+					walletMessage['innerHTML'] = 'Transaction sent successfully!';
+				else
+					switch(networkId) {
+						case 0x609e:
+							walletMessage['innerHTML'] = 'Transaction sent successfully! <a href=\"https://www.mintme.com/explorer/tx/' + escapeHtml(_0x353738['transactionHash']) + '\">view on blockchain explorer</a>';
+							break;
+						case 0x38:
+							walletMessage['innerHTML'] = 'Transaction sent successfully! <a href=\"https://www.bscscan.com/tx/' + escapeHtml(_0x353738['transactionHash']) + '\">view on blockchain explorer</a>';
+							break;
+						case 0x4:
+							walletMessage['innerHTML'] = 'Transaction sent successfully! <a href=\"https://rinkeby.etherscan.io/tx/' + escapeHtml(_0x353738['transactionHash']) + '\">view on blockchain explorer</a>';
+							break;
+					}
+				enableButtons(), MultipurpuseModalInstance['open'](), reloadWallet();
+			}, function(_0x4eb6de) {
+				enableButtons(), walletMessage['innerHTML'] = 'Can\'t send transaction: ' + escapeHtml(_0x4eb6de['message']) + '!', MultipurpuseModalInstance['open'](), reloadWallet();
+			});
+		}, function(_0x5d67c0) {
+			enableButtons(), walletMessage['innerHTML'] = 'Can\'t sign transaction: ' + escapeHtml(_0x5d67c0['message']) + '!', MultipurpuseModalInstance['open']();
+		});
+	}
+	
 }, NativeSend = async function() {
 	sendNativeButton['disabled'] = !![];
 	var _0x13f221 = {};
@@ -346,34 +376,33 @@ const flushWalletStorage = async function() {
 	}
 	switch(_0x10ea09) {
 		case 'withdraw':
-			_0x2315ac['data'] = loadedTokenContracts['0x8e4d858128c9ba2d3a7636892268fab031eddaf8']['methods']['withdrawDividendsTo'](walletAddressRAW, _0x599ef0, '0x00')['encodeABI']();
+			_0x2315ac['data'] = loadedTokenContracts['0x8e4d858128c9ba2d3a7636892268fab031eddaf8']['methods']['withdrawDividendsTo'](loadedAccount.address, _0x599ef0, '0x00')['encodeABI']();
 			break;
 		case 'unstake':
-			_0x2315ac['data'] = loadedTokenContracts['0x8e4d858128c9ba2d3a7636892268fab031eddaf8']['methods']['unstake'](walletAddressRAW, _0x599ef0)['encodeABI']();
+			_0x2315ac['data'] = loadedTokenContracts['0x8e4d858128c9ba2d3a7636892268fab031eddaf8']['methods']['unstake'](loadedAccount.address, _0x599ef0)['encodeABI']();
 			break;
 		case 'stake':
-			_0x2315ac['data'] = loadedTokenContracts['0x8e4d858128c9ba2d3a7636892268fab031eddaf8']['methods']['stakeForDividends'](walletAddressRAW, _0x599ef0)['encodeABI']();
+			_0x2315ac['data'] = loadedTokenContracts['0x8e4d858128c9ba2d3a7636892268fab031eddaf8']['methods']['stakeForDividends'](loadedAccount.address, _0x599ef0)['encodeABI']();
 			break;
 		case 'burn':
-			_0x2315ac['data'] = loadedTokenContracts['0x8e4d858128c9ba2d3a7636892268fab031eddaf8']['methods']['burnForDividends'](walletAddressRAW, _0x599ef0)['encodeABI']();
+			_0x2315ac['data'] = loadedTokenContracts['0x8e4d858128c9ba2d3a7636892268fab031eddaf8']['methods']['burnForDividends'](loadedAccount.address, _0x599ef0)['encodeABI']();
 			break;
 		default:
 			withdrawDividendButton['disabled'] = ![], unstakeEubiButton['disabled'] = ![], stakeEubiButton['disabled'] = ![], burnEubiButton['disabled'] = ![], walletMessage['innerHTML'] = 'Undefined action!', MultipurpuseModalInstance['open']();
 			break;
 	}
-	_0x2315ac['gas'] = '200000', _0x2315ac['to'] = '0x8e4d858128c9ba2d3a7636892268fab031eddaf8', loadedAccount['signTransaction'](_0x2315ac)['then'](function(_0x1bbb94) {
-		web3['eth']['sendSignedTransaction'](_0x1bbb94['rawTransaction'])['then'](function(_0xb66489) {
-			_0xb66489 === null ? (walletMessage['innerHTML'] = 'Transaction sent successfully!', MultipurpuseModalInstance['open'](), withdrawDividendButton['disabled'] = ![], unstakeEubiButton['disabled'] = ![], stakeEubiButton['disabled'] = ![], burnEubiButton['disabled'] = ![]) : (walletMessage['innerHTML'] = 'Transaction sent successfully! <a href=\"https://rinkeby.etherscan.io/tx/' + escapeHtml(_0xb66489['transactionHash']) + '\">view on blockchain explorer</a>', MultipurpuseModalInstance['open'](), withdrawDividendButton['disabled'] = ![], unstakeEubiButton['disabled'] = ![], stakeEubiButton['disabled'] = ![], burnEubiButton['disabled'] = ![]), reloadWallet();
-		}, function(_0x543863) {
-			walletMessage['innerHTML'] = 'Can\'t send transaction: ' + escapeHtml(_0x543863['message']) + '!', MultipurpuseModalInstance['open'](), withdrawDividendButton['disabled'] = ![], unstakeEubiButton['disabled'] = ![], stakeEubiButton['disabled'] = ![], burnEubiButton['disabled'] = ![], reloadWallet();
-		});
-	}, function(_0x3743b0) {
-		walletMessage['innerHTML'] = 'Can\'t sign transaction: ' + escapeHtml(_0x3743b0['message']) + '!', MultipurpuseModalInstance['open'](), withdrawDividendButton['disabled'] = ![], unstakeEubiButton['disabled'] = ![], stakeEubiButton['disabled'] = ![], burnEubiButton['disabled'] = ![];
-	});
+	_0x2315ac['gas'] = '200000';
+	_0x2315ac['to'] = '0x8e4d858128c9ba2d3a7636892268fab031eddaf8';
+	SignAndSendFuckingTransaction(_0x2315ac, function(){
+		withdrawDividendButton['disabled'] = ![];
+		unstakeEubiButton['disabled'] = ![];
+		stakeEubiButton['disabled'] = ![];
+		burnEubiButton['disabled'] = ![];
+	}, 0x4);
 }, encryptAndStore = async function() {
 	var _0x28750c = pass1['value'];
 	if(pass2['value'] == _0x28750c) {
-		var _0x2654da = web3['eth']['accounts']['encrypt'](privateKeyRAW, _0x28750c);
+		var _0x2654da = loadedAccount['encrypt'](_0x28750c);
 		_0x2654da['name'] = escapeHtml(storedWalletName['value']), allSavedWallets[allSavedWallets['length']] = _0x2654da, flushWalletStorage(), walletMessage['innerHTML'] = 'Wallet encrypted and stored!';
 	} else
 		walletMessage['innerHTML'] = 'The two passwords doesn\'t match!';
@@ -405,12 +434,12 @@ const flushWalletStorage = async function() {
 	}
 	_0x3a860d != undefined && (web3['eth']['getChainId'] = getChainId2, web3['setProvider'](_0x3a860d), web3['eth']['getChainId'] = new AsyncFunction('return ' + escapeHtml((await getChainId2())['toString']()) + ';'), reloadWallet());
 }, logout = async function() {
-	selectedTargetWallet = -0x1, loadedAccount = null, privateKeyRAW = '', walletAddressRAW = '0x0000000000000000000000000000000000000000', privateKey['value'] = '', pass3['value'] = '', walletMessage['innerHTML'] = 'Wallet unloaded!', afterWalletLoad['style']['display'] = 'none', beforeWalletLoad['style']['display'] = 'block';
+	selectedTargetWallet = -0x1, loadedAccount = null, privateKey['value'] = '', pass3['value'] = '', walletMessage['innerHTML'] = 'Wallet unloaded!', afterWalletLoad['style']['display'] = 'none', beforeWalletLoad['style']['display'] = 'block';
 }, checkAllowance = async function() {
 	var _0x17bb19 = function(_0x2dbaa6, _0x2427a7, _0x93678e, _0x4a29c6) {
 			try {
 				var _0x51d9be, _0x1911b4;
-				_0x4a29c6 == 'Your remaining allowance: ' ? (_0x51d9be = approvalOwner['value'], _0x1911b4 = walletAddressRAW) : (_0x51d9be = walletAddressRAW, _0x1911b4 = sendto['value']), loadTokenContract(_0x2dbaa6)['methods']['allowance'](_0x51d9be, _0x1911b4)['call']()['then'](function(_0x4b5447) {
+				_0x4a29c6 == 'Your remaining allowance: ' ? (_0x51d9be = approvalOwner['value'], _0x1911b4 = loadedAccount.address) : (_0x51d9be = loadedAccount.address, _0x1911b4 = sendto['value']), loadTokenContract(_0x2dbaa6)['methods']['allowance'](_0x51d9be, _0x1911b4)['call']()['then'](function(_0x4b5447) {
 					var _0x5557ae = _0x4b5447['length'];
 					_0x5557ae > _0x2427a7 ? (_0x5557ae -= _0x2427a7, _0x4b5447 = _0x4b5447['substring'](0x0, _0x5557ae) + '.' + _0x4b5447['substring'](_0x5557ae)['padEnd'](_0x2427a7, '0')) : _0x4b5447 = '0.' + _0x4b5447['padStart'](_0x2427a7, '0'), walletMessage['innerHTML'] = escapeHtml(_0x4a29c6 + _0x4b5447) + _0x93678e, MultipurpuseModalInstance['open']();
 				}, function(_0x10eb7c) {
@@ -438,38 +467,26 @@ const flushWalletStorage = async function() {
 		], [
 			_0x57e5dd,
 			'0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1',
-			walletAddressRAW,
+			loadedAccount.address,
 			_0x2a6f85,
 			_0x2a6f85,
 			_0x1e1ac9,
 			'115792089237316195423570985008687907853269984665640564039457584007913129639935'
 		]));
-		navigator['clipboard']['writeText'](MintMEReceiverPaidGasFees['methods']['sendPreauthorizedTransaction'](_0x57e5dd, '0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1', walletAddressRAW, _0x2a6f85, _0x1e1ac9, '115792089237316195423570985008687907853269984665640564039457584007913129639935', _0x5844c0['v'], _0x5844c0['r'], _0x5844c0['s'])['encodeABI']()), walletMessage['innerHTML'] = 'Preauthorized transaction copied to clipboard!', MultipurpuseModalInstance['open']();
+		navigator['clipboard']['writeText'](MintMEReceiverPaidGasFees['methods']['sendPreauthorizedTransaction'](_0x57e5dd, '0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1', loadedAccount.address, _0x2a6f85, _0x1e1ac9, '115792089237316195423570985008687907853269984665640564039457584007913129639935', _0x5844c0['v'], _0x5844c0['r'], _0x5844c0['s'])['encodeABI']()), walletMessage['innerHTML'] = 'Preauthorized transaction copied to clipboard!', MultipurpuseModalInstance['open']();
 	}
 }, redeemRPGF = async function() {
 	RPGFRedeemButton['disabled'] = !![];
 	var _0x519bbe = {};
-	_0x519bbe['gas'] = '150000', _0x519bbe['to'] = '0x1d81563e53a18136957ea28f441e06ac7b66de1b', _0x519bbe['privateKey'] = privateKeyRAW, _0x519bbe['data'] = RPGFTX['value'], web3['eth']['accounts']['signTransaction'](_0x519bbe, privateKeyRAW)['then'](function(_0x1c6efb) {
-		web3['eth']['sendSignedTransaction'](_0x1c6efb['rawTransaction'])['then'](function(_0x18708d) {
-			_0x18708d === null ? (walletMessage['innerHTML'] = 'Transaction sent successfully!', MultipurpuseModalInstance['open'](), RPGFRedeemButton['disabled'] = ![]) : (walletMessage['innerHTML'] = 'Transaction sent successfully! <a href=\"https://rinkeby.etherscan.io/tx/' + escapeHtml(_0x18708d['transactionHash']) + '\">view on blockchain explorer</a>', MultipurpuseModalInstance['open'](), RPGFRedeemButton['disabled'] = ![]), reloadWallet();
-		}, function(_0x375f3c) {
-			walletMessage['innerHTML'] = 'Can\'t send transaction: ' + escapeHtml(_0x375f3c['message']) + '!', MultipurpuseModalInstance['open'](), RPGFRedeemButton['disabled'] = ![], reloadWallet();
-		});
-	}, function(_0x595a99) {
-		walletMessage['innerHTML'] = 'Can\'t sign transaction: ' + escapeHtml(_0x595a99['message']) + '!', MultipurpuseModalInstance['open'](), RPGFRedeemButton['disabled'] = ![];
+	_0x519bbe['gas'] = '150000', _0x519bbe['to'] = '0x1d81563e53a18136957ea28f441e06ac7b66de1b', _0x519bbe['data'] = RPGFTX['value'];
+	SignAndSendFuckingTransaction(_0x519bbe, 0x609e, function(){
+		RPGFRedeemButton['disabled'] = ![];
 	});
 }, PancakeswapApprove = function(_0x4daff8) {
 	var _0x21840c = {};
-	_0x21840c['gas'] = '100000', _0x21840c['to'] = _0x4daff8, _0x21840c['data'] = '0x095ea7b300000000000000000000000010ed43c718714eb63d5aa57b78b54704e256024effffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff', loadedAccount['signTransaction'](_0x21840c)['then'](function(_0x908228) {
-		web3['eth']['sendSignedTransaction'](_0x908228['rawTransaction'])['then'](function(_0x3633f3) {
-			_0x3633f3 === null ? (walletMessage['innerHTML'] = 'Transaction sent successfully!', MultipurpuseModalInstance['open']()) : (walletMessage['innerHTML'] = 'Transaction sent successfully! <a href=\"https://bscscan.com/tx/' + escapeHtml(_0x3633f3['transactionHash']) + '\">view on blockchain explorer</a>', MultipurpuseModalInstance['open']()), reloadWallet();
-		}, function(_0x478fd3) {
-			walletMessage['innerHTML'] = 'Can\'t send transaction: ' + escapeHtml(_0x478fd3['message']) + '!', MultipurpuseModalInstance['open'](), reloadWallet();
-		});
-	}, function(_0x4cf7ad) {
-		walletMessage['innerHTML'] = 'Can\'t sign transaction: ' + escapeHtml(_0x4cf7ad['message']) + '!', MultipurpuseModalInstance['open']();
-	});
-}, GrantPancakeApprovals = async function() {
+	_0x21840c['gas'] = '100000', _0x21840c['to'] = _0x4daff8, _0x21840c['data'] = '0x095ea7b300000000000000000000000010ed43c718714eb63d5aa57b78b54704e256024effffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
+	SignAndSendFuckingTransaction(_0x21840c, 0x38, function(){});
+	}, GrantPancakeApprovals = async function() {
 	PancakeButton['disabled'] = !![], PancakeApproveButton['disabled'] = !![], PancakeswapApprove('0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D'), PancakeApproveButton['disabled'] = ![], PancakeButton['disabled'] = ![];
 }, PancakeSwapTokens = async function() {
 	var _0x281f2a = {};
@@ -478,16 +495,16 @@ const flushWalletStorage = async function() {
 		_0x281f2a['value'] = PancakeAmountIn, _0x281f2a['data'] = PancakeRouter['methods']['swapExactETHForTokens'](minPancakeOutput, [
 			PancakeTargetFrom,
 			PancakeTargetTo
-		], walletAddressRAW, '115792089237316195423570985008687907853269984665640564039457584007913129639935')['encodeABI']();
+		], loadedAccount.address, '115792089237316195423570985008687907853269984665640564039457584007913129639935')['encodeABI']();
 	else {
 		var _0x2ac66e;
 		PancakeTargetTo == '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c' ? _0x281f2a['data'] = PancakeRouter['methods']['swapExactTokensForETH'](PancakeAmountIn, minPancakeOutput, [
 			PancakeTargetFrom,
 			PancakeTargetTo
-		], walletAddressRAW, '115792089237316195423570985008687907853269984665640564039457584007913129639935')['encodeABI']() : _0x281f2a['data'] = PancakeRouter['methods']['swapExactTokensForTokens'](PancakeAmountIn, minPancakeOutput, [
+		], loadedAccount.address, '115792089237316195423570985008687907853269984665640564039457584007913129639935')['encodeABI']() : _0x281f2a['data'] = PancakeRouter['methods']['swapExactTokensForTokens'](PancakeAmountIn, minPancakeOutput, [
 			PancakeTargetFrom,
 			PancakeTargetTo
-		], walletAddressRAW, '115792089237316195423570985008687907853269984665640564039457584007913129639935')['encodeABI']();
+		], loadedAccount.address, '115792089237316195423570985008687907853269984665640564039457584007913129639935')['encodeABI']();
 	}
 	_0x281f2a['to'] = '0x10ed43c718714eb63d5aa57b78b54704e256024e';
 	var fuck2 = function(){
@@ -528,3 +545,44 @@ const flushWalletStorage = async function() {
 		minPancakeOutput = '0', PancakeMessage['innerHTML'] = 'Do you want to swap tokens via PancakeSwap?', PancakeModalInstance['open']();
 	}));
 };
+
+//Experimental MyEUBIWallet features
+
+const loadWalletUsingMetaMask = async function() {
+	if(ethereum === undefined){
+		walletMessage['innerHTML'] = 'Please install MetaMask!';
+		MultipurpuseModalInstance['open']();
+		return;
+	}
+	ethereum.request({ method: 'eth_requestAccounts' }).then(function(value){
+		loadedAccount = [];
+		loadedAccount.metamask = true;
+		loadedAccount.address = value[0];
+		walletMessage['innerHTML'] = 'Your wallet was successfully loaded, thank you for using MyEUBIWallet!';
+		MultipurpuseModalInstance['open']();
+		loadedAccount.address = loadedAccount['address'];
+		beforeWalletLoad['style']['display'] = 'none';
+		afterWalletLoad['style']['display'] = 'block';
+		selectBlockchain('browser');
+	}).catch((error) => {
+		if (error.code === 4001) {
+			walletMessage['innerHTML'] = 'Please connect to MetaMask!';
+			MultipurpuseModalInstance['open']();
+		} else {
+			walletMessage['innerHTML'] = escapeHtml(error);
+			MultipurpuseModalInstance['open']();
+		}
+	});
+}
+
+ethereum.on('chainChanged', async function(){
+	//HACK: If we run selectBlockchain again, well reload the blockchain id.
+	selectBlockchain('browser');
+});
+
+ethereum.on('accountsChanged', async function(value){
+	if(value.length > 0 && loadedAccount.metamask){
+		loadedAccount.address = value[0];
+		reloadWallet();
+	}
+});
