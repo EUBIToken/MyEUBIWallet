@@ -40,11 +40,6 @@ const beforeWalletLoad = document['getElementById']('beforeWalletLoad'),
 	unstakeEubiButton = document['getElementById']('unstakeEubiButton'),
 	stakeEubiButton = document['getElementById']('stakeEubiButton'),
 	burnEubiButton = document['getElementById']('burnEubiButton'),
-	ReceiverPaidGasFees = document['getElementById']('ReceiverPaidGasFees'),
-	RPGFReceiver = document['getElementById']('RPGFReceiver'),
-	RPGFAmount = document['getElementById']('RPGFAmount'),
-	RPGFTX = document['getElementById']('RPGFTX'),
-	RPGFRedeemButton = document['getElementById']('RPGFRedeemButton'),
 	PancakeSwap = document['getElementById']('PancakeSwap'),
 	PancakeAmount = document['getElementById']('PancakeAmount'),
 	PancakeButton = document['getElementById']('PancakeButton'),
@@ -62,7 +57,6 @@ const beforeWalletLoad = document['getElementById']('beforeWalletLoad'),
 	UnstakeTokensModal = document['getElementById']('UnstakeTokensModal'),
 	StakeTokensModal = document['getElementById']('StakeTokensModal'),
 	BurnTokensModal = document['getElementById']('BurnTokensModal'),
-	RPGFModal = document['getElementById']('RPGFModal'),
 	deleteWalletModal = document['getElementById']('deleteWalletModal'),
 	PancakeModal = document['getElementById']('PancakeModal'),
 	PancakeMessage = document['getElementById']('PancakeMessage'),
@@ -72,7 +66,6 @@ const beforeWalletLoad = document['getElementById']('beforeWalletLoad'),
 	web3 = new Web3('https://node1.mintme.com:443'),
 	loadedTokenContracts = [],
 	BigInt = web3['utils']['BN'],
-	MintMEReceiverPaidGasFees = new web3['eth']['Contract'](JSON['parse']('[{\"inputs\": [{\"internalType\": \"uint256\",\"name\": \"random\",\"type\": \"uint256\"},{\"internalType\": \"address\",\"name\": \"token\",\"type\": \"address\"},{\"internalType\": \"address\",\"name\": \"from\",\"type\": \"address\"},{\"internalType\": \"address\",\"name\": \"to\",\"type\": \"address\"},{\"internalType\": \"uint256\",\"name\": \"value\",\"type\": \"uint256\"},{\"internalType\": \"uint256\",\"name\": \"expiry\",\"type\": \"uint256\"},{\"internalType\": \"uint8\",\"name\": \"v\",\"type\": \"uint8\"},{\"internalType\": \"bytes32\",\"name\": \"r\",\"type\": \"bytes32\"},{\"internalType\": \"bytes32\",\"name\": \"s\",\"type\": \"bytes32\"}],\"name\": \"sendPreauthorizedTransaction\",\"outputs\": [],\"stateMutability\": \"nonpayable\",\"type\": \"function\"}]'), '0x1d81563e53a18136957ea28f441e06ac7b66de1b'),
 	PancakeRouter = new web3['eth']['Contract'](JSON['parse']('[{\"inputs\": [{\"internalType\": \"uint256\",\"name\": \"amountIn\",\"type\": \"uint256\"},{\"internalType\": \"address[]\",\"name\": \"path\",\"type\": \"address[]\"}],\"name\": \"getAmountsOut\",\"outputs\": [{\"internalType\": \"uint256[]\",\"name\": \"amounts\",\"type\": \"uint256[]\"}],\"stateMutability\": \"view\",\"type\": \"function\"},{\"inputs\": [{\"internalType\": \"uint256\",\"name\": \"amountOutMin\",\"type\": \"uint256\"},{\"internalType\": \"address[]\",\"name\": \"path\",\"type\": \"address[]\"},{\"internalType\": \"address\",\"name\": \"to\",\"type\": \"address\"},{\"internalType\": \"uint256\",\"name\": \"deadline\",\"type\": \"uint256\"}],\"name\": \"swapExactETHForTokens\",\"outputs\": [{\"internalType\": \"uint256[]\",\"name\": \"amounts\",\"type\": \"uint256[]\"}],\"stateMutability\": \"payable\",\"type\": \"function\"},{\"inputs\": [{\"internalType\": \"uint256\",\"name\": \"amountIn\",\"type\": \"uint256\"},{\"internalType\": \"uint256\",\"name\": \"amountOutMin\",\"type\": \"uint256\"},{\"internalType\": \"address[]\",\"name\": \"path\",\"type\": \"address[]\"},{\"internalType\": \"address\",\"name\": \"to\",\"type\": \"address\"},{\"internalType\": \"uint256\",\"name\": \"deadline\",\"type\": \"uint256\"}],\"name\": \"swapExactTokensForETH\",\"outputs\": [{\"internalType\": \"uint256[]\",\"name\": \"amounts\",\"type\": \"uint256[]\"}],\"stateMutability\": \"nonpayable\",\"type\": \"function\"},{\"inputs\": [{\"internalType\": \"uint256\",\"name\": \"amountIn\",\"type\": \"uint256\"},{\"internalType\": \"uint256\",\"name\": \"amountOutMin\",\"type\": \"uint256\"},{\"internalType\": \"address[]\",\"name\": \"path\",\"type\": \"address[]\"},{\"internalType\": \"address\",\"name\": \"to\",\"type\": \"address\"},{\"internalType\": \"uint256\",\"name\": \"deadline\",\"type\": \"uint256\"}],\"name\": \"swapExactTokensForTokens\",\"outputs\": [{\"internalType\": \"uint256[]\",\"name\": \"amounts\",\"type\": \"uint256[]\"}],\"stateMutability\": \"nonpayable\",\"type\": \"function\"}]'), '0x10ed43c718714eb63d5aa57b78b54704e256024e'),
 	c100 = new BigInt(0x64),
 	c99 = new BigInt(0x63),
@@ -84,7 +77,6 @@ const beforeWalletLoad = document['getElementById']('beforeWalletLoad'),
 	UnstakeTokensModalInstance = M['Modal']['getInstance'](UnstakeTokensModal),
 	StakeTokensModalInstance = M['Modal']['getInstance'](StakeTokensModal),
 	BurnTokensModalInstance = M['Modal']['getInstance'](BurnTokensModal),
-	RPGFModalInstance = M['Modal']['getInstance'](RPGFModal),
 	deleteWalletModalInstance = M['Modal']['getInstance'](deleteWalletModal),
 	PancakeModalInstance = M['Modal']['getInstance'](PancakeModal);
 var loadedAccount = null,
@@ -197,7 +189,7 @@ const flushWalletStorage = async function() {
 			});
 			break;
 	}
-	ReceiverPaidGasFees['style']['display'] = networkId == 0x609e ? 'list-item' : 'none', PancakeSwap['style']['display'] = networkId == 0x38 ? 'list-item' : 'none', dividendsMenu['style']['display'] = networkId == 0x4 ? 'list-item' : 'none';
+	PancakeSwap['style']['display'] = networkId == 0x38 ? 'list-item' : 'none', dividendsMenu['style']['display'] = networkId == 0x4 ? 'list-item' : 'none';
 }, loadWallet = async function() {
 	var privateKey2 = privateKey['value'], loadedAccount = null;
 	if(privateKey2['length'] == 0x42)
@@ -454,37 +446,6 @@ const flushWalletStorage = async function() {
 		},
 		_0x4ee7d8 = useApprovalCheckbox['checked'] ? 'Your remaining allowance: ' : 'Remaining allowance: ';
 	networkId == 0x38 ? _0x17bb19('0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D', 0x12, ' bEUBI', _0x4ee7d8) : _0x17bb19(contractAddress, 0xc, ' EUBI', _0x4ee7d8);
-}, createRPGF = function() {
-	var _0x57e5dd = web3['utils']['randomHex'](0x10),
-		_0x2a6f85 = RPGFReceiver['value'],
-		_0x1e1ac9 = convDecimalToRaw(RPGFAmount['value'], 0xc);
-	if(_0x1e1ac9 != 'invalid') {
-		var _0x5844c0 = loadedAccount['sign'](web3['eth']['abi']['encodeParameters']([
-			'uint256',
-			'address',
-			'address',
-			'address',
-			'address',
-			'uint256',
-			'uint256'
-		], [
-			_0x57e5dd,
-			'0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1',
-			loadedAccount.address,
-			_0x2a6f85,
-			_0x2a6f85,
-			_0x1e1ac9,
-			'115792089237316195423570985008687907853269984665640564039457584007913129639935'
-		]));
-		navigator['clipboard']['writeText'](MintMEReceiverPaidGasFees['methods']['sendPreauthorizedTransaction'](_0x57e5dd, '0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1', loadedAccount.address, _0x2a6f85, _0x1e1ac9, '115792089237316195423570985008687907853269984665640564039457584007913129639935', _0x5844c0['v'], _0x5844c0['r'], _0x5844c0['s'])['encodeABI']()), walletMessage['innerHTML'] = 'Preauthorized transaction copied to clipboard!', MultipurpuseModalInstance['open']();
-	}
-}, redeemRPGF = async function() {
-	RPGFRedeemButton['disabled'] = !![];
-	var _0x519bbe = {};
-	_0x519bbe['gas'] = '150000', _0x519bbe['to'] = '0x1d81563e53a18136957ea28f441e06ac7b66de1b', _0x519bbe['data'] = RPGFTX['value'];
-	SignAndSendFuckingTransaction(_0x519bbe, 0x609e, function(){
-		RPGFRedeemButton['disabled'] = ![];
-	});
 }, PancakeswapApprove = function(_0x4daff8) {
 	var _0x21840c = {};
 	_0x21840c['gas'] = '100000', _0x21840c['to'] = _0x4daff8, _0x21840c['data'] = '0x095ea7b300000000000000000000000010ed43c718714eb63d5aa57b78b54704e256024effffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';

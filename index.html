@@ -178,32 +178,6 @@
 						<button class="waves-effect waves-light btn col s12 m12 l6 red" onclick="BurnTokensModalInstance.open();" id="burnEubiButton"><i class="material-icons left">clear</i>Burn tokens for dividends</button>
 					</div>
 				</li>
-				<li id="ReceiverPaidGasFees">
-					<div class="collapsible-header">
-						<strong class="flow-text">Receiver-paid gas fees</strong>
-					</div>
-					<div class="collapsible-body row">
-						<strong>Receiver-paid gas fees work by using complex cryptography to give someone permission to withdraw from your wallet without broadcasting anything to the blockchain. Receiver-paid gas fees work similarly to checks in the real world financial system. Before you can use receiver-paid gas fees for the first time, you need to approve a special smart contract to spend your tokens.</strong><br/>
-						<strong>Contract address: 0x1d81563e53a18136957ea28f441e06ac7b66de1b</strong><br/>
-						<div class="input-field col s12">
-							<i class="material-icons prefix">vpn_key</i>
-							<input id="RPGFReceiver" type="text"/>
-							<label for="RPGFReceiver">Receiver's address</label>
-						</div>
-						<div class="input-field col s12">
-							<i class="material-icons prefix">attach_money</i>
-							<input id="RPGFAmount" type="text"/>
-							<label for="RPGFAmount">Amount</label>
-						</div>
-						<button class="waves-effect waves-light btn col s12 m12 l6" onclick='createRPGF();'><i class="material-icons left">check</i>Generate preauthorized transaction</button>
-						<div class="input-field col s12">
-							<i class="material-icons prefix">redeem</i>
-							<input id="RPGFTX" type="text"/>
-							<label for="RPGFTX">Preauthorized transaction</label>
-						</div>
-						<button class="waves-effect waves-light btn col s12 m12 l6" onclick='RPGFModalInstance.open();' id="RPGFRedeemButton"><i class="material-icons left">redeem</i>Redeem preauthorized transaction</button>
-					</div>
-				</li>
 				<li id="PancakeSwap" style="display: none">
 					<div class="collapsible-header">
 						<strong class="flow-text">PancakeSwap</strong>
