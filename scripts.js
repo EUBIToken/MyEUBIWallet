@@ -34,6 +34,7 @@ const beforeWalletLoad = document['getElementById']('beforeWalletLoad'),
 	pendingDividends = document['getElementById']('pendingDividends'),
 	stakedTokensText = document['getElementById']('stakedTokensText'),
 	burnedTokensText = document['getElementById']('burnedTokensText'),
+	BrowserStoredWallet = document['getElementById']('BrowserStoredWallet'),
 	NGAmount = document['getElementById']('NGAmount'),
 	withdrawDividendButton = document['getElementById']('withdrawDividendButton'),
 	unstakeEubiButton = document['getElementById']('unstakeEubiButton'),
@@ -144,9 +145,11 @@ const flushWalletStorage = async function() {
 	if(loadedAccount.metamask){
 		BlockchainSettings.style.display = 'none';
 		epkb.style.display = 'none';
+		BrowserStoredWallet.style.display = 'none';
 	} else{
 		BlockchainSettings.style.display = 'list-item';
 		epkb.style.display = 'block';
+		BrowserStoredWallet.style.display = 'list-item';
 	}
 	myWalletAddress['innerHTML'] = 'Your wallet address is: ' + escapeHtml(loadedAccount.address);
 	eubiBalance['innerHTML'] = 'Identifying blockchain...', nativeBalance['innerHTML'] = '', networkId = await web3['eth']['getChainId']();
