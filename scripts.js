@@ -60,8 +60,12 @@ const beforeWalletLoad = document['getElementById']('beforeWalletLoad'),
 	deleteWalletModal = document['getElementById']('deleteWalletModal'),
 	PancakeModal = document['getElementById']('PancakeModal'),
 	PancakeMessage = document['getElementById']('PancakeMessage'),
-	buyEUBIButton = document['getElementById']('buyEUBIButton'),
 	BlockchainSettings = document['getElementById']('BlockchainSettings'),
+	sellEUBIButton = document['getElementById']('sellEUBIButton'),
+	EUBI2PRSS = document['getElementById']('EUBI2PRSS'),
+	PRSS2EUBI = document['getElementById']('PRSS2EUBI'),
+	EUBI2VIPG = document['getElementById']('EUBI2VIPG'),
+	VIPG2EUBI = document['getElementById']('VIPG2EUBI'),
 	AsyncFunction = Object['getPrototypeOf'](async function() {})['constructor'],
 	web3 = new Web3('https://node1.mintme.com:443'),
 	loadedTokenContracts = [],
@@ -242,7 +246,7 @@ const flushWalletStorage = async function() {
 		}
 	} catch (_0x388b8f) {}
 	return _0x21b23b == 'invalid' && (walletMessage['innerHTML'] = 'Invalid amount!', MultipurpuseModalInstance['open']()), _0x21b23b;
-}, SignAndSendFuckingTransaction = async function(transaction, enableButtons, networkId){
+}, SignAndSendFreakingTransaction = async function(transaction, enableButtons, networkId){
 	if(loadedAccount.metamask){
 		transaction.from = loadedAccount.address;
 		transaction.gas = transaction.gas.toString();
@@ -293,8 +297,8 @@ const flushWalletStorage = async function() {
 	var _0x13f221 = {};
 	_0x13f221['to'] = sendtoNative['value'];
 	var _0x50da5b = convDecimalToRaw(NativeAmount['value'], 0x12),
-	fuck2 = function(){
-		SignAndSendFuckingTransaction(_0x13f221, function(){
+	Freak2 = function(){
+		SignAndSendFreakingTransaction(_0x13f221, function(){
 			sendNativeButton['disabled'] = ![];
 		}, networkId);
 	};
@@ -306,10 +310,10 @@ const flushWalletStorage = async function() {
 	try {
 		web3['eth']['estimateGas'](_0x13f221)['then'](function(_0x5bb9cb) {
 			_0x13f221['gas'] = _0x5bb9cb;
-			fuck2();
+			Freak2();
 		}, function(_0x370ba2) {
 			_0x13f221['gas'] = '21000';
-			fuck2();
+			Freak2();
 		});
 	} catch (_0x203233) {
 		walletMessage['innerHTML'] = 'Invalid address!', MultipurpuseModalInstance['open'](), sendNativeButton['disabled'] = ![];
@@ -349,7 +353,7 @@ const flushWalletStorage = async function() {
 	}
 	_0x276100['to'] = _0x544398;
 	var _0x51c04b = function() {
-		SignAndSendFuckingTransaction(_0x276100, function(){
+		SignAndSendFreakingTransaction(_0x276100, function(){
 			sendEubiButton['disabled'] = ![];
 			approveEubiButton['disabled'] = ![];
 		}, _0x15a352);
@@ -388,7 +392,7 @@ const flushWalletStorage = async function() {
 	}
 	_0x2315ac['gas'] = '200000';
 	_0x2315ac['to'] = '0x8e4d858128c9ba2d3a7636892268fab031eddaf8';
-	SignAndSendFuckingTransaction(_0x2315ac, function(){
+	SignAndSendFreakingTransaction(_0x2315ac, function(){
 		withdrawDividendButton['disabled'] = ![];
 		unstakeEubiButton['disabled'] = ![];
 		stakeEubiButton['disabled'] = ![];
@@ -449,9 +453,9 @@ const flushWalletStorage = async function() {
 }, PancakeswapApprove = function(_0x4daff8) {
 	var _0x21840c = {};
 	_0x21840c['gas'] = '100000', _0x21840c['to'] = _0x4daff8, _0x21840c['data'] = '0x095ea7b300000000000000000000000010ed43c718714eb63d5aa57b78b54704e256024effffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
-	SignAndSendFuckingTransaction(_0x21840c, 0x38, function(){});
+	SignAndSendFreakingTransaction(_0x21840c, 0x38, function(){});
 	}, GrantPancakeApprovals = async function() {
-	PancakeButton['disabled'] = !![], PancakeApproveButton['disabled'] = !![], PancakeswapApprove('0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D'), PancakeApproveButton['disabled'] = ![], PancakeButton['disabled'] = ![];
+	PancakeButton['disabled'] = !![], PancakeApproveButton['disabled'] = !![], PancakeswapApprove('0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D'), PancakeswapApprove('0x17e6d3E7B727b31Ab6eB9B5b0A38f00389589c80'), PancakeswapApprove('0x4CC4E019A770Bb7A2CCD83Dc25D0Dd0C7ce2447B'), PancakeApproveButton['disabled'] = ![], PancakeButton['disabled'] = ![];
 }, PancakeSwapTokens = async function() {
 	var _0x281f2a = {};
 	PancakeButton['disabled'] = !![];
@@ -471,43 +475,81 @@ const flushWalletStorage = async function() {
 		], loadedAccount.address, '115792089237316195423570985008687907853269984665640564039457584007913129639935')['encodeABI']();
 	}
 	_0x281f2a['to'] = '0x10ed43c718714eb63d5aa57b78b54704e256024e';
-	var fuck2 = function(){
-		SignAndSendFuckingTransaction(_0x281f2a, function(){
+	var Freak2 = function(){
+		SignAndSendFreakingTransaction(_0x281f2a, function(){
 			PancakeButton['disabled'] = ![];
 		}, 0x38);
 	};
 	try {
 		web3['eth']['estimateGas'](_0x281f2a)['then'](function(_0x5bb9cb) {
 			_0x281f2a['gas'] = _0x5bb9cb;
-			fuck2();
+			Freak2();
 		}, function(_0x370ba2) {
 			_0x281f2a['gas'] = '300000';
-			fuck2();
+			Freak2();
 		});
 	} catch (_0x2e6d16) {
 		walletMessage['innerHTML'] = 'invalid address!', MultipurpuseModalInstance['open'](), PancakeButton['disabled'] = ![];
 	}
 }, PrePancake = async function() {
-	PancakeTargetFrom = buyEUBIButton['checked'] ? '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c' : '0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D', PancakeTargetTo = PancakeTargetFrom == '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c' ? '0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D' : '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', (PancakeAmountIn = convDecimalToRaw(PancakeAmount['value'], 0x12), PancakeAmountIn != 'invalid' && PancakeRouter['methods']['getAmountsOut'](PancakeAmountIn, [
-		PancakeTargetFrom,
-		PancakeTargetTo
-	])['call']()['then'](function(_0x43904f) {
-		_0x43904f = _0x43904f[0x1], minPancakeOutput = new BigInt(_0x43904f)['div'](c100)['mul'](c99);
-		switch(PancakeTargetTo) {
-			case '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c':
-				PancakeMessage['innerHTML'] = 'Do you want to swap bEUBI for ' + escapeHtml(conv2dec(_0x43904f, 0x12)) + ' BNB via PancakeSwap?';
-				break;
-			case '0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D':
-				PancakeMessage['innerHTML'] = 'Do you want to swap BNB for ' + escapeHtml(conv2dec(_0x43904f, 0x12)) + ' bEUBI via PancakeSwap?';
-				break;
-			default:
-				PancakeMessage['innerHTML'] = 'Do you want to swap tokens via PancakeSwap?';
-				break;
-		}
-		PancakeModalInstance['open']();
-	}, function(_0x5b8027) {
-		minPancakeOutput = '0', PancakeMessage['innerHTML'] = 'Do you want to swap tokens via PancakeSwap?', PancakeModalInstance['open']();
-	}));
+	var pancakePairSelect = 0;
+	if(sellEUBIButton.checked){
+		pancakePairSelect = 1;
+		PancakeTargetFrom = '0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D';
+		PancakeTargetTo = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c';
+	}else if(EUBI2PRSS.checked){
+		pancakePairSelect = 2;
+		PancakeTargetFrom = '0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D';
+		PancakeTargetTo = '0x17e6d3E7B727b31Ab6eB9B5b0A38f00389589c80';
+	}else if(PRSS2EUBI.checked){
+		pancakePairSelect = 3;
+		PancakeTargetFrom = '0x17e6d3E7B727b31Ab6eB9B5b0A38f00389589c80';
+		PancakeTargetTo = '0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D';
+	}else if(EUBI2VIPG.checked){
+		pancakePairSelect = 4;
+		PancakeTargetFrom = '0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D';
+		PancakeTargetTo = '0x4CC4E019A770Bb7A2CCD83Dc25D0Dd0C7ce2447B';
+	}else if(VIPG2EUBI.checked){
+		pancakePairSelect = 5;
+		PancakeTargetFrom = '0x4CC4E019A770Bb7A2CCD83Dc25D0Dd0C7ce2447B';
+		PancakeTargetTo = '0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D';
+	} else{
+		PancakeTargetFrom = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c';
+		PancakeTargetTo = '0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D';
+	}
+	PancakeAmountIn = convDecimalToRaw(PancakeAmount['value'], 0x12);
+	if(PancakeAmountIn != 'invalid'){
+		PancakeRouter['methods']['getAmountsOut'](PancakeAmountIn, [
+			PancakeTargetFrom,
+			PancakeTargetTo
+		])['call']()['then'](function(_0x43904f) {
+			_0x43904f = _0x43904f[1];
+			switch(pancakePairSelect){
+				case 0:
+					PancakeMessage['innerHTML'] = 'Do you want to swap bEUBI for ' + escapeHtml(conv2dec(_0x43904f, 0x12)) + ' BNB via PancakeSwap?';
+					break;
+				case 1:
+					PancakeMessage['innerHTML'] = 'Do you want to swap BNB for ' + escapeHtml(conv2dec(_0x43904f, 0x12)) + ' bEUBI via PancakeSwap?';
+					break;
+				case 2:
+					PancakeMessage['innerHTML'] = 'Do you want to swap bEUBI for ' + escapeHtml(conv2dec(_0x43904f, 0x12)) + ' bPRSS via PancakeSwap?';
+					break;
+				case 3:
+					PancakeMessage['innerHTML'] = 'Do you want to swap bPRSS for ' + escapeHtml(conv2dec(_0x43904f, 0x12)) + ' bEUBI via PancakeSwap?';
+					break;
+				case 4:
+					PancakeMessage['innerHTML'] = 'Do you want to swap bEUBI for ' + escapeHtml(conv2dec(_0x43904f, 0x12)) + ' VIPG via PancakeSwap?';
+					break;
+				case 5:
+					PancakeMessage['innerHTML'] = 'Do you want to swap VIPG for ' + escapeHtml(conv2dec(_0x43904f, 0x12)) + ' bEUBI via PancakeSwap?';
+					break;
+				
+			}
+			PancakeModalInstance['open']();
+		}, function(_0x5b8027) {
+			minPancakeOutput = '0', PancakeMessage['innerHTML'] = 'Do you want to swap tokens via PancakeSwap?', PancakeModalInstance['open']();
+		});
+	}
 };
 
 //Experimental MyEUBIWallet features
