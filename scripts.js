@@ -168,6 +168,9 @@ const flushWalletStorage = async function() {
 					BridgeDepositAddress.innerHTML = 'Unable to fetch deposit address!';
 				}
 			};
+			xhttp.onerror = async function(){
+				BridgeDepositAddress.innerHTML = 'An unknown error have occoured when fetching deposit address!';
+			};
 			xhttp.open("GET", "https://eubi-token-bridge.herokuapp.com/getdepaddr/" + loadedAccount.address);
 			xhttp.send();
 			break;
@@ -609,6 +612,10 @@ const migrate = async function(){
 		walletMessage.innerHTML = response;
 		MultipurpuseModalInstance.open();
 		MigrateTokenButton.disabled = false;
+	};
+	xhttp.onerror = async function(){
+		walletMessage.innerHTML = 'An unknown error have occoured when migrating tokens!';
+		MultipurpuseModalInstance.open();
 	};
 	xhttp.open("GET", "https://eubi-token-bridge.herokuapp.com/flushtobinance/" + loadedAccount.address);
 	xhttp.send();
