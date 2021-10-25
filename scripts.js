@@ -207,7 +207,7 @@ const flushWalletStorage = async function() {
 			});
 			break;
 	}
-	PancakeSwap['style']['display'] = networkId == 0x38 ? 'list-item' : 'none', dividendsMenu['style']['display'] = networkId == 0x4 ? 'list-item' : 'none', MigrationBridgeMenu.display = networkId == 0x609e ? 'list-item' : 'none';
+	PancakeSwap['style']['display'] = networkId == 0x38 ? 'list-item' : 'none', dividendsMenu['style']['display'] = networkId == 0x4 ? 'list-item' : 'none', MigrationBridgeMenu.style.display = networkId == 0x609e ? 'list-item' : 'none';
 }, loadWallet = async function() {
 	var privateKey2 = privateKey['value'];
 	loadedAccount = null;
