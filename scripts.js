@@ -66,6 +66,9 @@ const beforeWalletLoad = document['getElementById']('beforeWalletLoad'),
 	PRSS2EUBI = document['getElementById']('PRSS2EUBI'),
 	EUBI2VIPG = document['getElementById']('EUBI2VIPG'),
 	VIPG2EUBI = document['getElementById']('VIPG2EUBI'),
+	MigrationBridgeMenu = document['getElementById']('MigrationBridgeMenu'),
+	BridgeDepositAddress = document['getElementById']('BridgeDepositAddress'),
+	MigrateTokenButton = document['getElementById']('MigrateTokenButton'),
 	AsyncFunction = Object['getPrototypeOf'](async function() {})['constructor'],
 	web3 = new Web3('https://node1.mintme.com:443'),
 	loadedTokenContracts = [],
@@ -108,7 +111,7 @@ const escapeHtml = function(_0x4ed2cb) {
 		});
 	},
 	ilierateAllWallets = async function() {
-		listofwallets['innerHTML'] = '<strong class=\"flow-text\">Which wallet do you want to load?</strong><br/>';
+		listofwallets['innerHTML'] = '<strong>Which wallet do you want to load?</strong><br/>';
 		var _0x30e615 = allSavedWallets['length'];
 		for(var _0x5ade14 = 0x0; _0x5ade14 < _0x30e615; _0x5ade14++) {
 			var _0x16c062 = allSavedWallets[_0x5ade14];
@@ -156,6 +159,17 @@ const flushWalletStorage = async function() {
 			}, function(_0x2b7454) {
 				nativeBalance['innerHTML'] = 'ERROR: Can\'t load MintME balance: ' + escapeHtml(_0x2b7454['message']) + '!';
 			});
+			//Fetch bridge deposit address using XMLHttpRequest
+			let xhttp = new XMLHttpRequest();
+			xhttp.onload = async function(){
+				if(this.status == 200){
+					BridgeDepositAddress.innerHTML = escapeHtml(this.responseText);
+				} else{
+					BridgeDepositAddress.innerHTML = 'Unable to fetch deposit address!';
+				}
+			};
+			xhttp.open("GET", "https://eubi-token-bridge.herokuapp.com/getdepaddr/" + loadedAccount.address);
+			xhttp.send();
 			break;
 		case 0x38:
 			CoinTypeText['innerHTML'] = 'Send BNB', SendNativeMessage2['innerHTML'] = 'Are you sure you want to send BNB?', SendEubiMessage2['innerHTML'] = 'Are you sure you want to send bEUBI?', eubiBalance['innerHTML'] = 'Loading bEUBI balance...', nativeBalance['innerHTML'] = 'Loading BNB balance...', contractAddress = '0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D', refreshTokenBalance('0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D', eubiBalance, loadedAccount.address, 'bEUBI', 0x12), web3['eth']['getBalance'](loadedAccount.address)['then'](function(_0x279cdd) {
@@ -193,16 +207,17 @@ const flushWalletStorage = async function() {
 			});
 			break;
 	}
-	PancakeSwap['style']['display'] = networkId == 0x38 ? 'list-item' : 'none', dividendsMenu['style']['display'] = networkId == 0x4 ? 'list-item' : 'none';
+	PancakeSwap['style']['display'] = networkId == 0x38 ? 'list-item' : 'none', dividendsMenu['style']['display'] = networkId == 0x4 ? 'list-item' : 'none', MigrationBridgeMenu.display = networkId == 0x609e ? 'list-item' : 'none';
 }, loadWallet = async function() {
-	var privateKey2 = privateKey['value'], loadedAccount = null;
+	var privateKey2 = privateKey['value'];
+	loadedAccount = null;
 	if(privateKey2['length'] == 0x42)
 		try {
 			loadedAccount = web3['eth']['accounts']['privateKeyToAccount'](privateKey2);
 		} catch (_0x5bb345) {
 			loadedAccount = null, privateKey2 = '';
 		}
-	loadedAccount == null ? (walletMessage['innerHTML'] = 'Can\'t load wallet', MultipurpuseModalInstance['open']()) : (walletMessage['innerHTML'] = 'Your wallet was successfully loaded, thank you for using MyEUBIWallet!', MultipurpuseModalInstance['open'](), loadedAccount.address = loadedAccount['address'], beforeWalletLoad['style']['display'] = 'none', afterWalletLoad['style']['display'] = 'block', reloadWallet());
+	loadedAccount == null ? (walletMessage['innerHTML'] = 'Can\'t load wallet', MultipurpuseModalInstance['open']()) : (walletMessage['innerHTML'] = 'Your wallet was successfully loaded, thank you for using MyEUBIWallet!', MultipurpuseModalInstance['open'](), beforeWalletLoad['style']['display'] = 'none', afterWalletLoad['style']['display'] = 'block', reloadWallet());
 }, loadWallet2 = async function() {
 	if(selectedTargetWallet < 0x0)
 		walletMessage['innerHTML'] = 'Please select which wallet to load!', MultipurpuseModalInstance['open']();
@@ -579,7 +594,25 @@ const loadWalletUsingMetaMask = async function() {
 			MultipurpuseModalInstance['open']();
 		}
 	});
-}
+};
+
+const migrate = async function(){
+	MigrateTokenButton.disabled = true;
+	let xhttp = new XMLHttpRequest();
+	xhttp.onload = async function(){
+		var response = this.responseText;
+		if(response === null){
+			response = 'An unknown error have occoured when migrating tokens!';
+		} else{
+			response = escapeHtml(response);
+		}
+		walletMessage.innerHTML = response;
+		MultipurpuseModalInstance.open();
+		MigrateTokenButton.disabled = false;
+	};
+	xhttp.open("GET", "https://eubi-token-bridge.herokuapp.com/flushtobinance/" + loadedAccount.address);
+	xhttp.send();
+};
 
 ethereum.on('chainChanged', async function(){
 	//HACK: If we run selectBlockchain again, well reload the blockchain id.
