@@ -1,6 +1,7 @@
 'use strict';
 M['AutoInit']();
 const beforeWalletLoad = document['getElementById']('beforeWalletLoad'),
+	MintMESelector = document['getElementById']('MintMESelector'),
 	loadmode1 = document['getElementById']('loadmode1'),
 	loadmode2 = document['getElementById']('loadmode2'),
 	epkb = document['getElementById']('epkb'),
@@ -94,7 +95,8 @@ var loadedAccount = null,
 	PancakeTargetTo = '0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D',
 	PancakeAmountIn = '0',
 	allSavedWallets = [],
-	selectedTargetWallet = -0x1;
+	selectedTargetWallet = -0x1,
+	walletProvider2 = undefined;
 web3['eth']['getChainId'] = new AsyncFunction('return 0x609e;'), history['scrollRestoration'] ? history['scrollRestoration'] = 'manual' : window['onbeforeunload'] = function() {
 	window['scrollTo'](0x0, 0x0);
 };
@@ -267,8 +269,8 @@ const flushWalletStorage = async function() {
 }, SignAndSendFreakingTransaction = async function(transaction, enableButtons, networkId){
 	if(loadedAccount.metamask){
 		transaction.from = loadedAccount.address;
-		transaction.gas = transaction.gas.toString();
-		ethereum.request({
+		transaction.gas = web3.utils.toHex(transaction.gas.toString());
+		walletProvider2.request({
 			method: 'eth_sendTransaction',
 			params: [transaction],
 		}).then(function(value){
@@ -276,10 +278,16 @@ const flushWalletStorage = async function() {
 			enableButtons();
 			MultipurpuseModalInstance.open();
 		}).catch(function(error){
+			//Null coalescing protection
+			error = error ?? [];
 			if (error.code === 4001) {
 				walletMessage['innerHTML'] = 'MetaMask Transaction rejected!';
 			} else{
-				walletMessage['innerHTML'] = escapeHtml(error);
+				if(error.replace === undefined){
+					walletMessage['innerHTML'] = "Unknown error occoured when sending transaction!";
+				} else{
+					walletMessage['innerHTML'] = escapeHtml(error);
+				}
 			}
 			enableButtons();
 			MultipurpuseModalInstance.open();
@@ -324,7 +332,7 @@ const flushWalletStorage = async function() {
 		sendNativeButton['disabled'] = ![];
 		return;
 	}
-	_0x13f221['value'] = _0x50da5b;
+	_0x13f221['value'] = web3.utils.toHex(_0x50da5b);
 	try {
 		web3['eth']['estimateGas'](_0x13f221)['then'](function(_0x5bb9cb) {
 			_0x13f221['gas'] = _0x5bb9cb;
@@ -451,7 +459,7 @@ const flushWalletStorage = async function() {
 	}
 	_0x3a860d != undefined && (web3['eth']['getChainId'] = getChainId2, web3['setProvider'](_0x3a860d), web3['eth']['getChainId'] = new AsyncFunction('return ' + escapeHtml((await getChainId2())['toString']()) + ';'), reloadWallet());
 }, logout = async function() {
-	selectedTargetWallet = -0x1, loadedAccount = null, privateKey['value'] = '', pass3['value'] = '', walletMessage['innerHTML'] = 'Wallet unloaded!', afterWalletLoad['style']['display'] = 'none', beforeWalletLoad['style']['display'] = 'block';
+	MintMESelector.click(), selectedTargetWallet = -0x1, loadedAccount = null, privateKey['value'] = '', pass3['value'] = '', walletMessage['innerHTML'] = 'Wallet unloaded!', afterWalletLoad['style']['display'] = 'none', beforeWalletLoad['style']['display'] = 'block';
 }, checkAllowance = async function() {
 	var _0x17bb19 = function(_0x2dbaa6, _0x2427a7, _0x93678e, _0x4a29c6) {
 			try {
@@ -572,31 +580,68 @@ const flushWalletStorage = async function() {
 
 //Experimental MyEUBIWallet features
 
-const loadWalletUsingMetaMask = async function() {
-	if(ethereum === undefined){
-		walletMessage['innerHTML'] = 'Please install MetaMask!';
-		MultipurpuseModalInstance['open']();
-		return;
+const handleChainChanged = async function(){
+	//HACK: If we run selectBlockchain again, well reload the blockchain id.
+	selectBlockchain('browser');
+};
+
+const handleAccountChanged = async function(value){
+	if(value.length > 0 && loadedAccount.metamask){
+		loadedAccount.address = value[0];
+		reloadWallet();
 	}
-	ethereum.request({ method: 'eth_requestAccounts' }).then(function(value){
+};
+
+const setWalletProvider2 = async function(w2){
+	if(walletProvider2 != undefined){
+		walletProvider2.removeListener('chainChanged', handleChainChanged);
+		walletProvider2.removeListener('accountsChanged', handleAccountChanged);
+	}
+	w2.on('chainChanged', handleChainChanged);
+	w2.on('accountsChanged', handleAccountChanged);
+	w2.request({ method: 'eth_requestAccounts' }).then(function(value){
 		loadedAccount = [];
 		loadedAccount.metamask = true;
 		loadedAccount.address = value[0];
 		walletMessage['innerHTML'] = 'Your wallet was successfully loaded, thank you for using MyEUBIWallet!';
 		MultipurpuseModalInstance['open']();
 		loadedAccount.address = loadedAccount['address'];
+		selectBlockchain('browser');
 		beforeWalletLoad['style']['display'] = 'none';
 		afterWalletLoad['style']['display'] = 'block';
-		selectBlockchain('browser');
 	}).catch((error) => {
 		if (error.code === 4001) {
-			walletMessage['innerHTML'] = 'Please connect to MetaMask!';
+			walletMessage['innerHTML'] = 'Please connect to wallet!';
 			MultipurpuseModalInstance['open']();
 		} else {
 			walletMessage['innerHTML'] = escapeHtml(error);
 			MultipurpuseModalInstance['open']();
 		}
 	});
+	walletProvider2 = w2;
+};
+
+const loadWalletUsingMetaMask = async function() {
+	if(ethereum === undefined){
+		walletMessage['innerHTML'] = 'Please install MetaMask!';
+		MultipurpuseModalInstance['open']();
+	} else{
+		setWalletProvider2(ethereum);
+	}
+};
+
+const loadBinanceChainWallet = async function() {
+	if(BinanceChain === undefined){
+		walletMessage['innerHTML'] = 'Please install Binance Chain Wallet!';
+		MultipurpuseModalInstance['open']();
+	} else{
+		//HACKs for the broken binance chain wallet
+		BinanceChain.autoRefreshOnNetworkChange = false;
+		await BinanceChain.switchNetwork("bsc-mainnet");
+		BinanceChain.autoRefreshOnNetworkChange = true;
+		selectBlockchain("BinanceSmartChain");
+		await setWalletProvider2(BinanceChain);
+	}
 };
 
 const migrate = async function(){
@@ -620,15 +665,3 @@ const migrate = async function(){
 	xhttp.open("GET", "https://eubi-token-bridge.herokuapp.com/flushtobinance/" + loadedAccount.address);
 	xhttp.send();
 };
-
-ethereum.on('chainChanged', async function(){
-	//HACK: If we run selectBlockchain again, well reload the blockchain id.
-	selectBlockchain('browser');
-});
-
-ethereum.on('accountsChanged', async function(value){
-	if(value.length > 0 && loadedAccount.metamask){
-		loadedAccount.address = value[0];
-		reloadWallet();
-	}
-});

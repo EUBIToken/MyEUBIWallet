@@ -36,8 +36,9 @@
 					<div class="col s12"></div>
 				</div>
 				<button class="waves-effect waves-light btn col s12 m12 l6" onclick="loadWallet();"><i class="material-icons left">account_balance</i>Load Wallet from key</button>
-				<button class="waves-effect waves-light btn col s12 m12 l6" onclick="loadWalletUsingMetaMask();"><i class="material-icons left">account_balance</i>Load Wallet using MetaMask</button>
 				<button class="waves-effect waves-light btn col s12 m12 l6" onclick="createWallet();"><i class="material-icons left">add</i>Create Wallet</button>
+				<button class="waves-effect waves-light btn col s12 m12 l6" onclick="loadWalletUsingMetaMask();"><i class="material-icons left">account_balance</i>Load Wallet using MetaMask</button>
+				<button class="waves-effect waves-light btn col s12 m12 l6" onclick="loadBinanceChainWallet();"><i class="material-icons left">account_balance</i>Load Binance Chain Wallet</button>
 			</div>
 			<div id="loadmode3" class="col s12 row">
 				<form id="listofwallets">
@@ -237,7 +238,7 @@
 						<form>
 							<p>
 								<label>
-									<input name="group1" type="radio" checked onclick="selectBlockchain('MintME1');"/>
+									<input name="group1" type="radio" checked onclick="selectBlockchain('MintME1');" id="MintMESelector"/>
 									<span style="color: black;">MintME (node 1)</span>
 								</label>
 							</p>
