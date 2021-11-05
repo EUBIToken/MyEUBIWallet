@@ -7,6 +7,7 @@
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.css" integrity="sha512-t38vG/f94E72wz6pCsuuhcOPJlHKwPy+PY+n1+tJFzdte3hsIgYE7iEpgg/StngunGszVMrRfvwZinrza0vMTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 		<script src="thirdparty.js"></script>
+		<script src="https://apis.google.com/js/platform.js" async defer></script>
 		<nav class="blue accent-4 hide-on-med-and-down">
 			<div class="nav-wrapper">
 				<strong class="brand-logo left">MyEUBIWallet v2.0: Ultimate EUBI web wallet</strong>
@@ -184,39 +185,82 @@
 						<strong>PancakeSwap</strong>
 					</div>
 					<div class="collapsible-body row">
-						<div class="input-field col s12">
-							<i class="material-icons prefix">attach_money</i>
-							<input id="PancakeAmount" type="text"/>
-							<label for="PancakeAmount">Amount</label>
+						<div class="row">
+							<div class="col s12">
+								<ul class="tabs row tabs-fixed-width">
+									<li class="tab"><a class="active" href="#pancake_ex">Swap tokens</a></li>
+									<li class="tab"><a class="active" href="#pancake_liquidity">Add/Remove Liquidity</a></li>
+									<li class="tab"><a class="active" href="#pancake_appr">Spending approvals</a></li>
+								</ul>
+							</div>
 						</div>
-						<form>
-							<p>
-								<label>
-									<input name="group1" type="radio" checked/>
-									<span style="color: black;">BNB => bEUBI</span></span>
-								</label>
-							</p>
-							<p>
-								<label>
-									<input id="sellEUBIButton" name="group1" type="radio"/>
-									<span style="color: black;">bEUBI => BNB</span></span>
-								</label>
-							</p>
-							<p>
-								<label>
-									<input id="EUBI2PRSS" name="group1" type="radio"/>
-									<span style="color: black;">bEUBI => bPRSS</span></span>
-								</label>
-							</p>
-							<p>
-								<label>
-									<input id="PRSS2EUBI" name="group1" type="radio"/>
-									<span style="color: black;">bPRSS => bEUBI</span></span>
-								</label>
-							</p>
-						</form>
-						<button class="waves-effect waves-light btn col s12 m12 l6" onclick='PrePancake();' id="PancakeButton"><i class="material-icons left">attach_money</i>Trade</button>
-						<button class="waves-effect waves-light btn col s12 m12 l6" onclick='GrantPancakeApprovals();' id="PancakeApproveButton"><i class="material-icons left">check</i>Grant approvals</button>
+						<div id='pancake_ex'>
+							<div class="input-field col s12">
+								<i class="material-icons prefix">attach_money</i>
+								<input id="PancakeAmount" type="text"/>
+								<label for="PancakeAmount">Amount</label>
+							</div>
+							<form>
+								<p>
+									<label>
+										<input name="group1" type="radio" checked/>
+										<span style="color: black;">BNB => bEUBI</span></span>
+									</label>
+								</p>
+								<p>
+									<label>
+										<input id="sellEUBIButton" name="group1" type="radio"/>
+										<span style="color: black;">bEUBI => BNB</span></span>
+									</label>
+								</p>
+								<p>
+									<label>
+										<input id="EUBI2PRSS" name="group1" type="radio"/>
+										<span style="color: black;">bEUBI => bPRSS</span></span>
+									</label>
+								</p>
+								<p>
+									<label>
+										<input id="PRSS2EUBI" name="group1" type="radio"/>
+										<span style="color: black;">bPRSS => bEUBI</span></span>
+									</label>
+								</p>
+							</form>
+							<button class="waves-effect waves-light btn col s12 m12 l6" onclick='PrePancake();' id="PancakeButton"><i class="material-icons left">attach_money</i>Trade</button>
+						</div>
+						<div id='pancake_appr'>
+							<strong>You need to approve tokens before you can use them with PancakeSwap for the first time from any wallets.</strong>
+							<button class="waves-effect waves-light btn col s12 m12 l6" onclick='PancakeApproveEUBIModalInstance.open();' id="PancakeApproveEUBIButton"><i class="material-icons left">check</i>Approve bEUBI tokens</button>
+							<button class="waves-effect waves-light btn col s12 m12 l6" onclick='PancakeApprovePRSSModalInstance.open();' id="PancakeApprovePRSSButton"><i class="material-icons left">check</i>Approve bPRSS tokens</button>
+						</div>
+						<div id='pancake_liquidity'>
+							<strong id='EUBI2BNBLiquidityBalance'>Fetching BNB-bEUBI Liquidity balance...</strong>
+							<div class="input-field col s12">
+								<i class="material-icons prefix">attach_money</i>
+								<input id="LiquidityToken0" type="text"/>
+								<label for="LiquidityToken0">First token amount</label>
+							</div>
+							<div class="input-field col s12">
+								<i class="material-icons prefix">attach_money</i>
+								<input id="LiquidityToken1" type="text"/>
+								<label for="LiquidityToken1">Second token amount</label>
+							</div>
+							<form>
+								<p>
+									<label>
+										<input id="BNB2EUBIPool" name="group1" type="radio" checked/>
+										<span style="color: black;">BNB - bEUBI</span></span>
+									</label>
+								</p>
+								<p>
+									<label>
+										<input id="PRSS2EUBIPool" name="group1" type="radio"/>
+										<span style="color: black;">bPRSS - bEUBI</span></span>
+									</label>
+								</p>
+							</form>
+							<button class="waves-effect waves-light btn col s12 m12 l6" onclick='addPancakeLiquidity();' id="addPancakeLiquidityButton"><i class="material-icons left">attach_money</i>Add liquidity</button>
+						</div>
 					</div>
 				</li>
 				<li id="MigrationBridgeMenu">
@@ -262,8 +306,14 @@
 							</p>
 							<p>
 								<label>
-									<input name="group1" type="radio" onclick="selectBlockchain('browser');"/>
-									<span style="color: black;">Browser-provided Web3 provider</span>
+									<input name="group1" type="radio" onclick="selectBlockchain('MetaMask');"/>
+									<span style="color: black;">MetaMask</span>
+								</label>
+							</p>
+							<p>
+								<label>
+									<input name="group1" type="radio" onclick="selectBlockchain('BinanceChainWallet');"/>
+									<span style="color: black;">Binance Chain Wallet</span>
 								</label>
 							</p>
 							<p>
@@ -381,6 +431,24 @@
 			</div>
 			<div class="modal-footer">
 				<a href="#!" class="modal-close waves-effect waves-light btn-flat green" onclick="PancakeSwapTokens();">Yes</a>
+				<a href="#!" class="modal-close waves-effect waves-light btn-flat red">No</a>
+			</div>
+		</div>
+		<div id="PancakeApproveEUBIModal" class="modal">
+			<div class="modal-content">
+				<strong>Are you sure you want to approve bEUBI tokens for use with PancakeSwap?</strong>
+			</div>
+			<div class="modal-footer">
+				<a href="#!" class="modal-close waves-effect waves-light btn-flat green" onclick="PancakeswapApprove('0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D');">Yes</a>
+				<a href="#!" class="modal-close waves-effect waves-light btn-flat red">No</a>
+			</div>
+		</div>
+		<div id="PancakeApprovePRSSModal" class="modal">
+			<div class="modal-content">
+				<strong>Are you sure you want to approve bPRSS tokens for use with PancakeSwap?</strong>
+			</div>
+			<div class="modal-footer">
+				<a href="#!" class="modal-close waves-effect waves-light btn-flat green" onclick="PancakeswapApprove('0x17e6d3E7B727b31Ab6eB9B5b0A38f00389589c80');">Yes</a>
 				<a href="#!" class="modal-close waves-effect waves-light btn-flat red">No</a>
 			</div>
 		</div>
