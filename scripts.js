@@ -21,6 +21,7 @@ const beforeWalletLoad = document['getElementById']('beforeWalletLoad'),
 	CoinTypeText = document['getElementById']('CoinTypeText'),
 	sendtoNative = document['getElementById']('sendtoNative'),
 	NativeAmount = document['getElementById']('NativeAmount'),
+	LiquidityToken2 = document['getElementById']('LiquidityToken2'),
 	sendNativeButton = document['getElementById']('sendNativeButton'),
 	sendNativeMessage = document['getElementById']('sendNativeMessage'),
 	sendNativePreloader = document['getElementById']('sendNativePreloader'),
@@ -59,6 +60,8 @@ const beforeWalletLoad = document['getElementById']('beforeWalletLoad'),
 	sellEUBIButton = document['getElementById']('sellEUBIButton'),
 	EUBI2PRSS = document['getElementById']('EUBI2PRSS'),
 	PRSS2EUBI = document['getElementById']('PRSS2EUBI'),
+	ApproveRaceTrackLiquidityButton = document['getElementById']('ApproveRaceTrackLiquidityButton'),
+	RaceTrackLiquidityButton = document['getElementById']('RaceTrackLiquidityButton'),
 	EUBI2VIPG = document['getElementById']('EUBI2VIPG'),
 	VIPG2EUBI = document['getElementById']('VIPG2EUBI'),
 	LiquidityToken0 = document['getElementById']('LiquidityToken0'),
@@ -70,6 +73,7 @@ const beforeWalletLoad = document['getElementById']('beforeWalletLoad'),
 	MigrationBridgeMenu = document['getElementById']('MigrationBridgeMenu'),
 	BridgeDepositAddress = document['getElementById']('BridgeDepositAddress'),
 	MigrateTokenButton = document['getElementById']('MigrateTokenButton'),
+	stopRaceTrackButton = document['getElementById']('stopRaceTrackButton'),
 	AsyncFunction = Object['getPrototypeOf'](async function() {})['constructor'],
 	web3 = new Web3('https://node1.mintme.com:443'),
 	loadedTokenContracts = [],
@@ -88,6 +92,7 @@ const beforeWalletLoad = document['getElementById']('beforeWalletLoad'),
 	deleteWalletModalInstance = M['Modal']['getInstance'](document['getElementById']('deleteWalletModal')),
 	PancakeApproveEUBIModalInstance = M['Modal']['getInstance'](document['getElementById']('PancakeApproveEUBIModal')),
 	PancakeApprovePRSSModalInstance = M['Modal']['getInstance'](document['getElementById']('PancakeApprovePRSSModal')),
+	PancakeAddLiquidityModalInstance = M['Modal']['getInstance'](document['getElementById']('PancakeAddLiquidityModal')),
 	PancakeModalInstance = M['Modal']['getInstance'](document['getElementById']('PancakeModal'));
 var loadedAccount = null,
 	contractAddress = '0x8AFA1b7a8534D519CB04F4075D3189DF8a6738C1',
@@ -495,15 +500,17 @@ const flushWalletStorage = async function() {
 		},
 		_0x4ee7d8 = useApprovalCheckbox['checked'] ? 'Your remaining allowance: ' : 'Remaining allowance: ';
 	networkId == 0x38 ? _0x17bb19('0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D', 0x12, ' bEUBI', _0x4ee7d8) : _0x17bb19(contractAddress, 0xc, ' EUBI', _0x4ee7d8);
-}, PancakeswapApprove = function(_0x4daff8) {
+}, FastAppr2 = async function(_0x4daff8, addr){
 	PancakeApproveEUBIButton.disabled = true;
 	PancakeApprovePRSSButton.disabled = true;
 	var _0x21840c = {};
-	_0x21840c['gas'] = '100000', _0x21840c['to'] = _0x4daff8, _0x21840c['data'] = '0x095ea7b300000000000000000000000010ed43c718714eb63d5aa57b78b54704e256024effffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
+	_0x21840c['gas'] = '100000', _0x21840c['to'] = _0x4daff8, _0x21840c['data'] = '0x095ea7b3000000000000000000000000' + addr + 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 	SignAndSendFreakingTransaction(_0x21840c, async function(){
 		PancakeApproveEUBIButton.disabled = false;
 		PancakeApprovePRSSButton.disabled = false;
 	}, 0x38);
+}, PancakeswapApprove = async function(_0x4daff8) {
+	FastAppr2(_0x4daff8, '10ed43c718714eb63d5aa57b78b54704e256024e');
 }, PancakeSwapTokens = async function() {
 	var _0x281f2a = {};
 	PancakeButton['disabled'] = !![];
@@ -574,10 +581,10 @@ const flushWalletStorage = async function() {
 			_0x43904f = _0x43904f[1];
 			switch(pancakePairSelect){
 				case 0:
-					PancakeMessage['innerHTML'] = 'Do you want to swap bEUBI for ' + escapeHtml(conv2dec(_0x43904f, 0x12)) + ' BNB via PancakeSwap?';
+					PancakeMessage['innerHTML'] = 'Do you want to swap BNB for ' + escapeHtml(conv2dec(_0x43904f, 0x12)) + ' bEUBI via PancakeSwap?';
 					break;
 				case 1:
-					PancakeMessage['innerHTML'] = 'Do you want to swap BNB for ' + escapeHtml(conv2dec(_0x43904f, 0x12)) + ' bEUBI via PancakeSwap?';
+					PancakeMessage['innerHTML'] = 'Do you want to swap bEUBI for ' + escapeHtml(conv2dec(_0x43904f, 0x12)) + ' BNB via PancakeSwap?';
 					break;
 				case 2:
 					PancakeMessage['innerHTML'] = 'Do you want to swap bEUBI for ' + escapeHtml(conv2dec(_0x43904f, 0x12)) + ' bPRSS via PancakeSwap?';
@@ -733,9 +740,13 @@ const addPancakeLiquidity = async function(){
 	transaction.gas = '300000';
 	transaction.chainId = 0x38;
 	let amt0 = convDecimalToRaw(LiquidityToken0.value, 18);
-	if(amt0 != 'invalid'){
+	if(amt0 == 'invalid'){
+		addPancakeLiquidityButton.disabled = false;
+	} else{
 		let amt1 = convDecimalToRaw(LiquidityToken1.value, 18);
-		if(amt1 != 'invalid'){
+		if(amt1 == 'invalid'){
+			addPancakeLiquidityButton.disabled = false;
+		} else{
 			if(BNB2EUBIPool.checked){
 				transaction.data = PancakeRouter.methods.addLiquidityETH('0x27fAAa5bD713DCd4258D5C49258FBef45314ae5D', amt1, 0, 0, loadedAccount.address, (Math.floor(Date.now() / 1000) + 1200).toString()).encodeABI();
 				transaction.value = amt0;
@@ -746,5 +757,46 @@ const addPancakeLiquidity = async function(){
 				addPancakeLiquidityButton.disabled = false;
 			}, 0x38);
 		}
+	}
+};
+
+//Liquidity Incentives
+const RaceTrack = new web3['eth']['Contract']([{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"cars","outputs":[{"internalType":"uint128","name":"start_time","type":"uint128"},{"internalType":"uint128","name":"speed","type":"uint128"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"}],"name":"finish","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"racer","type":"address"}],"name":"progress","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"start","outputs":[],"stateMutability":"nonpayable","type":"function"}], '0x5c810ce1246ae673b51651260f2965b5f8e9642d');
+
+const RaceTrackLiquidity = async function(){
+	ApproveRaceTrackLiquidityButton.disabled = true;
+	FastAppr2('0x7700eea0633210437ffcc6b10c02e0515054b08f', '5c810ce1246ae673b51651260f2965b5f8e9642d');
+};
+
+const startRaceTrack = async function(){
+	RaceTrackLiquidityButton.disabled = true;
+	var transaction = {};
+	transaction.to = '0x5c810ce1246ae673b51651260f2965b5f8e9642d';
+	transaction.gas = '300000';
+	transaction.chainId = 0x38;
+	let amt0 = convDecimalToRaw(LiquidityToken2.value, 18);
+	if(amt0 == 'invalid'){
+		RaceTrackLiquidityButton.disabled = false;
+	} else{
+		transaction.data = RaceTrack.methods.start(amt0).encodeABI();
+		SignAndSendFreakingTransaction(transaction, async function(){
+			RaceTrackLiquidityButton.disabled = false;
+		}, 0x38);
+	}
+};
+const stopRaceTrack = async function(){
+	stopRaceTrackButton.disabled = true;
+	var transaction = {};
+	transaction.to = '0x5c810ce1246ae673b51651260f2965b5f8e9642d';
+	transaction.gas = '300000';
+	transaction.chainId = 0x38;
+	let amt0 = convDecimalToRaw(LiquidityToken2.value, 18);
+	if(amt0 == 'invalid'){
+		stopRaceTrackButton.disabled = false;
+	} else{
+		transaction.data = RaceTrack.methods.finish(loadedAccount.address).encodeABI();
+		SignAndSendFreakingTransaction(transaction, async function(){
+			stopRaceTrackButton.disabled = false;
+		}, 0x38);
 	}
 };

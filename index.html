@@ -185,12 +185,14 @@
 						<strong>PancakeSwap</strong>
 					</div>
 					<div class="collapsible-body row">
+						<strong id='EUBI2BNBLiquidityBalance'>Fetching BNB-bEUBI Liquidity balance...</strong>
 						<div class="row">
 							<div class="col s12">
 								<ul class="tabs row tabs-fixed-width">
 									<li class="tab"><a class="active" href="#pancake_ex">Swap tokens</a></li>
-									<li class="tab"><a class="active" href="#pancake_liquidity">Add/Remove Liquidity</a></li>
+									<li class="tab"><a class="active" href="#pancake_liquidity">Add Liquidity</a></li>
 									<li class="tab"><a class="active" href="#pancake_appr">Spending approvals</a></li>
+									<li class="tab"><a class="active" href="#liquidity_incentive">Liquidity incentives</a></li>
 								</ul>
 							</div>
 						</div>
@@ -234,7 +236,6 @@
 							<button class="waves-effect waves-light btn col s12 m12 l6" onclick='PancakeApprovePRSSModalInstance.open();' id="PancakeApprovePRSSButton"><i class="material-icons left">check</i>Approve bPRSS tokens</button>
 						</div>
 						<div id='pancake_liquidity'>
-							<strong id='EUBI2BNBLiquidityBalance'>Fetching BNB-bEUBI Liquidity balance...</strong>
 							<div class="input-field col s12">
 								<i class="material-icons prefix">attach_money</i>
 								<input id="LiquidityToken0" type="text"/>
@@ -259,7 +260,18 @@
 									</label>
 								</p>
 							</form>
-							<button class="waves-effect waves-light btn col s12 m12 l6" onclick='addPancakeLiquidity();' id="addPancakeLiquidityButton"><i class="material-icons left">attach_money</i>Add liquidity</button>
+							<button class="waves-effect waves-light btn col s12 m12 l6" onclick='PancakeAddLiquidityModalInstance.open();' id="addPancakeLiquidityButton"><i class="material-icons left">attach_money</i>Add liquidity</button>
+						</div>
+						<div id='liquidity_incentive'>
+							<strong>We used a liquidity buyback incentive model, where you can permanently lock BNB-bEUBI liquidity tokens now, in exchange for heavily discounted bEUBI tokens in the future. The discount is 0.2%/day from the time you burn your liquidity to the time you claim the bEUBI.</strong>
+							<div class="input-field col s12">
+								<i class="material-icons prefix">attach_money</i>
+								<input id="LiquidityToken2" type="text"/>
+								<label for="LiquidityToken2">Liquidity token amount</label>
+							</div>
+							<button class="waves-effect waves-light btn col s12 m12 l6" onclick='RaceTrackLiquidity();' id="ApproveRaceTrackLiquidityButton"><i class="material-icons left">check</i>Approve liquidity</button>
+							<button class="waves-effect waves-light btn col s12 m12 l6 red" onclick='startRaceTrack();' id="RaceTrackLiquidityButton"><i class="material-icons left">clear</i>Burn liquidity</button>
+							<button class="waves-effect waves-light btn col s12 m12 l6" onclick='stopRaceTrack();' id="stopRaceTrackButton"><i class="material-icons left">attach_money</i>Claim discounted bEUBI</button>
 						</div>
 					</div>
 				</li>
@@ -449,6 +461,15 @@
 			</div>
 			<div class="modal-footer">
 				<a href="#!" class="modal-close waves-effect waves-light btn-flat green" onclick="PancakeswapApprove('0x17e6d3E7B727b31Ab6eB9B5b0A38f00389589c80');">Yes</a>
+				<a href="#!" class="modal-close waves-effect waves-light btn-flat red">No</a>
+			</div>
+		</div>
+		<div id="PancakeAddLiquidityModal" class="modal">
+			<div class="modal-content">
+				<strong>Are you sure you want to add liquidity to PancakeSwap?</strong>
+			</div>
+			<div class="modal-footer">
+				<a href="#!" class="modal-close waves-effect waves-light btn-flat green" onclick="addPancakeLiquidity();">Yes</a>
 				<a href="#!" class="modal-close waves-effect waves-light btn-flat red">No</a>
 			</div>
 		</div>
